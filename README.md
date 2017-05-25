@@ -1,0 +1,2 @@
+# MindType
+EEG speller
