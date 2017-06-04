@@ -17,18 +17,20 @@ class ButtonBlock(QtGui.QWidget):
     def __init__(self):
         super().__init__()
 
+        buttons = []
+
         # creating a grid of buttons
         grid = QtGui.QGridLayout()
-        for i in range(6):
-            for j in range(6):
-                button_name = chr(ord('a') + (i * 6) + j)
+        for row in range(6):
+            for col in range(6):
+                button_name = chr(ord('a') + (row * 6) + col)
                 button = QtGui.QPushButton(button_name)
+                buttons.append(button)
                 # adding buttons to grid and creating a listener (signals in python?)
                 button.clicked.connect(print_char(button_name))
-                grid.addWidget(button, i, j)
+                grid.addWidget(button, row, col)
         # attaching grid to self
         self.setLayout(grid)
-
 
 # Running gui
 app = QtGui.QApplication(sys.argv)
