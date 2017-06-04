@@ -23,12 +23,26 @@ class ButtonBlock(QtGui.QWidget):
         grid = QtGui.QGridLayout()
         for row in range(6):
             for col in range(6):
-                button_name = chr(ord('a') + (row * 6) + col)
+                character_number = (row * 6) + col
+
+                if character_number < 26:
+                    button_name = chr(ord('a') + character_number)
+
+                else:
+                    button_name = str(character_number - 26)
+
                 button = QtGui.QPushButton(button_name)
                 buttons.append(button)
                 # adding buttons to grid and creating a listener (signals in python?)
                 button.clicked.connect(print_char(button_name))
                 grid.addWidget(button, row, col)
+
+
+
+
+
+
+
         # attaching grid to self
         self.setLayout(grid)
 
