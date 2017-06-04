@@ -237,7 +237,7 @@ class PluginPacketsToCSV(plugintypes.IPluginExtended):
                 f.write(row)
 
         else:
-            print "Time to wipe :D\n\n\n"
+            print("Time to wipe :D\n\n\n")
 
             # Wipe file
             with open(self.file_name, 'w') as f:

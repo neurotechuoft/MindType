@@ -9,3 +9,6 @@ class BioSignal:
     # METHODS-------------------------------------------------------------------
     def update(self, sample):
         raise NotImplementedError("Subclass must implement abstract method")
+
+    def process(self):
+        raise NotImplementedError("Subclass must implement abstract method")

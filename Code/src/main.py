@@ -19,8 +19,16 @@ manager = PluginManager()
 manager.setPluginPlaces(["plugins"])
 manager.collectPlugins()
 
+exit_str = ""
+
 
 # Type sudo python main.py -p /dev/ttyUSB0
+
+def process(objs_to_process):
+    while exit_str != "/exit":
+        for biosignal in objs_to_process:
+            if biosignal.needs_processing():
+                biosignal.process()
 
 def set_up_parser():
     '''
@@ -101,6 +109,9 @@ def execute_plugins(board, objs_to_update):
     :param board: bci.OpenBCIBoard
     :return:
     '''
+
+    global exit_str
+
     print("--------------INFO---------------")
     print("User serial interface enabled...\n\
     View command map at http://docs.openbci.com.\n\
@@ -205,6 +216,8 @@ https://github.com/OpenBCI/OpenBCI_Python")
         else:
             s = raw_input('--> ')
             pass
+
+        exit_str = s
 
 
 if __name__ == '__main__':
@@ -311,8 +324,10 @@ if __name__ == '__main__':
     # EXECUTE PLUGINS, STREAM FROM OPENBCI
     openbci_update_thread = threading.Thread \
         (target=execute_plugins, args=(board, [app.eog]))
+    process_data_thread = threading.Thread (target=process([app.eog]))
     try:
         openbci_update_thread.start()
+        process_data_thread.start()
     except:
         raise
 
