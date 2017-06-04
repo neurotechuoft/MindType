@@ -37,12 +37,6 @@ class ButtonBlock(QtGui.QWidget):
                 button.clicked.connect(print_char(button_name))
                 grid.addWidget(button, row, col)
 
-
-
-
-
-
-
         # attaching grid to self
         self.setLayout(grid)
 
