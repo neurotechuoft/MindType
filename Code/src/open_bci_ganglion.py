@@ -241,7 +241,7 @@ class OpenBCIBoard(object):
     """Might not be used depending on the mode."""
     return  self.imp_channels_per_sample
 
-  def start_streaming(self, callback, lapse=-1):
+  def start_streaming(self, callback, lapse=-1, update_object_list=None):
     """
     Start handling streaming data from the board. Call a provided callback
     for every single sample that is processed
@@ -273,7 +273,10 @@ class OpenBCIBoard(object):
         self.time_last_packet = timeit.default_timer() 
         for call in callback:
           for sample in samples:
-            call(sample)
+            if update_object_list:
+              call(sample, update_object_list)
+            else:
+              call(sample)
       
       if(lapse > 0 and timeit.default_timer() - start_time > lapse):
         self.stop();

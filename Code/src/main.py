@@ -182,7 +182,7 @@ if __name__ == '__main__':
     #     for plug_candidate in args.add:
     #         add_plugin()
 
-    add_plugin('print', [], board, plug_list, callback_list)
+    add_plugin('pub_sub', [], board, plug_list, callback_list)
 
     if len(plug_list) == 0:
         fun = None
