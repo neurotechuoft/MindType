@@ -1,8 +1,0 @@
-[Core]
-Name = save_to_array
-Module = save_to_array
-
-[Documentation]
-Author = Various
-Version = 0.1
-Description = Live-graph the data coming in.
