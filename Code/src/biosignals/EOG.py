@@ -49,8 +49,17 @@ class EOG(BioSignal):
                                     1000000.0)
         self.__eog_list__[2].append((float(sample[4]) - float(sample[3])) /
                                     1000000.0)
+        # print(sample)
 
-        if(self.num_of_packets > 300):
+
+    def process(self):
+
+        if self.num_of_packets > 300:
+
+            self.__eog_list__[0].pop(0)
+            self.__eog_list__[1].pop(0)
+            self.__eog_list__[2].pop(0)
+
             # Apply bandpass filter
             self.__eog_list_filtered__[1] = self.bandpass\
                 (self.__eog_list__[1])
@@ -68,18 +77,16 @@ class EOG(BioSignal):
                                                 self.sample_rate)
             self.__peaks__[1] = self.find_peaks(self.__eog_list_filtered__[2],
                                                 self.sample_rate)
-
+            print(self.__peaks__)
             # Find gesture
-            self.id_gestures()
-            self.gesture_graph()
-
+            # self.id_gestures()
+            # self.gesture_graph()
+            #
             # self.left_gaze = False
             # self.right_gaze = False
             # self.up_gaze = False
             # self.down_gaze = False
             # self.blink = False
-
-
 
     # def update_eog(self):
     #     '''
