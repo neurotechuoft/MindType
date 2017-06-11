@@ -1,12 +1,11 @@
 #!/usr/bin/env python2.7
 import argparse  # new in Python2.7
-import os
-import time
-import string
 import atexit
-import threading
 import logging
+import string
 import sys
+import threading
+import time
 
 from biosignals.EOG import EOG
 
@@ -95,7 +94,38 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
             callback_list.append(plug.plugin_object)
 
 
-def execute_board(biosignals, stop):
+def stop_biosignals(biosignals):
+    for biosignal in biosignals:
+        biosignal.stop()
+
+
+def restart_biosignals(biosignals):
+    for biosignal in biosignals:
+        biosignal.restart()
+
+
+def exit_biosignals(biosignals):
+    for biosignal in biosignals:
+        biosignal.exit()
+
+
+def process(biosignal):
+    # stop = False
+    # while not stop:
+    #     biosignal.process()
+    #
+    #     if biosignal.is_stop():
+    #         stop = True
+    exit = False
+
+    while not exit:
+        if not biosignal.is_stop():
+            biosignal.process()
+        if biosignal.is_exit():
+            exit = True
+
+
+def execute_board(biosignals):
     print("--------------INFO---------------")
     print("User serial interface enabled...\n\
 View command map at http://docs.openbci.com.\n\
@@ -177,6 +207,7 @@ https://github.com/OpenBCI/OpenBCI_Python")
                                                                 biosignals))
                         boardThread.daemon = True  # will stop on exit
                         try:
+                            restart_biosignals(biosignals)
                             boardThread.start()
                         except:
                             raise
@@ -192,7 +223,7 @@ https://github.com/OpenBCI/OpenBCI_Python")
                     board.stop()
                     rec = True
                     flush = True
-                    stop=True
+                    stop_biosignals(biosignals)
                 if rec == False:
                     print("Command not recognized...")
 
@@ -230,15 +261,12 @@ https://github.com/OpenBCI/OpenBCI_Python")
         else:
             s = raw_input('--> ')
 
-
-def process(biosignal, stop):
-    while True and not stop:
-        biosignal.process()
+    exit_biosignals(biosignals)
 
 
 if __name__ == '__main__':
 
-    print ("------------main.py-------------")
+    print("------------main.py-------------")
     parser = set_up_parser()
 
     args = parser.parse_args()
@@ -247,17 +275,18 @@ if __name__ == '__main__':
     #     print ("WARNING: no plugin selected, you will only be able to communicate with the board. You should select at least one plugin with '--add [plugin_name]'. Use '--list' to show available plugins or '--info [plugin_name]' to get more information.")
 
     if args.board == "cyton":
-        print ("Board type: OpenBCI Cyton (v3 API)")
+        print("Board type: OpenBCI Cyton (v3 API)")
         import open_bci_v3 as bci
     elif args.board == "ganglion":
-        print ("Board type: OpenBCI Ganglion")
+        print("Board type: OpenBCI Ganglion")
         import open_bci_ganglion as bci
     else:
-        raise ValueError('Board type %r was not recognized. Known are 3 and 4' % args.board)
+        raise ValueError(
+            'Board type %r was not recognized. Known are 3 and 4' % args.board)
 
     # Check AUTO port selection, a "None" parameter for the board API
     check_auto_port_selection(args)
-    
+
     plugins_paths = ["plugins"]
     # if args.plugins_path:
     #     plugins_paths += args.plugins_path
@@ -295,7 +324,7 @@ if __name__ == '__main__':
     # else:
     #     print ("main.py: Logging Disabled.")
 
-    print ("\n-------INSTANTIATING BOARD-------")
+    print("\n-------INSTANTIATING BOARD-------")
     board = bci.OpenBCIBoard(port=args.port,
                              daisy=args.daisy,
                              filter_data=args.filtering,
@@ -305,12 +334,14 @@ if __name__ == '__main__':
 
     #  Info about effective number of channels and sampling rate
     if board.daisy:
-        print ("Force daisy mode:")
+        print("Force daisy mode:")
     else:
-        print ("No daisy:")
-        print (board.getNbEEGChannels(), "EEG channels and", board.getNbAUXChannels(), "AUX channels at", board.getSampleRate(), "Hz.")
+        print("No daisy:")
+        print(board.getNbEEGChannels(), "EEG channels and",
+              board.getNbAUXChannels(), "AUX channels at",
+              board.getSampleRate(), "Hz.")
 
-    print ("\n------------PLUGINS--------------")
+    print("\n------------PLUGINS--------------")
     # Loop round the plugins and print their names.
     # print ("Found plugins:")
     # for plugin in manager.getAllPlugins():
@@ -332,21 +363,21 @@ if __name__ == '__main__':
     else:
         fun = callback_list
 
+
     def cleanUp():
         board.disconnect()
-        print ("Deactivating Plugins...")
+        print("Deactivating Plugins...")
         for plug in plug_list:
             plug.deactivate()
-        print ("User.py exiting...")
+        print("User.py exiting...")
+
 
     atexit.register(cleanUp)
 
     eog = EOG(256)
-    stop=False
 
-    process_thread = threading.Thread(target=process, args=(eog, stop))
+    process_thread = threading.Thread(target=process, args=[eog])
+    # process_thread.setDaemon()
     process_thread.start()
 
-    execute_board([eog], stop)
-
-
+    execute_board([eog])

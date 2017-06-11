@@ -49,8 +49,8 @@ class UDPServer(plugintypes.IPluginExtended):
     self.server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
   def activate(self):
-    print "udp_server plugin"
-    print self.args
+    print("udp_server plugin")
+    print(self.args)
 
     if len(self.args) > 0:
       self.ip = self.args[0]
@@ -58,11 +58,12 @@ class UDPServer(plugintypes.IPluginExtended):
       self.port = int(self.args[1])
     
     # init network
-    print "Selecting raw UDP streaming. IP: ", self.ip, ", port: ", str(self.port)
+    print("Selecting raw UDP streaming. IP: ", self.ip, ", port: ",
+          str(self.port))
 
     self.server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    print "Server started on port " + str(self.port)
+    print("Server started on port " + str(self.port))
 
   def __call__(self, sample): 
     self.send_data(json.dumps(sample.channel_data))
@@ -75,6 +76,6 @@ class UDPServer(plugintypes.IPluginExtended):
     self.server.close();
 
   def show_help(self):
-      print """Optional arguments: [ip [port]]
+    print("""Optional arguments: [ip [port]]
       \t ip: target IP address (default: 'localhost')
-      \t port: target port (default: 12345)"""
+      \t port: target port (default: 12345)""")

@@ -37,9 +37,14 @@ class EOG(BioSignal):
     # FACTORY METHODS-----------------------------------------------------------
     # GETTERS, SETTERS----------------------------------------------------------
 
+    # TODO: make thread-safe
     # METHODS-------------------------------------------------------------------
     def update(self, sample):
-        self.num_of_packets+= 1
+        self.num_of_packets += 1
+
+        # self.__eog_list__[0].pop(0)
+        # self.__eog_list__[1].pop(0)
+        # self.__eog_list__[2].pop(0)
 
         # Append data to EOG list
         # TODO: encapsulate EOG List into something that reads more nicely
@@ -49,16 +54,17 @@ class EOG(BioSignal):
                                     1000000.0)
         self.__eog_list__[2].append((float(sample[4]) - float(sample[3])) /
                                     1000000.0)
+
         # print(sample)
+        if self.num_of_packets > 300:
+            self.__eog_list__[0].pop(0)
+            self.__eog_list__[1].pop(0)
+            self.__eog_list__[2].pop(0)
 
 
     def process(self):
 
-        if self.num_of_packets > 300:
-
-            self.__eog_list__[0].pop(0)
-            self.__eog_list__[1].pop(0)
-            self.__eog_list__[2].pop(0)
+        if self.num_of_packets >= 300:
 
             # Apply bandpass filter
             self.__eog_list_filtered__[1] = self.bandpass\

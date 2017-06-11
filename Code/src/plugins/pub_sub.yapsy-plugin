@@ -1,4 +1,3 @@
-
 [Core]
 Name = pub_sub
 Module = pub_sub
