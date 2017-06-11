@@ -1,8 +1,0 @@
-[Core]
-Name = packets_to_csv
-Module = packets_to_csv
-
-[Documentation]
-Author = Various
-Version = 0.1
-Description = Live-graph the data coming in.

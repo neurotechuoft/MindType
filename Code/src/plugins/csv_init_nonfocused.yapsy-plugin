@@ -1,8 +1,0 @@
-[Core]
-Name = csv_init_nonfocused
-Module = csv_init_nonfocused
-
-[Documentation]
-Author = Various
-Version = 0.1
-Description = Write cvs data
