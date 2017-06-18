@@ -59,6 +59,18 @@ class UDPServer(plugintypes.IPluginExtended):
     
     # init network
     print("Selecting raw UDP streaming. IP: ", self.ip, ", port: ",
+  def __call__(self, sample):
+    self.send_data(json.dumps(sample.channel_data))
+
+  def send_data(self, data):
+    self.server.sendto(data, (self.ip, self.port))
+
+  # From IPlugin: close sockets, send message to client
+  def deactivate(self):
+    self.server.close();
+
+  def show_help(self):
+    print
           str(self.port))
 
     self.server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

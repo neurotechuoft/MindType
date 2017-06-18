@@ -96,12 +96,12 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
 
 def stop_biosignals(biosignals):
     for biosignal in biosignals:
-        biosignal.stop()
+        biosignal.pause()
 
 
-def restart_biosignals(biosignals):
+def resume_biosignals(biosignals):
     for biosignal in biosignals:
-        biosignal.restart()
+        biosignal.resume()
 
 
 def exit_biosignals(biosignals):
@@ -207,7 +207,7 @@ https://github.com/OpenBCI/OpenBCI_Python")
                                                                 biosignals))
                         boardThread.daemon = True  # will stop on exit
                         try:
-                            restart_biosignals(biosignals)
+                            resume_biosignals(biosignals)
                             boardThread.start()
                         except:
                             raise
