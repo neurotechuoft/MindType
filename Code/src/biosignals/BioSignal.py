@@ -5,7 +5,7 @@ class BioSignal:
         self.COMMA_DELIMITER = ","
 
         # Multithreading
-        self.__paused__ = False
+        self.__paused__ = True
         self.__exit__ = False
 
     # GETTERS, SETTERS----------------------------------------------------------

@@ -476,7 +476,7 @@ def smoother(signal=None, kernel='boxzen', size=10, mirror=True, **kwargs):
 
     length = len(signal)
 
-    if isinstance(kernel, basestring):
+    if isinstance(kernel, str):
         # check length
         if size > length:
             size = length - 1

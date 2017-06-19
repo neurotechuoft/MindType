@@ -56,10 +56,13 @@ class EOG(BioSignal):
                                     1000000.0)
 
         # print(sample)
+
         if self.num_of_packets > 300:
             self.__eog_list__[0].pop(0)
             self.__eog_list__[1].pop(0)
             self.__eog_list__[2].pop(0)
+
+        # print(self.__eog_list__[0])
 
 
     def process(self):
