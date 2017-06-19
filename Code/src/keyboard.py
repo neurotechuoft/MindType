@@ -5,6 +5,7 @@ from random import randint
 from PyQt4 import QtGui
 from PyQt4.QtCore import QTimer
 
+
 # grid of labels object
 class ButtonBlock(QtGui.QWidget):
     grid = QtGui.QGridLayout()
@@ -26,7 +27,7 @@ class ButtonBlock(QtGui.QWidget):
         send = functools.partial(runFlash, self)
 
         startbut.clicked.connect(send)
-        endbut.clicked.connect(print_char('+',self))
+        endbut.clicked.connect(print_char('+', self))
 
         ButtonBlock.hbox.addWidget(typed)
         ButtonBlock.hbox.addWidget(startbut)
@@ -42,18 +43,19 @@ class ButtonBlock(QtGui.QWidget):
 
                 else:
                     button_name = str(character_number - 26)
-                #button_name = chr(ord('a') + (i * 6) + j)
+                # button_name = chr(ord('a') + (i * 6) + j)
                 label = QtGui.QPushButton(button_name)
                 label.setStyleSheet(
                     "QLabel {background-color: black; color: white; font-size: 65px;}")
                 # adding buttons to grid and creating a listener (signals in python?)
-                label.clicked.connect(print_char(button_name,self))
+                label.clicked.connect(print_char(button_name, self))
                 ButtonBlock.grid.addWidget(label, i, j)
 
         # attaching grid to self
         ButtonBlock.vbox.addLayout(ButtonBlock.hbox)
         ButtonBlock.vbox.addLayout(ButtonBlock.grid)
         self.setLayout(ButtonBlock.vbox)
+
 
 def deleteWidget(block, index):
     item = block.hbox.itemAt(index)
@@ -62,6 +64,8 @@ def deleteWidget(block, index):
         if widget is not None:
             block.hbox.removeWidget(widget)
             widget.deleteLater()
+
+
 # function that lightens a row of widgets
 
 def lighten(block, index):
@@ -73,6 +77,7 @@ def lighten(block, index):
         label.clicked.connect(print_char(letter, block))
         block.grid.addWidget(label, index, x)
 
+
 # function that darkens a row of widgets
 def darken(block, index):
     for x in range(6):
@@ -83,18 +88,20 @@ def darken(block, index):
         label.clicked.connect(print_char(letter, block))
         block.grid.addWidget(label, index, x)
 
+
 # function that darkens a column of widgets
-def vertdark(block,index):
+def vertdark(block, index):
     for x in range(6):
         letter = chr(ord('a') + index + (x * 6))
         label = QtGui.QPushButton(letter)
         label.setStyleSheet(
             "QPushButton {background-color: black; color: blue; font-size: 65px;}")
-        label.clicked.connect(print_char(letter,block))
+        label.clicked.connect(print_char(letter, block))
         block.grid.addWidget(label, x, index)
 
+
 # function that lightens a column of widgets
-def vertlight(block,index):
+def vertlight(block, index):
     for x in range(6):
         letter = chr(ord('a') + index + (x * 6))
         label = QtGui.QPushButton(letter)
@@ -103,18 +110,20 @@ def vertlight(block,index):
         label.clicked.connect(print_char(letter, block))
         block.grid.addWidget(label, x, index)
 
+
 # calls the flashes in sequence
 def flash(block, index, isrow):
     if isrow:
-        darkobj = functools.partial(darken,block,index)
-        lightobj = functools.partial(lighten,block,index)
+        darkobj = functools.partial(darken, block, index)
+        lightobj = functools.partial(lighten, block, index)
         QTimer.singleShot(0, darkobj)
-        QTimer.singleShot(200,lightobj)
+        QTimer.singleShot(200, lightobj)
     else:
         darkobj = functools.partial(vertdark, block, index)
         lightobj = functools.partial(vertlight, block, index)
         QTimer.singleShot(0, darkobj)
         QTimer.singleShot(200, lightobj)
+
 
 # driver method for flash function
 # checks that all rows and columns has been flashed at least once
@@ -124,15 +133,16 @@ def runFlash(block):
     counter = 300
     while complete == False:
         isrow = False
-        index = randint(0,11)
+        index = randint(0, 11)
         beenflashed[index] = True
-        if(index>5):
-            index=index-6
+        if (index > 5):
+            index = index - 6
             isrow = True
         timercallback = functools.partial(flash, block, index, isrow)
         QTimer.singleShot(counter, timercallback)
         counter += 300
         complete = all(beenflashed)
+
 
 def print_char(name, block):
     def print_char_function():
@@ -141,21 +151,24 @@ def print_char(name, block):
         if name != '+':
             block.display = block.display + name
             type = QtGui.QLabel(block.display)
-            block.hbox.insertWidget(0,type)
-            deleteWidget(block,1)
+            block.hbox.insertWidget(0, type)
+            deleteWidget(block, 1)
         else:
             type = QtGui.QLabel("")
             block.display = ""
             block.hbox.insertWidget(0, type)
             deleteWidget(block, 1)
             print("done")
+
     return print_char_function  # (ButtonBlock --> extends QWidget)
+
 
 def initflash(block):
     for x in range(6):
         flash(block, x, True)
     for x in range(6):
         flash(block, x, False)
+
 
 # Running gui
 app = QtGui.QApplication(sys.argv)
