@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.io
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
@@ -29,7 +30,7 @@ class Data:
                 channel_signals = []
                 for signal in range(96):
                     channel_signals.append(float(self.training_data['Signal'][index][flash*42][channel]))
-                one_flash.append(max(channel_signals))
+                one_flash.append(channel_signals)
             one_character_signals.append(one_flash)
         np_one_character_signals = np.array(one_character_signals)
         return np_one_character_signals
@@ -56,23 +57,35 @@ class Data:
 class CharacterClassification:
     def __init__(self, channels_data, expected_result):
         # initializing class var
-        self.training_data = channels_data
-        self.training_results = expected_result
+        self.training_data = np.array(channels_data)
+        self.training_results = np.array(expected_result)
         self.lda = LinearDiscriminantAnalysis()
+        # self.lda.fit_transform(channels_data, expected_result)
+        self.predictions = [[],[],[],[],[],[],[],[]]
 
-        self.lda.fit_transform(channels_data, expected_result)
+    def train(self, training_data):
+        self.training_data = np.swapaxes(self.training_data, 1, 2)
 
-    def is_required_character(self, channels_data):
-        prediction = self.lda.predict(channels_data)
-        print(prediction)
-        if 0 == prediction:
-            return False
-        return True
+        for i in range(85):
+            for k in range(8):
+                for j in range(180):
+                    self.lda.fit(self.training_data[i][k], self.training_results[i])
 
 
-np.array([1, 2, 3, 4, 5, 6, 7, 8])
 
-LDA = CharacterClassification(np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]]),
-                              np.array([0, 0, 0, 1, 1, 1]))
+    def get_predictions(self, channels_data):
+        for i in range(0, len(channels_data)):
+            for k in range(8):
+                prediction = self.lda.decision_function(channels_data[i][k])
+                self.predictions[k].append(prediction)
+        return self.predictions
 
-LDA.is_required_character([[-9999977767650.8003, -7641]])
+    # def is_required_character:
+    #     final_prediction = np.mean(self.predictions)
+
+
+# data = scipy.io.loadmat("BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
+# all_data = Data(data)
+# print("Hello.")
+# classifier = CharacterClassification(all_data.character_signals[0], all_data.character_labels[0])
+# classifier.is_required_character(all_data.character_signals[1])
