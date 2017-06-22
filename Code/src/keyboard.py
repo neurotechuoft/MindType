@@ -2,13 +2,11 @@ import functools
 import random
 import sys
 
-import time
 from PyQt4 import QtGui
 from PyQt4.QtCore import QTimer
 
 is_paused = False
 current_index = 0
-q_timer = QTimer
 
 
 # Keyboard Gui Class
@@ -115,17 +113,19 @@ def run_flash(keyboard):
     for index in range(12):
         counter = 300 * (index + 1)
         row_col = row_col_visited[index]
-        q_timer.singleShot(counter, functools.partial(flash, keyboard, row_col))
+        QTimer.singleShot(counter, functools.partial(flash, keyboard, row_col))
 
 
+# setting time intervals for flashing
 def flash(keyboard, row_col):
-    global q_timer
-    if not is_paused:
-        q_timer.singleShot(0, functools.partial(change_color, keyboard, row_col, "dark"))
-        q_timer.singleShot(200, functools.partial(change_color, keyboard, row_col, "light"))
+    if is_paused:
+        QTimer.stop()
+    else:
+        QTimer.singleShot(0, functools.partial(change_color, keyboard, row_col, "dark"))
+        QTimer.singleShot(200, functools.partial(change_color, keyboard, row_col, "light"))
 
 
-# function that lightens a row/col
+# function that lightens/darken a row/col
 def change_color(keyboard, row_col, color):
     keyboard_buttons = keyboard.character_buttons
     is_row = False
@@ -160,7 +160,6 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     buttonBlock = Keyboard()
     init_flash(buttonBlock)
-    time.sleep(1)
-    buttonBlock.resize(550, 500)
+    buttonBlock.resize(550, 550)
     buttonBlock.show()
     sys.exit(app.exec_())
