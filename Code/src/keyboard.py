@@ -1,39 +1,45 @@
 import functools
+import random
 import sys
 
-from random import randint
+import time
 from PyQt4 import QtGui
 from PyQt4.QtCore import QTimer
 
+is_paused = False
+current_index = 0
+q_timer = QTimer
 
-# grid of labels object
-class ButtonBlock(QtGui.QWidget):
+
+# Keyboard Gui Class
+# -------------------
+class Keyboard(QtGui.QWidget):
+    v_box = QtGui.QVBoxLayout()
+    h_box = QtGui.QHBoxLayout()
     grid = QtGui.QGridLayout()
-    vbox = QtGui.QVBoxLayout()
-    hbox = QtGui.QHBoxLayout()
-    display = ""
 
     # constructor
     def __init__(self):
-        super(ButtonBlock, self).__init__()
-        # creating a grid of buttons, setting margins and spacing
-        ButtonBlock.grid.setSpacing(0)
-        ButtonBlock.vbox.setContentsMargins(0, 0, 0, 0)
+        super(Keyboard, self).__init__()
 
-        typed = QtGui.QLabel("")
-        startbut = QtGui.QPushButton("Start/next letter")
-        endbut = QtGui.QPushButton("Finished")
+        # creating a grid of buttons, setting margins and spacing (adding to v_box)
+        Keyboard.grid.setSpacing(0)
+        Keyboard.v_box.setContentsMargins(0, 0, 0, 0)
 
-        send = functools.partial(runFlash, self)
+        # adding top bar for keyboard (adding to h_box)
+        self.character_display_panel = QtGui.QLabel("Enter Text!")
+        self.start_button = QtGui.QPushButton("Start / Next letter")
+        self.end_button = QtGui.QPushButton("Pause")
 
-        startbut.clicked.connect(send)
-        endbut.clicked.connect(print_char('+', self))
+        self.start_button.clicked.connect(start(self))
+        self.end_button.clicked.connect(pause_resume(self))
 
-        ButtonBlock.hbox.addWidget(typed)
-        ButtonBlock.hbox.addWidget(startbut)
-        ButtonBlock.hbox.addWidget(endbut)
+        Keyboard.h_box.addWidget(self.character_display_panel)
+        Keyboard.h_box.addWidget(self.start_button)
+        Keyboard.h_box.addWidget(self.end_button)
 
-        # loops through and adds labels with appropriate characters
+        self.character_buttons = []
+        # adding keyboard keys (adding to grid)
         for i in range(6):
             for j in range(6):
                 character_number = (i * 6) + j
@@ -45,135 +51,116 @@ class ButtonBlock(QtGui.QWidget):
                     button_name = str(character_number - 26)
                 # button_name = chr(ord('a') + (i * 6) + j)
                 label = QtGui.QPushButton(button_name)
-                label.setStyleSheet(
-                    "QLabel {background-color: black; color: white; font-size: 65px;}")
+                label.setStyleSheet("QLabel {background-color: black; color: white; font-size: 65px;}")
                 # adding buttons to grid and creating a listener (signals in python?)
                 label.clicked.connect(print_char(button_name, self))
-                ButtonBlock.grid.addWidget(label, i, j)
+                Keyboard.grid.addWidget(label, i, j)
+                self.character_buttons.append(label)
 
-        # attaching grid to self
-        ButtonBlock.vbox.addLayout(ButtonBlock.hbox)
-        ButtonBlock.vbox.addLayout(ButtonBlock.grid)
-        self.setLayout(ButtonBlock.vbox)
-
-
-def deleteWidget(block, index):
-    item = block.hbox.itemAt(index)
-    if item is not None:
-        widget = item.widget()
-        if widget is not None:
-            block.hbox.removeWidget(widget)
-            widget.deleteLater()
+        # attaching grid and h_box to the v_box
+        Keyboard.v_box.addLayout(Keyboard.h_box)
+        Keyboard.v_box.addLayout(Keyboard.grid)
+        # setting the layout of of Keyboard to v_box
+        self.setLayout(Keyboard.v_box)
 
 
-# function that lightens a row of widgets
+# signal functions (on click listeners)
+# -------------------------------------
+def start(keyboard):
+    def start_function():
+        button_start = keyboard.start_button
+        # button_start.setDisabled(True)
+        run_flash(keyboard)
 
-def lighten(block, index):
-    for x in range(6):
-        letter = chr(ord('a') + (index * 6) + x)
-        label = QtGui.QPushButton(letter)
-        label.setStyleSheet(
-            "QPushButton {background-color: black; color: white; font-size: 65px;}")
-        label.clicked.connect(print_char(letter, block))
-        block.grid.addWidget(label, index, x)
-
-
-# function that darkens a row of widgets
-def darken(block, index):
-    for x in range(6):
-        letter = chr(ord('a') + (index * 6) + x)
-        label = QtGui.QPushButton(letter)
-        label.setStyleSheet(
-            "QPushButton {background-color: black; color: blue; font-size: 65px;}")
-        label.clicked.connect(print_char(letter, block))
-        block.grid.addWidget(label, index, x)
+    return start_function
 
 
-# function that darkens a column of widgets
-def vertdark(block, index):
-    for x in range(6):
-        letter = chr(ord('a') + index + (x * 6))
-        label = QtGui.QPushButton(letter)
-        label.setStyleSheet(
-            "QPushButton {background-color: black; color: blue; font-size: 65px;}")
-        label.clicked.connect(print_char(letter, block))
-        block.grid.addWidget(label, x, index)
+def pause_resume(keyboard):
+    def pause_resume_function():
+        global is_paused
+        button_pause_resume = keyboard.end_button
+        if button_pause_resume.text() == "Pause":
+            button_pause_resume.setText("Resume")
+            is_paused = True
+        else:
+            button_pause_resume.setText("Pause")
+            is_paused = False
+            # cont.
+
+    return pause_resume_function
 
 
-# function that lightens a column of widgets
-def vertlight(block, index):
-    for x in range(6):
-        letter = chr(ord('a') + index + (x * 6))
-        label = QtGui.QPushButton(letter)
-        label.setStyleSheet(
-            "QPushButton {background-color: black; color: white; font-size: 65px;}")
-        label.clicked.connect(print_char(letter, block))
-        block.grid.addWidget(label, x, index)
-
-
-# calls the flashes in sequence
-def flash(block, index, isrow):
-    if isrow:
-        darkobj = functools.partial(darken, block, index)
-        lightobj = functools.partial(lighten, block, index)
-        QTimer.singleShot(0, darkobj)
-        QTimer.singleShot(200, lightobj)
-    else:
-        darkobj = functools.partial(vertdark, block, index)
-        lightobj = functools.partial(vertlight, block, index)
-        QTimer.singleShot(0, darkobj)
-        QTimer.singleShot(200, lightobj)
-
-
-# driver method for flash function
-# checks that all rows and columns has been flashed at least once
-def runFlash(block):
-    complete = False
-    beenflashed = [False] * 12
-    counter = 300
-    while complete == False:
-        isrow = False
-        index = randint(0, 11)
-        beenflashed[index] = True
-        if (index > 5):
-            index = index - 6
-            isrow = True
-        timercallback = functools.partial(flash, block, index, isrow)
-        QTimer.singleShot(counter, timercallback)
-        counter += 300
-        complete = all(beenflashed)
-
-
-def print_char(name, block):
+def print_char(name, keyboard):
     def print_char_function():
         # printing characters on same line
-        print(name)
-        if name != '+':
-            block.display = block.display + name
-            type = QtGui.QLabel(block.display)
-            block.hbox.insertWidget(0, type)
-            deleteWidget(block, 1)
+        print(name),
+        display_panel = keyboard.character_display_panel
+        if display_panel.text() == "Enter Text!":
+            display_panel.setText(name)
         else:
-            type = QtGui.QLabel("")
-            block.display = ""
-            block.hbox.insertWidget(0, type)
-            deleteWidget(block, 1)
-            print("done")
+            display_panel.setText(keyboard.character_display_panel.text() + name)
 
     return print_char_function  # (ButtonBlock --> extends QWidget)
 
 
-def initflash(block):
-    for x in range(6):
-        flash(block, x, True)
-    for x in range(6):
-        flash(block, x, False)
+# helper Signal functions
+# ------------------------
+# driver method for flash function
+def run_flash(keyboard):
+    global current_index, is_paused, q_timer
+
+    row_col_visited = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    random.shuffle(row_col_visited)
+
+    for index in range(12):
+        counter = 300 * (index + 1)
+        row_col = row_col_visited[index]
+        q_timer.singleShot(counter, functools.partial(flash, keyboard, row_col))
 
 
-# Running gui
-app = QtGui.QApplication(sys.argv)
-buttonBlock = ButtonBlock()
-initflash(buttonBlock)
-buttonBlock.show()
-buttonBlock.resize(550, 500)
-sys.exit(app.exec_())
+def flash(keyboard, row_col):
+    global q_timer
+    if not is_paused:
+        q_timer.singleShot(0, functools.partial(change_color, keyboard, row_col, "dark"))
+        q_timer.singleShot(200, functools.partial(change_color, keyboard, row_col, "light"))
+
+
+# function that lightens a row/col
+def change_color(keyboard, row_col, color):
+    keyboard_buttons = keyboard.character_buttons
+    is_row = False
+
+    if row_col > 5:
+        row_col = row_col - 6
+        is_row = True
+
+    for index in range(6):
+        # displaying rows
+        if is_row:
+            keyboard_button = keyboard_buttons[index + (row_col * 6)]
+        # displaying col
+        else:
+            keyboard_button = keyboard_buttons[(index * 6) + row_col]
+
+        if color == "light":
+            keyboard_button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+        else:
+            keyboard_button.setStyleSheet("QPushButton {background-color: black; color: blue; font-size: 65px;}")
+
+
+def init_flash(block):
+    for x in range(12):
+        flash(block, x)
+
+
+# main method
+# -----------
+if __name__ == '__main__':
+    # Running gui
+    app = QtGui.QApplication(sys.argv)
+    buttonBlock = Keyboard()
+    init_flash(buttonBlock)
+    time.sleep(1)
+    buttonBlock.resize(550, 500)
+    buttonBlock.show()
+    sys.exit(app.exec_())
