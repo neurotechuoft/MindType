@@ -1,9 +1,7 @@
 import numpy as np
 import scipy.io
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-
-
-
+import scipy
 
 class Data:
     """Preprocessing and data collection."""
@@ -61,16 +59,16 @@ class CharacterClassification:
         self.training_results = np.array(expected_result)
         self.lda = LinearDiscriminantAnalysis()
         # self.lda.fit_transform(channels_data, expected_result)
+        for()
         self.predictions = [[],[],[],[],[],[],[],[]]
 
-    def train(self, training_data):
+    def train(self):
         self.training_data = np.swapaxes(self.training_data, 1, 2)
 
         for i in range(85):
             for k in range(8):
                 for j in range(180):
                     self.lda.fit(self.training_data[i][k], self.training_results[i])
-
 
 
     def get_predictions(self, channels_data):
@@ -89,3 +87,15 @@ class CharacterClassification:
 # print("Hello.")
 # classifier = CharacterClassification(all_data.character_signals[0], all_data.character_labels[0])
 # classifier.is_required_character(all_data.character_signals[1])
+
+if __name__ == '__main__':
+    data = scipy.io.loadmat("../BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
+    test_data = scipy.io.loadmat(
+        "../BCI_Comp_III_Wads_2004/Subject_B_Train.mat")
+
+    all_data = Data(data)
+
+    classifier = CharacterClassification(all_data.character_signals,
+                                         all_data.character_labels)
+
+    classifier.train()
