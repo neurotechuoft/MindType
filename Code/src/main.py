@@ -274,9 +274,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # if not(args.add):
-    #     print ("WARNING: no plugin selected, you will only be able to communicate with the board. You should select at least one plugin with '--add [plugin_name]'. Use '--list' to show available plugins or '--info [plugin_name]' to get more information.")
-
     if args.board == "cyton":
         print("Board type: OpenBCI Cyton (v3 API)")
         import open_bci_v3 as bci
@@ -291,41 +288,9 @@ if __name__ == '__main__':
     check_auto_port_selection(args)
 
     plugins_paths = ["plugins"]
-    # if args.plugins_path:
-    #     plugins_paths += args.plugins_path
     manager.setPluginPlaces(plugins_paths)
     manager.collectPlugins()
 
-    # Print list of available plugins and exit
-    # if args.list:
-    #     print ("Available plugins:")
-    #     for plugin in manager.getAllPlugins():
-    #         print ("\t- " + plugin.name)
-    #     exit()
-
-    # User wants more info about a plugin...
-    # if args.info:
-    #     plugin = manager.getPluginByName(args.info)
-    #     if plugin == None:
-    #         # eg: if an import fail inside a plugin, yapsy skip it
-    #         print ("Error: [ " +  args.info + " ] not found or could not be loaded. Check name and requirements.")
-    #     else:
-    #         print (plugin.description)
-    #         plugin.plugin_object.show_help()
-    #     exit()
-
-    # print ("\n------------SETTINGS-------------")
-    # print ("Notch filtering:" + str(args.filtering))
-    #
-    # # Logging
-    # if args.log:
-    #     print ("Logging Enabled: " + str(args.log))
-    #     logging.basicConfig(filename="OBCI.log", format='%(asctime)s - %(levelname)s : %(message)s', level=logging.DEBUG)
-    #     logging.getLogger('yapsy').setLevel(logging.DEBUG)
-    #     logging.info('---------LOG START-------------')
-    #     logging.info(args)
-    # else:
-    #     print ("main.py: Logging Disabled.")
 
     print("\n-------INSTANTIATING BOARD-------")
     board = bci.OpenBCIBoard(port=args.port,
@@ -346,18 +311,15 @@ if __name__ == '__main__':
 
     print("\n------------PLUGINS--------------")
     # Loop round the plugins and print their names.
-    # print ("Found plugins:")
-    # for plugin in manager.getAllPlugins():
-    #     print ("[ " + plugin.name + " ]")
-    # print("\n")
+    print ("Found plugins:")
+    for plugin in manager.getAllPlugins():
+        print ("[ " + plugin.name + " ]")
+    print("\n")
 
 
     # Fetch plugins, try to activate them, add to the list if OK
     plug_list = []
     callback_list = []
-    # if args.add:
-    #     for plug_candidate in args.add:
-    #         add_plugin()
 
     add_plugin('pub_sub', [], board, plug_list, callback_list)
 
