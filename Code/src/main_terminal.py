@@ -1,6 +1,7 @@
 # main method
 # -----------
 import sys
+
 from PyQt4 import QtGui
 
 from MindType import MindType

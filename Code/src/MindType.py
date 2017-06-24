@@ -1,6 +1,6 @@
 from PyQt4 import QtGui
 
-# Sayan sucks; don't complain
+# Sayan sucks; don't complain - yours truly Abdel and Scholar
 from Keyboard import Keyboard
 
 
