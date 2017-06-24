@@ -119,8 +119,10 @@ def process(biosignal):
     exit = False
 
     while not exit:
-        if not biosignal.is_stop():
+        # print("processing")
+        if not biosignal.is_paused():
             biosignal.process()
+            print("processing")
         if biosignal.is_exit():
             exit = True
 
@@ -190,6 +192,7 @@ https://github.com/OpenBCI/OpenBCI_Python")
                                                                     biosignals))
                             boardThread.daemon = True  # will stop on exit
                             try:
+                                resume_biosignals(biosignals)
                                 boardThread.start()
                             except:
                                 raise

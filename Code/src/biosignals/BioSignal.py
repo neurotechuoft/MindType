@@ -5,7 +5,7 @@ class BioSignal:
         self.COMMA_DELIMITER = ","
 
         # Multithreading
-        self.__paused__ = False
+        self.__paused__ = True
         self.__exit__ = False
 
     # GETTERS, SETTERS----------------------------------------------------------
@@ -17,7 +17,7 @@ class BioSignal:
     def process(self):
         raise NotImplementedError("Subclass must implement abstract method")
 
-    def is_stop(self):
+    def is_paused(self):
         return self.__paused__
 
     def is_exit(self):
