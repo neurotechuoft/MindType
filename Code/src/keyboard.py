@@ -26,7 +26,7 @@ class Keyboard(QtGui.QWidget):
 
         # adding top bar for keyboard (adding to h_box)
         self.character_display_panel = QtGui.QLabel("Enter Text!")
-        self.start_button = QtGui.QPushButton("Start / Next letter")
+        self.start_button = QtGui.QPushButton("Start")
         self.end_button = QtGui.QPushButton("Pause")
 
         self.start_button.clicked.connect(start(self))
@@ -148,7 +148,7 @@ def setup_flash(keyboard):
     # TODO - create an instruction class/method
     button_timer = QTimer()
     button_timer.setSingleShot(True)
-    button_timer.timeout.connect(functools.partial(enable_start_button, keyboard))
+    button_timer.timeout.connect(functools.partial(run_again, keyboard))
     keyboard.flash_timer_queue.append(button_timer)
 
 
@@ -183,8 +183,10 @@ def change_color(keyboard, row_col, color):
             keyboard_button.setStyleSheet("QPushButton {background-color: black; color: blue; font-size: 65px;}")
 
 
-def enable_start_button(keyboard):
+def run_again(keyboard):
     keyboard.start_button.setEnabled(True)
+    keyboard.start_button.click()
+    keyboard.start_button.setEnabled(False)
 
 
 # main method
