@@ -188,28 +188,28 @@ https://github.com/OpenBCI/OpenBCI_Python")
                 #     lapse = -1
                 lapse = -1
 
-                if ('startimp' in s):
-                    if board.getBoardType() == "cyton":
-                        print("Impedance checking not supported on cyton.")
-                    else:
-                        board.setImpedance(True)
-                        if (fun != None):
-                            # start streaming in a separate thread so we could always send commands in here
-                            boardThread = threading.Thread(
-                                target=board.start_streaming, args=(fun,
-                                                                    lapse,
-                                                                    biosignals))
-                            boardThread.daemon = True  # will stop on exit
-                            try:
-                                resume_biosignals(biosignals)
-                                boardThread.start()
-                            except:
-                                raise
-                        else:
-                            print("No function loaded")
-                        rec = True
+                # if ('startimp' in s):
+                #     if board.getBoardType() == "cyton":
+                #         print("Impedance checking not supported on cyton.")
+                #     else:
+                #         board.setImpedance(True)
+                #         if (fun != None):
+                #             # start streaming in a separate thread so we could always send commands in here
+                #             boardThread = threading.Thread(
+                #                 target=board.start_streaming, args=(fun,
+                #                                                     lapse,
+                #                                                     biosignals))
+                #             boardThread.daemon = True  # will stop on exit
+                #             try:
+                #                 resume_biosignals(biosignals)
+                #                 boardThread.start()
+                #             except:
+                #                 raise
+                #         else:
+                #             print("No function loaded")
+                #         rec = True
 
-                elif ("start" in s):
+                if ("start" in s):
                     board.setImpedance(False)
                     if (fun != None):
                         # start streaming in a separate thread so we could always send commands in here
