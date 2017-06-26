@@ -153,27 +153,7 @@ def init_board(board):
         time.sleep(0.100)
 
 def execute_board(board, biosignals):
-#     print("--------------INFO---------------")
-#     print("User serial interface enabled...\n\
-# View command map at http://docs.openbci.com.\n\
-# Type /start to run (/startimp for impedance \n\
-# checking, if supported) -- and /stop\n\
-# before issuing new commands afterwards.\n\
-# Type /exit to exit. \n\
-# Board outputs are automatically printed as: \n\
-# %  <tab>  message\n\
-# $$$ signals end of message")
-    # print("\n-------------BEGIN---------------")
-    # # Init board state
-    # # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
-    # s = 'sv'
-    # # Tell the board to enable or not daisy module
-    # if board.daisy:
-    #     s = s + 'C'
-    # else:
-    #     s = s + 'c'
-    # # d: Channels settings back to default
-    # s = s + 'd'
+
     s = "sv"
     while (s != "/exit"):
         # Send char and wait for registers to set
@@ -196,16 +176,17 @@ https://github.com/OpenBCI/OpenBCI_Python")
                 s = s[1:]
                 rec = False  # current command is recognized or fot
 
-                if ("T:" in s):
-                    lapse = int(s[string.find(s, "T:") + 2:])
-                    print("Found T:")
-                    rec = True
-                elif ("t:" in s):
-                    lapse = int(s[string.find(s, "t:") + 2:])
-                    rec = True
-                    print("Found t:")
-                else:
-                    lapse = -1
+                # if ("T:" in s):
+                #     lapse = int(s[string.find(s, "T:") + 2:])
+                #     print("Found T:")
+                #     rec = True
+                # elif ("t:" in s):
+                #     lapse = int(s[string.find(s, "t:") + 2:])
+                #     rec = True
+                #     print("Found t:")
+                # else:
+                #     lapse = -1
+                lapse = -1
 
                 if ('startimp' in s):
                     if board.getBoardType() == "cyton":
