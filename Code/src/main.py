@@ -121,18 +121,17 @@ def process(biosignal):
         if biosignal.is_exit():
             exit = True
 
-
-def execute_board(board, biosignals):
+def init_board(board):
     print("--------------INFO---------------")
     print("User serial interface enabled...\n\
-View command map at http://docs.openbci.com.\n\
-Type /start to run (/startimp for impedance \n\
-checking, if supported) -- and /stop\n\
-before issuing new commands afterwards.\n\
-Type /exit to exit. \n\
-Board outputs are automatically printed as: \n\
-%  <tab>  message\n\
-$$$ signals end of message")
+    View command map at http://docs.openbci.com.\n\
+    Type /start to run (/startimp for impedance \n\
+    checking, if supported) -- and /stop\n\
+    before issuing new commands afterwards.\n\
+    Type /exit to exit. \n\
+    Board outputs are automatically printed as: \n\
+    %  <tab>  message\n\
+    $$$ signals end of message")
     print("\n-------------BEGIN---------------")
     # Init board state
     # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
@@ -144,6 +143,38 @@ $$$ signals end of message")
         s = s + 'c'
     # d: Channels settings back to default
     s = s + 'd'
+
+    print("Writing serial to board")
+    for c in s:
+        if sys.hexversion > 0x03000000:
+            board.ser_write(bytes(c, 'utf-8'))
+        else:
+            board.ser_write(bytes(c))
+        time.sleep(0.100)
+
+def execute_board(board, biosignals):
+#     print("--------------INFO---------------")
+#     print("User serial interface enabled...\n\
+# View command map at http://docs.openbci.com.\n\
+# Type /start to run (/startimp for impedance \n\
+# checking, if supported) -- and /stop\n\
+# before issuing new commands afterwards.\n\
+# Type /exit to exit. \n\
+# Board outputs are automatically printed as: \n\
+# %  <tab>  message\n\
+# $$$ signals end of message")
+    # print("\n-------------BEGIN---------------")
+    # # Init board state
+    # # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
+    # s = 'sv'
+    # # Tell the board to enable or not daisy module
+    # if board.daisy:
+    #     s = s + 'C'
+    # else:
+    #     s = s + 'c'
+    # # d: Channels settings back to default
+    # s = s + 'd'
+    s = "sv"
     while (s != "/exit"):
         # Send char and wait for registers to set
         if (not s):
@@ -227,14 +258,14 @@ https://github.com/OpenBCI/OpenBCI_Python")
                 if rec == False:
                     print("Command not recognized...")
 
-            elif s:
-                print("Writing serial to board")
-                for c in s:
-                    if sys.hexversion > 0x03000000:
-                        board.ser_write(bytes(c, 'utf-8'))
-                    else:
-                        board.ser_write(bytes(c))
-                    time.sleep(0.100)
+            # elif s:
+            #     print("Writing serial to board")
+            #     for c in s:
+            #         if sys.hexversion > 0x03000000:
+            #             board.ser_write(bytes(c, 'utf-8'))
+            #         else:
+            #             board.ser_write(bytes(c))
+            #         time.sleep(0.100)
 
             line = ''
             time.sleep(0.1)  # Wait to see if the board has anything to report
@@ -341,5 +372,5 @@ if __name__ == '__main__':
 
     process_thread = threading.Thread(target=process, args=[eog])
     process_thread.start()
-
+    init_board(board)
     execute_board(board, [eog])
