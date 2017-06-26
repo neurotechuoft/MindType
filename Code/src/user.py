@@ -122,7 +122,7 @@ def process(biosignal):
             exit = True
 
 
-def execute_board(board, biosignals):
+def execute_board(biosignals):
     print("--------------INFO---------------")
     print("User serial interface enabled...\n\
 View command map at http://docs.openbci.com.\n\
@@ -340,6 +340,7 @@ if __name__ == '__main__':
     eog = EOG(256)
 
     process_thread = threading.Thread(target=process, args=[eog])
+    # process_thread.setDaemon()
     process_thread.start()
 
-    execute_board(board, [eog])
+    execute_board([eog])
