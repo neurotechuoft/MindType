@@ -1,15 +1,16 @@
 from PyQt4 import QtGui
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
+# ^ Sayan is
 from Keyboard import Keyboard
 
 
 class MindType(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, controller):
         super(MindType, self).__init__()
 
         # variables used for pausing
-        self.paused = False
+        self.controller = controller
         self.interval = 100
 
         # Creating main panel which contains everything
@@ -49,7 +50,7 @@ class MindType(QtGui.QWidget):
         def start_function():
             # setting / resetting variables
             self.start_button.setDisabled(True)
-            self.paused = False
+            self.controller.paused = False
             self.keyboard.start()
 
         return start_function
@@ -59,12 +60,17 @@ class MindType(QtGui.QWidget):
             button_pause_resume = self.end_button
             if button_pause_resume.text() == "Pause":
                 button_pause_resume.setText("Resume")
-                self.is_paused = True
+                self.controller.is_paused = True
                 self.keyboard.pause()
 
             else:
                 button_pause_resume.setText("Pause")
-                self.is_paused = False
+                self.controller.is_paused = False
                 self.keyboard.resume()
 
         return pause_resume_function
+
+    def closeEvent(self, event):
+        self.controller.exited = True
+        print("Exiting...")
+        event.accept()
