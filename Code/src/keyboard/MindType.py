@@ -50,27 +50,34 @@ class MindType(QtGui.QWidget):
         def start_function():
             # setting / resetting variables
             self.start_button.setDisabled(True)
-            self.controller.paused = False
+            self.controller.resume()
+            print(self.controller)
             self.keyboard.start()
 
         return start_function
 
     def pause_resume(self):
+        # print("Pause resume")
+
         def pause_resume_function():
+
             button_pause_resume = self.end_button
+            print("Before pause-resume")
+            print(self.controller)
             if button_pause_resume.text() == "Pause":
                 button_pause_resume.setText("Resume")
-                self.controller.is_paused = True
+                self.controller.pause()
                 self.keyboard.pause()
-
             else:
                 button_pause_resume.setText("Pause")
-                self.controller.is_paused = False
+                self.controller.resume()
                 self.keyboard.resume()
+            print("After pause-resume")
+            print(self.controller)
 
         return pause_resume_function
 
     def closeEvent(self, event):
-        self.controller.exited = True
+        self.controller.quit()
         print("Exiting...")
         event.accept()

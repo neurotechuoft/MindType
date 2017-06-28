@@ -1,12 +1,13 @@
 class BioSignal:
-    def __init__(self):
+    def __init__(self, controller):
         # CONSTANTS-------------------------------------------------------------
         # CSV
         self.COMMA_DELIMITER = ","
 
         # Multithreading
-        self.__paused__ = True
-        self.__exit__ = False
+        self.controller = controller
+        # self.__paused__ = True
+        # self.__exit__ = False
 
     # GETTERS, SETTERS----------------------------------------------------------
 
@@ -18,16 +19,16 @@ class BioSignal:
         raise NotImplementedError("Subclass must implement abstract method")
 
     def is_paused(self):
-        return self.__paused__
+        return self.controller.paused
 
     def is_exit(self):
-        return self.__exit__
+        return self.controller.exited
 
     def pause(self):
-        self.__paused__ = True
+        self.controller.pause()
 
     def resume(self):
-        self.__paused__ = False
+        self.controller.resume()
 
     def exit(self):
-        self.__exit__ = True
+        self.controller.quit()

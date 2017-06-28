@@ -8,9 +8,9 @@ import numpy as np
 
 class EOG(BioSignal):
     # CONSTRUCTORS--------------------------------------------------------------
-    def __init__(self, sample_rate, controller):
+    def __init__(self, sample_rate):
         # SUPERCLASS
-        BioSignal.__init__(self, controller)
+        BioSignal.__init__(self)
 
         # ATTRIBUTES------------------------------------------------------------
         self.num_of_packets = 0
@@ -60,7 +60,6 @@ class EOG(BioSignal):
             self.__eog_list__[0].pop(0)
             self.__eog_list__[1].pop(0)
             self.__eog_list__[2].pop(0)
-        print("Updating sample")
 
 
     def process(self):
@@ -84,9 +83,7 @@ class EOG(BioSignal):
                                                 self.sample_rate)
             self.__peaks__[1] = self.find_peaks(self.__eog_list_filtered__[2],
                                                 self.sample_rate)
-
-            print("Processing data...")
-            # print(self.__peaks__)
+            print(self.__peaks__)
             # Find gesture
             # self.id_gestures()
             # self.gesture_graph()

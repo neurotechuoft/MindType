@@ -100,32 +100,30 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
             callback_list.append(plug.plugin_object)
 
 
-def stop_biosignals(biosignals):
-    for biosignal in biosignals:
-        biosignal.pause()
+# def stop_biosignals(biosignals):
+#     for biosignal in biosignals:
+#         biosignal.pause()
+#
+#
+# def resume_biosignals(biosignals):
+#     for biosignal in biosignals:
+#         biosignal.resume()
+#
+#
+# def exit_biosignals(biosignals):
+#     for biosignal in biosignals:
+#         biosignal.exit()
 
 
-def resume_biosignals(biosignals):
-    for biosignal in biosignals:
-        biosignal.resume()
+def process(biosignal, controller):
 
-
-def exit_biosignals(biosignals):
-    for biosignal in biosignals:
-        biosignal.exit()
-
-
-def process(biosignal):
-
-    exit = False
-
-    while not exit:
+    while not controller.exited:
         # print("processing")
         if not biosignal.is_paused():
             biosignal.process()
             # print("processing")
         if biosignal.is_exit():
-            exit = True
+            controller.exited = True
 
 def init_board(board):
     print("--------------INFO---------------")
@@ -233,39 +231,47 @@ def init_board(board):
 #
 #     exit_biosignals(biosignals)
 
+
 def execute_board(board, controller, biosignals):
-
-    print("Executing Board...")
-
+    print("Execute-board")
     while not controller.exited:
+        # print("Executing Board...")
 
         # read silently incoming packet if set (used when stream is stopped)
         flush = False
 
         lapse = -1
 
-        if (not controller.paused):
-            controller.made = True
-            board.setImpedance(False)
-            if (fun != None):
-                # start streaming in a separate thread so we could always send commands in here
-                boardThread = threading.Thread(
-                    target=board.start_streaming, args=(fun,
-                                                        lapse,
-                                                        biosignals))
-                boardThread.daemon = True  # will stop on exit
-                try:
-                    resume_biosignals(biosignals)
-                    boardThread.start()
-                except:
-                    raise
-            else:
-                print("No function loaded")
+        if not controller.paused:
+            print(controller)
+            controller.make()
+            if controller.instruction_request:
+                board.setImpedance(False)
+                if (fun != None):
+                    # start streaming in a separate thread so we could always send commands in here
+                    boardThread = threading.Thread(
+                        target=board.start_streaming, args=(fun,
+                                                            lapse,
+                                                            biosignals))
+                    boardThread.daemon = True  # will stop on exit
+                    try:
+                        # resume_biosignals(biosignals)
+                        print("Starting board...")
+                        boardThread.start()
+                    except:
+                        raise
+                else:
+                    print("No function loaded")
 
-        elif controller.made:
-            board.stop()
-            flush = True
-            stop_biosignals(biosignals)
+                controller.confirm_instruction_executed()
+
+        elif controller.made and controller.paused:
+            if controller.instruction_request:
+                print("Pausing...")
+                board.stop()
+                flush = True
+            # stop_biosignals(biosignals)
+            controller.confirm_instruction_executed()
         else:
             continue
 
@@ -285,17 +291,18 @@ def execute_board(board, controller, biosignals):
             while board.ser_inWaiting():
                 board.waitForNotifications(0.001)
 
-        if not flush:
-            print(line)
+                # if not flush:
+                #     print(line)
 
-        # Take user input
-        # s = input('--> ')
-        # if sys.hexversion > 0x03000000:
-        #     s = input('--> ')
-        # else:
-        #     s = raw_input('--> ')
+                # Take user input
+                # s = input('--> ')
+                # if sys.hexversion > 0x03000000:
+                #     s = input('--> ')
+                # else:
+                #     s = raw_input('--> ')
 
-    exit_biosignals(biosignals)
+
+    controller.quit()
 
 
 def make_gui(controller):
@@ -304,6 +311,7 @@ def make_gui(controller):
     mindType.resize(550, 550)
     mindType.show()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     controller = Controller()
@@ -382,14 +390,10 @@ if __name__ == '__main__':
 
     atexit.register(cleanUp)
 
-    eog = EOG(256)
+    eog = EOG(256, controller)
 
-    process_thread = threading.Thread(target=process, args=[eog])
+    process_thread = threading.Thread(target=process, args=[eog, controller])
     process_thread.start()
-
-
-
-
 
     init_board(board)
     execute_board(board, controller, [eog])
