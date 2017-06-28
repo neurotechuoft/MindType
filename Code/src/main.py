@@ -156,91 +156,17 @@ def init_board(board):
             board.ser_write(bytes(c))
         time.sleep(0.100)
 
-# def execute_board(board, biosignals):
-#
-#     s = "sv"
-#     while (s != "/exit"):
-#         # Send char and wait for registers to set
-#         if (not s):
-#             pass
-#
-#         elif board.streaming and s != "/stop":
-#             print(
-#                 "Error: the board is currently streaming data, please type '/stop' before issuing new commands.")
-#         else:
-#             # read silently incoming packet if set (used when stream is stopped)
-#             flush = False
-#
-#             if ('/' == s[0]):
-#                 s = s[1:]
-#                 rec = False  # current command is recognized or fot
-#
-#                 lapse = -1
-#
-#                 if ("start" in s):
-#                     board.setImpedance(False)
-#                     if (fun != None):
-#                         # start streaming in a separate thread so we could always send commands in here
-#                         boardThread = threading.Thread(
-#                             target=board.start_streaming, args=(fun,
-#                                                                 lapse,
-#                                                                 biosignals))
-#                         boardThread.daemon = True  # will stop on exit
-#                         try:
-#                             resume_biosignals(biosignals)
-#                             boardThread.start()
-#                         except:
-#                             raise
-#                     else:
-#                         print("No function loaded")
-#                     rec = True
-#
-#                 elif ('stop' in s):
-#                     board.stop()
-#                     rec = True
-#                     flush = True
-#                     stop_biosignals(biosignals)
-#                 if rec == False:
-#                     print("Command not recognized...")
-#
-#             line = ''
-#             time.sleep(0.1)  # Wait to see if the board has anything to report
-#             # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
-#             if board.getBoardType() == "cyton":
-#                 while board.ser_inWaiting():
-#                     c = board.ser_read().decode('utf-8',
-#                                                 errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
-#                     line += c
-#                     time.sleep(0.001)
-#                     if (c == '\n') and not flush:
-#                         print('%\t' + line[:-1])
-#                         line = ''
-#             elif board.getBoardType() == "ganglion":
-#                 while board.ser_inWaiting():
-#                     board.waitForNotifications(0.001)
-#
-#             if not flush:
-#                 print(line)
-#
-#         # Take user input
-#         # s = input('--> ')
-#         if sys.hexversion > 0x03000000:
-#             s = input('--> ')
-#         else:
-#             s = raw_input('--> ')
-#
-#     exit_biosignals(biosignals)
 
 
 def execute_board(board, controller, biosignals):
     print("Execute-board")
+    lapse = -1
+
     while not controller.exited:
+        flush = False
         # print("Executing Board...")
 
         # read silently incoming packet if set (used when stream is stopped)
-        flush = False
-
-        lapse = -1
 
         if not controller.paused:
             print(controller)
@@ -249,13 +175,14 @@ def execute_board(board, controller, biosignals):
                 board.setImpedance(False)
                 if (fun != None):
                     # start streaming in a separate thread so we could always send commands in here
-                    boardThread = threading.Thread(
-                        target=board.start_streaming, args=(fun,
-                                                            lapse,
-                                                            biosignals))
-                    boardThread.daemon = True  # will stop on exit
                     try:
                         # resume_biosignals(biosignals)
+                        boardThread = threading.Thread(
+                            target=board.start_streaming, args=(fun,
+                                                                lapse,
+                                                                biosignals))
+                        boardThread.daemon = True  # will stop on exit
+
                         print("Starting board...")
                         boardThread.start()
                     except:
@@ -265,10 +192,11 @@ def execute_board(board, controller, biosignals):
 
                 controller.confirm_instruction_executed()
 
-        elif controller.made and controller.paused:
+        elif controller.paused:
             if controller.instruction_request:
                 print("Pausing...")
                 board.stop()
+                print(boardThread.is_alive())
                 flush = True
             # stop_biosignals(biosignals)
             controller.confirm_instruction_executed()
@@ -313,6 +241,16 @@ def make_gui(controller):
     sys.exit(app.exec_())
 
 
+def print_board_transmission_info(board):
+    if board.daisy:
+        print("Force daisy mode:")
+    else:
+        print("No daisy:")
+        print(board.getNbEEGChannels(), "EEG channels and",
+              board.getNbAUXChannels(), "AUX channels at",
+              board.getSampleRate(), "Hz.")
+
+
 if __name__ == '__main__':
     controller = Controller()
 
@@ -352,13 +290,7 @@ if __name__ == '__main__':
                              aux=args.aux)
 
     #  Info about effective number of channels and sampling rate
-    if board.daisy:
-        print("Force daisy mode:")
-    else:
-        print("No daisy:")
-        print(board.getNbEEGChannels(), "EEG channels and",
-              board.getNbAUXChannels(), "AUX channels at",
-              board.getSampleRate(), "Hz.")
+    print_board_transmission_info(board)
 
     print("\n------------PLUGINS--------------")
     # Loop round the plugins and print their names.

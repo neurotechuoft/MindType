@@ -121,6 +121,81 @@ def process(biosignal):
         if biosignal.is_exit():
             exit = True
 
+# def execute_board(board, biosignals):
+#
+#     s = "sv"
+#     while (s != "/exit"):
+#         # Send char and wait for registers to set
+#         if (not s):
+#             pass
+#
+#         elif board.streaming and s != "/stop":
+#             print(
+#                 "Error: the board is currently streaming data, please type '/stop' before issuing new commands.")
+#         else:
+#             # read silently incoming packet if set (used when stream is stopped)
+#             flush = False
+#
+#             if ('/' == s[0]):
+#                 s = s[1:]
+#                 rec = False  # current command is recognized or fot
+#
+#                 lapse = -1
+#
+#                 if ("start" in s):
+#                     board.setImpedance(False)
+#                     if (fun != None):
+#                         # start streaming in a separate thread so we could always send commands in here
+#                         boardThread = threading.Thread(
+#                             target=board.start_streaming, args=(fun,
+#                                                                 lapse,
+#                                                                 biosignals))
+#                         boardThread.daemon = True  # will stop on exit
+#                         try:
+#                             resume_biosignals(biosignals)
+#                             boardThread.start()
+#                         except:
+#                             raise
+#                     else:
+#                         print("No function loaded")
+#                     rec = True
+#
+#                 elif ('stop' in s):
+#                     board.stop()
+#                     rec = True
+#                     flush = True
+#                     stop_biosignals(biosignals)
+#                 if rec == False:
+#                     print("Command not recognized...")
+#
+#             line = ''
+#             time.sleep(0.1)  # Wait to see if the board has anything to report
+#             # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
+#             if board.getBoardType() == "cyton":
+#                 while board.ser_inWaiting():
+#                     c = board.ser_read().decode('utf-8',
+#                                                 errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
+#                     line += c
+#                     time.sleep(0.001)
+#                     if (c == '\n') and not flush:
+#                         print('%\t' + line[:-1])
+#                         line = ''
+#             elif board.getBoardType() == "ganglion":
+#                 while board.ser_inWaiting():
+#                     board.waitForNotifications(0.001)
+#
+#             if not flush:
+#                 print(line)
+#
+#         # Take user input
+#         # s = input('--> ')
+#         if sys.hexversion > 0x03000000:
+#             s = input('--> ')
+#         else:
+#             s = raw_input('--> ')
+#
+#     exit_biosignals(biosignals)
+
 
 def execute_board(biosignals):
     print("--------------INFO---------------")
