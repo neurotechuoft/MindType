@@ -4,7 +4,7 @@ import sys
 
 from PyQt4 import QtGui
 
-from MindType import MindType
+from Code.src.controller.MindType import MindType
 
 if __name__ == '__main__':
     # Running gui
