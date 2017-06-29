@@ -36,11 +36,11 @@ class Data:
             for channel in self.channels:
                 channel_signals = []
                 # will take 200 ms of signal (48)
-                for signal in range(48):
+                for signal in range(240):
                     # 42 is 100 ms flash + 75 ms delay
                     # +48 wait 200 ms after flash starts
                     channel_signals.append(
-                        float(self.training_data['Signal'][epoch_index][(flash * 42) + 48 + signal][channel]))
+                        float(self.training_data['Signal'][epoch_index][(flash * 42) + signal][channel]))
                 one_flash.append(channel_signals)
             epoch.append(one_flash)
         np_one_character_signals = epoch
@@ -80,6 +80,7 @@ class Data:
             self.character_labels[i] = np.array(self.character_labels[i])
             self.character_signals_unfiltered[i] = np.array(self.character_signals_unfiltered[i])
 
+
 class CharacterClassification:
     def __init__(self, channels_data, expected_result, row_col):
         # initializing class var
@@ -118,7 +119,8 @@ class CharacterClassification:
         for channel in range(self.num_channels):
             self.lda_classifiers[channel].fit(fit_data_arr[channel], fit_prediction_arr[channel])
 
-    def get_predictions(self, channels_data):
+    def get_predictions(self, channels_data, expected_characters):
+        percentage = 0
         channels_data = np.array(channels_data)
         channels_data = np.swapaxes(channels_data, 1, 2)
         for epoch in range(85):
@@ -140,22 +142,75 @@ class CharacterClassification:
                 if one_predictions > 4:
                     row_col_true.append(row_col_flashed)
 
-            if len(row_col_true) >= 2:
-                print(epoch)
-                print(row_col_true)
+            if len(row_col_true) > 1:
+                # print epoch,
+                track = np.zeros(12)
+                for value in row_col_true:
+                    if value == 1:
+                        track[0] += 1
+                    elif value == 2:
+                        track[1] += 1
+                    elif value == 3:
+                        track[2] += 1
+                    elif value == 4:
+                        track[3] += 1
+                    elif value == 5:
+                        track[4] += 1
+                    elif value == 6:
+                        track[5] += 1
+                    elif value == 7:
+                        track[6] += 1
+                    elif value == 8:
+                        track[7] += 1
+                    elif value == 9:
+                        track[8] += 1
+                    elif value == 10:
+                        track[9] += 1
+                    elif value == 11:
+                        track[10] += 1
+                    elif value == 12:
+                        track[11] += 1
 
-        return self.predictions
+                # print "row: ", row, " col: ", col
+                buttons = [[], [], [], [], [], []]
+                for row in range(6):
+                    for col in range(6):
+                        character_number = (row * 6) + col
+                        # a-z buttons
+                        if character_number < 26:
+                            button_name = chr(ord('a') + character_number).upper()
+                        # 0-9 buttons
+                        else:
+                            button_name = str(character_number - 26)
+                        buttons[row].append(button_name)
+
+                row = 1
+                col = 7
+                for index in range(5):
+                    if track[row - 1] < track[index + 1]:
+                        row = index + 1
+                    if track[col - 1] < track[index + 5]:
+                        col = index + 5
+                print buttons[row - 1][col - 1 - 6],
+
+                if buttons[row - 1][col - 1 - 6] == expected_characters[0][epoch]:
+                    percentage += 1
+
+        return percentage
 
 
 if __name__ == '__main__':
     data = scipy.io.loadmat(
-        "/home/hisham/Documents/NeuroTech/MindType/BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
+        "C:\\Users\\Abdelrahman\\Desktop\\Beedo\\Programming\\Python\\MindType\\Code"
+        "\\src\\classifiation\\resources\\Subject_A_Train.mat")
 
     all_data = Data(data)
-    print(np.shape(all_data.training_data['Signal']))
+    # print(np.shape(all_data.training_data['Signal']))
 
     classifier = CharacterClassification(all_data.character_signals,
                                          all_data.character_labels, all_data.row_col)
 
     classifier.train()
-    print(classifier.get_predictions(all_data.character_signals_unfiltered))
+    # print(all_data.training_data['TargetChar'])
+    print "hi"
+    print(classifier.get_predictions(all_data.character_signals_unfiltered, all_data.training_data['TargetChar']))
