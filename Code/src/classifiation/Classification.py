@@ -19,6 +19,8 @@ class Data:
         self.characters_number_training = 85
         self.character_signals = self.get_all_character_signals()
         self.character_labels = self.get_all_character_labels()
+        self.characters = self.training_data['TargetChar'][0]
+        self.row_col = self.training_data['StimulusCode']
 
     # There are 85 characters (epochs)
     def get_epoch(self, epoch_index):
@@ -61,23 +63,23 @@ class Data:
 
 
 class CharacterClassification:
-    def __init__(self, channels_data, expected_result):
+    def __init__(self, channels_data, expected_result, row_col):
         # initializing class var
         self.num_channels = 8
         self.training_data = np.array(channels_data)
+        self.training_data = np.swapaxes(self.training_data, 1, 2)
         self.training_results = np.array(expected_result)
         self.lda_classifiers = []
         self.predictions = []
-
+        self.row_col = row_col
         for channel in range(self.num_channels):
             self.predictions.append([])
             self.lda_classifiers.append(LinearDiscriminantAnalysis())
 
-        # self.lda = LinearDiscriminantAnalysis()
-        # self.lda.fit_transform(channels_data, expected_result)
+            # self.lda = LinearDiscriminantAnalysis()
+            # self.lda.fit_transform(channels_data, expected_result)
 
-    def train(self, training_data):
-        self.training_data = np.swapaxes(self.training_data, 1, 2)
+    def train(self):
         fit_data_list = []
         fit_prediction_list = []
         for channel in range(self.num_channels):
@@ -87,10 +89,10 @@ class CharacterClassification:
         for epoch in range(85):
             for channel in range(self.num_channels):
                 for flash_number in range(120):
+                    # print(self.training_data[epoch][channel][flash_number])
                     fit_data_list[channel].append(self.training_data[epoch][channel][flash_number])
-                    fit_prediction_list.append(self.training_results[epoch][flash_number])
-                    # self.lda_classifiers[channel].fit(self.training_data[epoch][flash_number], self.training_results[epoch])
-                    # self.lda.fit(self.training_data[epoch][channel], self.training_results[epoch])
+                    # print(self.training_results[epoch][flash_number])
+                    fit_prediction_list[channel].append(self.training_results[epoch][flash_number])
 
         fit_data_arr = np.array(fit_data_list)
         fit_prediction_arr = np.array(fit_prediction_list)
@@ -98,36 +100,45 @@ class CharacterClassification:
         for channel in range(self.num_channels):
             self.lda_classifiers[channel].fit(fit_data_arr[channel], fit_prediction_arr[channel])
 
-
     def get_predictions(self, channels_data):
-        for i in range(0, len(channels_data)):
-            for k in range(8):
-                prediction = self.lda.decision_function(channels_data[i][k])
-                self.predictions[k].append(prediction)
+        channels_data = np.array(channels_data)
+        channels_data = np.swapaxes(channels_data, 1, 2)
+        for epoch in range(85):
+            # row/col that predicted yes
+            row_col_true = []
+            for flash in range(120):
+                row_col_flashed = self.row_col[epoch][flash * 42]
+                predictions = []
+                for channel in range(8):
+                    to_predict = [channels_data[epoch][channel][flash]]
+                    predictions.append(self.lda_classifiers[channel].predict(to_predict))
+                zero_predictions = 0
+                one_predictions = 0
+                for prediction in predictions:
+                    if prediction == 0:
+                        zero_predictions += 1
+                    else:
+                        one_predictions += 1
+                if one_predictions >= 4:
+                    row_col_true.append(row_col_flashed)
+
+            if len(row_col_true) >= 2:
+                print epoch
+                print row_col_true
+
         return self.predictions
-
-        # def is_required_character:
-        #     final_prediction = np.mean(self.predictions)
-
-
-        # data = scipy.io.loadmat("BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
-        # all_data = Data(data)
-        # print("Hello.")
-        # classifier = CharacterClassification(all_data.character_signals[0], all_data.character_labels[0])
-        # classifier.is_required_character(all_data.character_signals[1])
 
 
 if __name__ == '__main__':
     data = scipy.io.loadmat(
-        "C:\\Users\\Abdelrahman\\Desktop\\Beedo\\Programming\\Python\\MindType\\Code\\src\\classifiation\\resources\\Subject_A_Train.mat")
-    # test_data = scipy.io.loadmat(
-    #     "../BCI_Comp_III_Wads_2004/Subject_B_Train.mat")
+        "C:\\Users\\Abdelrahman\\Desktop\\Beedo\\Programming\\Python\\MindType\\Code"
+        "\\src\\classifiation\\resources\\Subject_A_Train.mat")
 
     all_data = Data(data)
     print(np.shape(all_data.training_data['Signal']))
 
     classifier = CharacterClassification(all_data.character_signals,
-    all_data.character_labels)
+                                         all_data.character_labels, all_data.row_col)
 
-    classifier.train(all_data.character_signals)
+    classifier.train()
     print(classifier.get_predictions(all_data.character_signals))
