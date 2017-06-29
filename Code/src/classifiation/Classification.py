@@ -19,13 +19,15 @@ class Data:
         self.characters_number_training = 85
         self.character_signals = self.get_all_character_signals()
         self.character_labels = self.get_all_character_labels()
+        self.filter_no(60)
+        self.turn_into_np()
 
     # There are 85 characters (epochs)
     def get_epoch(self, epoch_index):
         epoch = []
         # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
         # will use 10 repetitions only for epoch
-        for flash in range(120):
+        for flash in range(180):
             one_flash = []
             # getting data from 8 channels
             for channel in self.channels:
@@ -37,15 +39,15 @@ class Data:
                         float(self.training_data['Signal'][epoch_index][(flash * 42) + signal][channel]))
                 one_flash.append(channel_signals)
             epoch.append(one_flash)
-        np_one_character_signals = np.array(epoch)
+        np_one_character_signals = epoch
         return np_one_character_signals
 
     def get_one_character_labels(self, index):
         one_character_labels = []
-        for flash in range(120):
+        for flash in range(180):
             one_character_labels.append(self.training_data['StimulusType'][index][flash * 42])
-        np_character_labels = np.array(one_character_labels)
-        return np_character_labels
+        # np_character_labels = np.array(one_character_labels)
+        return one_character_labels
 
     def get_all_character_signals(self):
         all_character_signals = []
@@ -59,6 +61,19 @@ class Data:
             all_character_labels.append(self.get_one_character_labels(character))
         return all_character_labels
 
+    def filter_no(self, total):
+        no_num = total - 30
+        num_extracted = 180 - total
+        for extract in range(num_extracted):
+            for epoch in range(85):
+                no_index = self.character_labels[epoch].index(0)
+                self.character_labels[epoch].pop(no_index)
+                self.character_signals[epoch].pop(no_index)
+
+    def turn_into_np(self):
+        for i in range(85):
+            self.character_signals[i] = np.array(self.character_signals[i])
+            self.character_labels[i] = np.array(self.character_labels[i])
 
 class CharacterClassification:
     def __init__(self, channels_data, expected_result):
