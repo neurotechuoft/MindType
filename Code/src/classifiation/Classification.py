@@ -38,7 +38,6 @@ class Data:
                 # will take 200 ms of signal (48)
                 for signal in range(240):
                     # 42 is 100 ms flash + 75 ms delay
-                    # +48 wait 200 ms after flash starts
                     channel_signals.append(
                         float(self.training_data['Signal'][epoch_index][(flash * 42) + signal][channel]))
                 one_flash.append(channel_signals)
@@ -193,9 +192,10 @@ class CharacterClassification:
                         col = index + 5
                 print buttons[row - 1][col - 1 - 6],
 
-                if buttons[row - 1][col - 1 - 6] == expected_characters[0][epoch]:
+                if buttons[col - 1 - 6][row - 1] == expected_characters[0][epoch]:
                     percentage += 1
 
+        print("new line")
         return percentage
 
 
@@ -212,5 +212,4 @@ if __name__ == '__main__':
 
     classifier.train()
     # print(all_data.training_data['TargetChar'])
-    print "hi"
     print(classifier.get_predictions(all_data.character_signals_unfiltered, all_data.training_data['TargetChar']))
