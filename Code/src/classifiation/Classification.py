@@ -26,17 +26,17 @@ class Data:
     def get_epoch(self, epoch_index):
         epoch = []
         # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
-        # will use 10 repetitions only for epoch
-        for flash in range(120):
+        for flash in range(180):
             one_flash = []
             # getting data from 8 channels
             for channel in self.channels:
                 channel_signals = []
-                # each flash is one second (240 points); will talk half a sec
-                for signal in range(120):
+                # will take 200 ms of signal (48)
+                for signal in range(48):
                     # 42 is 100 ms flash + 75 ms delay
+                    # +48 wait 200 ms after flash starts
                     channel_signals.append(
-                        float(self.training_data['Signal'][epoch_index][(flash * 42) + signal][channel]))
+                        float(self.training_data['Signal'][epoch_index][(flash * 42) + 48 + signal][channel]))
                 one_flash.append(channel_signals)
             epoch.append(one_flash)
         np_one_character_signals = np.array(epoch)
@@ -44,7 +44,7 @@ class Data:
 
     def get_one_character_labels(self, index):
         one_character_labels = []
-        for flash in range(120):
+        for flash in range(180):
             one_character_labels.append(self.training_data['StimulusType'][index][flash * 42])
         np_character_labels = np.array(one_character_labels)
         return np_character_labels
@@ -88,7 +88,7 @@ class CharacterClassification:
 
         for epoch in range(85):
             for channel in range(self.num_channels):
-                for flash_number in range(120):
+                for flash_number in range(180):
                     # print(self.training_data[epoch][channel][flash_number])
                     fit_data_list[channel].append(self.training_data[epoch][channel][flash_number])
                     # print(self.training_results[epoch][flash_number])
@@ -106,7 +106,7 @@ class CharacterClassification:
         for epoch in range(85):
             # row/col that predicted yes
             row_col_true = []
-            for flash in range(120):
+            for flash in range(180):
                 row_col_flashed = self.row_col[epoch][flash * 42]
                 predictions = []
                 for channel in range(8):
@@ -119,7 +119,7 @@ class CharacterClassification:
                         zero_predictions += 1
                     else:
                         one_predictions += 1
-                if one_predictions >= 4:
+                if one_predictions > 4:
                     row_col_true.append(row_col_flashed)
 
             if len(row_col_true) >= 2:
