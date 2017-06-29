@@ -19,6 +19,7 @@ class Data:
         self.characters_number_training = 85
         self.character_signals = self.get_all_character_signals()
         self.character_labels = self.get_all_character_labels()
+        self.character_signals_unfiltered = self.get_all_character_signals()
         self.filter_no(60)
         self.turn_into_np()
         self.characters = self.training_data['TargetChar'][0]
@@ -77,6 +78,7 @@ class Data:
         for i in range(85):
             self.character_signals[i] = np.array(self.character_signals[i])
             self.character_labels[i] = np.array(self.character_labels[i])
+            self.character_signals_unfiltered[i] = np.array(self.character_signals_unfiltered[i])
 
 class CharacterClassification:
     def __init__(self, channels_data, expected_result, row_col):
@@ -104,7 +106,7 @@ class CharacterClassification:
 
         for epoch in range(85):
             for channel in range(self.num_channels):
-                for flash_number in range(180):
+                for flash_number in range(60):
                     # print(self.training_data[epoch][channel][flash_number])
                     fit_data_list[channel].append(self.training_data[epoch][channel][flash_number])
                     # print(self.training_results[epoch][flash_number])
@@ -147,8 +149,7 @@ class CharacterClassification:
 
 if __name__ == '__main__':
     data = scipy.io.loadmat(
-        "C:\\Users\\Abdelrahman\\Desktop\\Beedo\\Programming\\Python\\MindType\\Code"
-        "\\src\\classifiation\\resources\\Subject_A_Train.mat")
+        "/home/hisham/Documents/NeuroTech/MindType/BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
 
     all_data = Data(data)
     print(np.shape(all_data.training_data['Signal']))
@@ -157,4 +158,4 @@ if __name__ == '__main__':
                                          all_data.character_labels, all_data.row_col)
 
     classifier.train()
-    print(classifier.get_predictions(all_data.character_signals))
+    print(classifier.get_predictions(all_data.character_signals_unfiltered))
