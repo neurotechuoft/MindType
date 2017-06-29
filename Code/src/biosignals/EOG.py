@@ -3,7 +3,9 @@ from biosppy.signals import tools as st
 from biosignals.BioSignal import BioSignal
 from scipy.signal import butter, lfilter
 import numpy as np
-#from scipy.fftpack import rfft, irfft
+
+
+# from scipy.fftpack import rfft, irfft
 
 
 class EOG(BioSignal):
@@ -17,22 +19,20 @@ class EOG(BioSignal):
         # EOG data
         self.__eog_list__ = [[], [], []]
         self.__eog_list_filtered__ = [[], [], []]
-        self.__peaks__ = [[],[]]
+        self.__peaks__ = [[], []]
 
         # Board Characteristics
         self.sample_rate = sample_rate
 
         # Gestures
-        #TODO: Encapsulate into classes
+        # TODO: Encapsulate into classes
         self.left_gaze = False
         self.right_gaze = False
         self.up_gaze = False
         self.down_gaze = False
         self.blink = False
 
-        self.gesture_list = [[0,0]]
-
-
+        self.gesture_list = [[0, 0]]
 
     # FACTORY METHODS-----------------------------------------------------------
     # GETTERS, SETTERS----------------------------------------------------------
@@ -62,15 +62,13 @@ class EOG(BioSignal):
             self.__eog_list__[2].pop(0)
         print("Updating sample")
 
-
     def process(self):
 
         if self.num_of_packets >= 300:
-
             # Apply bandpass filter
-            self.__eog_list_filtered__[1] = self.bandpass\
+            self.__eog_list_filtered__[1] = self.bandpass \
                 (self.__eog_list__[1])
-            self.__eog_list_filtered__[2] = self.bandpass\
+            self.__eog_list_filtered__[2] = self.bandpass \
                 (self.__eog_list__[2])
 
             # Apply smoothing
@@ -146,8 +144,8 @@ class EOG(BioSignal):
         sm_size = int(0.08 * self.sample_rate)
 
         smoothed_data, _ = st.smoother(signal=data,
-                                           kernel='hamming',
-                                           size=sm_size, mirror=True)
+                                       kernel='hamming',
+                                       size=sm_size, mirror=True)
 
         return smoothed_data
 
@@ -169,7 +167,7 @@ class EOG(BioSignal):
             stdev = window.std()
 
             for val in window:
-                if abs(val) > num_stds * stdev:
+                if abs(val - mean) > num_stds * stdev:
                     peaks.append(100)
                 else:
                     peaks.append(0)
@@ -197,9 +195,9 @@ class EOG(BioSignal):
 
         # FIND PEAKS IN EACH
         peaks_neg = self.find_peaks_helper(np.array(data_neg, float),
-                                        sampling_rate)
+                                           sampling_rate)
         peaks_pos = self.find_peaks_helper(np.array(data_pos, float),
-                                        sampling_rate)
+                                           sampling_rate)
 
         # RECOMBINE
         for i in range(0, len(data)):
@@ -213,21 +211,21 @@ class EOG(BioSignal):
         return peaks
 
     def id_gestures(self):
-        if(self.__eog_list__[0] > 300):
+        if (self.__eog_list__[0] > 300):
             for i in range(0, len(self.__peaks__[0])):
-                if(self.__peaks__[0] == -100 and self.__peaks__[1] == 100):
+                if (self.__peaks__[0] == -100 and self.__peaks__[1] == 100):
                     self.blink = True
                     return
-                elif(self.__peaks__[1] == 100):
+                elif (self.__peaks__[1] == 100):
                     self.left_gaze = True
                     return
-                elif(self.__peaks__[1] == -100):
+                elif (self.__peaks__[1] == -100):
                     self.right_gaze = True
                     return
-                elif(self.__peaks__[0] == 100):
+                elif (self.__peaks__[0] == 100):
                     self.up_gaze = True
                     return
-                elif(self.__peaks__[0] == -100):
+                elif (self.__peaks__[0] == -100):
                     self.down_gaze = True
                     return
 
@@ -235,7 +233,7 @@ class EOG(BioSignal):
 
         curr_gesture = self.gesture_list[-1][0] + 1
 
-        if(self.left_gaze == True):
+        if (self.left_gaze == True):
             self.gesture_list.append([curr_gesture, 1])
 
         elif (self.right_gaze == True):
@@ -254,7 +252,6 @@ class EOG(BioSignal):
             self.gesture_list.append([curr_gesture, 0])
 
 
-
 if __name__ == '__main__':
     with open('./../packets_ffted.csv', 'rb') as ecg_file:
         # INTERPRET EACH LINE
@@ -264,5 +261,5 @@ if __name__ == '__main__':
             print(row)
             print("\n")
 
-    # ecg = ECG('./../packets.csv', '', '')
-    # ecg.update_ecg()
+            # ecg = ECG('./../packets.csv', '', '')
+            # ecg.update_ecg()
