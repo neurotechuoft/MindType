@@ -205,7 +205,7 @@ class OpenBCIBoard(object):
                 controller.confirm_instruction_executed()
             else:
                 print("Waiting...")
-        self.disconnect()
+        # self.disconnect()
 
 
     def start_streaming(self, callback, lapse=-1, update_object_list=None):
