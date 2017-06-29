@@ -142,6 +142,7 @@ class CharacterClassification:
                 predictions = {}
                 for channel in range(8):
                     to_predict = [channels_data[epoch][channel][flash]]
+                    print len(self.row_col[0])
                     predictions[self.row_col[epoch][flash]] = self.lda_classifiers[channel].decision_function(to_predict)
                 # zero_predictions = 0
                 # one_predictions = 0
@@ -154,15 +155,37 @@ class CharacterClassification:
                 #     row_col_true.append(row_col_flashed)
                 confidence_scores.append(predictions)
             
-            for flash_score in confidence_scores:
-                row_scores = np.zeros(6)
-                col_scores = np.zeros(6)
-                all_scores = [row_scores, col_scores]
+            row_scores = np.zeros(6)
+            col_scores = np.zeros(6)
+            all_scores = [col_scores, row_scores]
+            for flash_score in confidence_scores:  
                 for row_col in range(12):
                     if row_col < 6:
                         all_scores[0][row_col] += flash_score[row_col+1]
                     elif row_col < 6:
                         all_scores[1][row_col] += flash_score[row_col+1]
+        
+            for row_col in range(12):
+                if row_col < 6:
+                    all_scores[0][row_col] /= 180 
+                elif row_col < 6:
+                    all_scores[1][row_col] /= 180
+                
+            
+            buttons = [[], [], [], [], [], []]
+            for row in range(6):
+                for col in range(6):
+                    character_number = (row * 6) + col
+                    # a-z buttons
+                    if character_number < 26:
+                        button_name = chr(ord('a') + character_number).upper()
+                    # 0-9 buttons
+                    else:
+                        button_name = str(character_number - 26)
+                    buttons[row].append(button_name)
+            
+            col, row = max(all_scores[0]), max(all_scores[1])
+
 
 
             # if len(row_col_true) > 1:
@@ -171,34 +194,18 @@ class CharacterClassification:
             #     for value in row_col_true:
             #         track[value-1] += 1
 
-            #     # print "row: ", row, " col: ", col
-            #     buttons = [[], [], [], [], [], []]
-            #     for row in range(6):
-            #         for col in range(6):
-            #             character_number = (row * 6) + col
-            #             # a-z buttons
-            #             if character_number < 26:
-            #                 button_name = chr(ord('a') + character_number).upper()
-            #             # 0-9 buttons
-            #             else:
-            #                 button_name = str(character_number - 26)
-            #             buttons[row].append(button_name)
+            # print "row: ", row, " col: ", col
+            
 
-            #     row = 1
-            #     col = 7
-            #     for index in range(5):
-            #         if track[row - 1] < track[index + 1]:
-            #             row = index + 1
-            #         if track[col - 1] < track[index + 5]:
-            #             col = index + 5
-            #     print buttons[row - 1][col - 1 - 6],
 
-                if buttons[col - 1 - 6][row - 1] == expected_characters[0][epoch]:
-                    percentage += 1
+            
+
+            if buttons[col - 1 - 6][row - 1] == expected_characters[0][epoch]:
+                percentage += 1
                 
                 print "number correct: ", percentage, "percentage: ", percentage / 85
 
-        print("new line")
+        print "\n"
         return percentage
 
 
@@ -208,6 +215,7 @@ if __name__ == '__main__':
 
     all_data = Data(data)
     # print(np.shape(all_data.training_data['Signal']))
+    print "Row Col, data: ", all_data.row_col
 
     classifier = CharacterClassification(all_data.character_signals,
                                          all_data.character_labels, all_data.row_col)
