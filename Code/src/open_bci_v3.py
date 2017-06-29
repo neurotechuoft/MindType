@@ -151,6 +151,63 @@ class OpenBCIBoard(object):
     def getNbImpChannels(self):
         return self.imp_channels_per_sample
 
+    def streamer(self, controller, callback, lapse=-1, update_object_list=None):
+
+        while not controller.exited:
+            if not controller.paused:
+
+                if not self.streaming:
+                    self.ser.write(b'b')
+                    self.streaming = True
+
+                start_time = timeit.default_timer()
+
+                # Enclose callback funtion in a list if it comes alone
+                if not isinstance(callback, list):
+                    callback = [callback]
+
+                # Initialize check connection
+                self.check_connection()
+
+                # read current sample
+                sample = self._read_serial_binary()
+                # if a daisy module is attached, wait to concatenate two samples (main board + daisy) before passing it to callback
+                if self.daisy:
+                    # odd sample: daisy sample, save for later
+                    if ~sample.id % 2:
+                        self.last_odd_sample = sample
+                    # even sample: concatenate and send if last sample was the fist part, otherwise drop the packet
+                    elif sample.id - 1 == self.last_odd_sample.id:
+                        # the aux data will be the average between the two samples, as the channel samples themselves have been averaged by the board
+                        avg_aux_data = list((np.array(sample.aux_data) + np.array(
+                            self.last_odd_sample.aux_data)) / 2)
+                        whole_sample = OpenBCISample(sample.id,
+                                                     sample.channel_data + self.last_odd_sample.channel_data,
+                                                     avg_aux_data)
+                        for call in callback:
+                            if update_object_list:
+                                call(whole_sample, update_object_list)
+                            else:
+                                call(whole_sample)
+                else:
+                    for call in callback:
+                        if update_object_list:
+                            call(sample, update_object_list)
+                        else:
+                            call(sample)
+
+                if (lapse > 0 and timeit.default_timer() - start_time > lapse):
+                    self.stop()
+                if self.log:
+                    self.log_packet_count = self.log_packet_count + 1
+            elif controller.instruction_request:
+                self.stop()
+                controller.confirm_instruction_executed()
+            else:
+                print("Waiting...")
+        self.disconnect()
+
+
     def start_streaming(self, callback, lapse=-1, update_object_list=None):
         """
         Start handling streaming data from the board. Call a provided callback

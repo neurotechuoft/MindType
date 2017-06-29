@@ -100,23 +100,8 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
             callback_list.append(plug.plugin_object)
 
 
-# def stop_biosignals(biosignals):
-#     for biosignal in biosignals:
-#         biosignal.pause()
-#
-#
-# def resume_biosignals(biosignals):
-#     for biosignal in biosignals:
-#         biosignal.resume()
-#
-#
-# def exit_biosignals(biosignals):
-#     for biosignal in biosignals:
-#         biosignal.exit()
-
 
 def process(biosignal, controller):
-
     while not controller.exited:
         # print("processing")
         if not biosignal.is_paused():
@@ -124,6 +109,7 @@ def process(biosignal, controller):
             # print("processing")
         if biosignal.is_exit():
             controller.exited = True
+
 
 def init_board(board):
     print("--------------INFO---------------")
@@ -157,51 +143,26 @@ def init_board(board):
         time.sleep(0.100)
 
 
-
 def execute_board(board, controller, biosignals):
     print("Execute-board")
     lapse = -1
 
+    board.setImpedance(False)
+    stream_thread = threading.Thread(
+        target=board.streamer, args=(controller,
+                                     fun,
+                                     lapse,
+                                     biosignals))
+    stream_thread.daemon = True  # will stop on exit
+
+    print("Starting board...")
+    stream_thread.start()
+
     while not controller.exited:
         flush = False
-        # print("Executing Board...")
 
-        # read silently incoming packet if set (used when stream is stopped)
-
-        if not controller.paused:
-            print(controller)
-            controller.make()
-            if controller.instruction_request:
-                board.setImpedance(False)
-                if (fun != None):
-                    # start streaming in a separate thread so we could always send commands in here
-                    try:
-                        # resume_biosignals(biosignals)
-                        boardThread = threading.Thread(
-                            target=board.start_streaming, args=(fun,
-                                                                lapse,
-                                                                biosignals))
-                        boardThread.daemon = True  # will stop on exit
-
-                        print("Starting board...")
-                        boardThread.start()
-                    except:
-                        raise
-                else:
-                    print("No function loaded")
-
-                controller.confirm_instruction_executed()
-
-        elif controller.paused:
-            if controller.instruction_request:
-                print("Pausing...")
-                board.stop()
-                print(boardThread.is_alive())
-                flush = True
-            # stop_biosignals(biosignals)
-            controller.confirm_instruction_executed()
-        else:
-            continue
+        if controller.paused:
+            flush = True
 
         line = ''
         time.sleep(0.1)  # Wait to see if the board has anything to report
@@ -218,16 +179,6 @@ def execute_board(board, controller, biosignals):
         elif board.getBoardType() == "ganglion":
             while board.ser_inWaiting():
                 board.waitForNotifications(0.001)
-
-                # if not flush:
-                #     print(line)
-
-                # Take user input
-                # s = input('--> ')
-                # if sys.hexversion > 0x03000000:
-                #     s = input('--> ')
-                # else:
-                #     s = raw_input('--> ')
 
 
     controller.quit()
@@ -280,7 +231,6 @@ if __name__ == '__main__':
     manager.setPluginPlaces(plugins_paths)
     manager.collectPlugins()
 
-
     print("\n-------INSTANTIATING BOARD-------")
     board = bci.OpenBCIBoard(port=args.port,
                              daisy=args.daisy,
@@ -294,11 +244,10 @@ if __name__ == '__main__':
 
     print("\n------------PLUGINS--------------")
     # Loop round the plugins and print their names.
-    print ("Found plugins:")
+    print("Found plugins:")
     for plugin in manager.getAllPlugins():
-        print ("[ " + plugin.name + " ]")
+        print("[ " + plugin.name + " ]")
     print("\n")
-
 
     # Fetch plugins, try to activate them, add to the list if OK
     plug_list = []
@@ -329,4 +278,3 @@ if __name__ == '__main__':
 
     init_board(board)
     execute_board(board, controller, [eog])
-

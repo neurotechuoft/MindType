@@ -33,7 +33,7 @@ class PluginPrint(plugintypes.IPluginExtended):
 
         data = row.split(",")
 
-        # print(data)
+        print(data)
         # print("Received data")
 
         # UPDATE OBJECTS
