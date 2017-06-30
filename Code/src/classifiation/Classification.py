@@ -134,17 +134,22 @@ class CharacterClassification:
         percentage = 0
         channels_data = np.array(channels_data)
         channels_data = np.swapaxes(channels_data, 1, 2)
+        row_col_flashed = self.row_col
         for epoch in range(85):
             confidence_scores = []
             # row/col that predicted yes
             row_col_true = []
+            predictions = {}
             for flash in range(180):
-                row_col_flashed = self.row_col
-                predictions = {}
+                flash_confidence = 0
                 for channel in range(8):
                     to_predict = [channels_data[epoch][channel][flash]]
-                    print len(self.row_col[0])
-                    predictions[int(self.row_col[epoch][flash])] = self.lda_classifiers[channel].decision_function(to_predict)
+                    # print len(self.row_col[0])
+                    flash_confidence += self.lda_classifiers[channel].decision_function(to_predict)
+                if self.row_col[epoch][flash] in predictions:
+                    predictions[int(self.row_col[epoch][flash])] += flash_confidence
+                else:
+                    predictions[self.row_col[epoch][flash]] = flash_confidence
                 # zero_predictions = 0
                 # one_predictions = 0
                 # for prediction in predictions:
@@ -156,13 +161,14 @@ class CharacterClassification:
                 #     row_col_true.append(row_col_flashed)
                 confidence_scores.append(predictions)
             
-            row_scores = np.zeros(6)
-            col_scores = np.zeros(6)
+            row_scores = list(np.zeros(6))
+            col_scores = list(np.zeros(6))
             all_scores = [col_scores, row_scores]
-            print confidence_scores
+            # print confidence_scores, "Confidence scores passed"
             for flash_score in confidence_scores:  
                 for row_col in range(12):
                     if row_col < 6:
+                        # print flash_score, row_col + 1
                         all_scores[0][row_col] += flash_score[row_col+1]
                     elif row_col < 12:
                         all_scores[1][row_col-6] += flash_score[row_col+1]
@@ -186,7 +192,7 @@ class CharacterClassification:
                         button_name = str(character_number - 26)
                     buttons[row].append(button_name)
             
-            col, row = max(all_scores[0]), max(all_scores[1])
+            col, row = all_scores[0].index(max(all_scores[0])), all_scores[1].index(max(all_scores[1]))
 
 
 
@@ -199,13 +205,18 @@ class CharacterClassification:
             # print "row: ", row, " col: ", col
             
 
+            col, row = int(col), int(row)
+            print "row/col: ", col, row
+            print "predicted: ", buttons[col - 1][row - 1]
+            print "expected: ", expected_characters[0][epoch]
 
-            
 
-            if buttons[col - 1 - 6][row - 1] == expected_characters[0][epoch]:
+
+
+            if buttons[col - 1][row - 1] == expected_characters[0][epoch]:
                 percentage += 1
                 
-                print "number correct: ", percentage, "percentage: ", percentage / 85
+            print "number correct: ", percentage, "percentage: ", percentage / 85
 
         print "\n"
         return percentage
@@ -213,13 +224,13 @@ class CharacterClassification:
 
 if __name__ == '__main__':
     data = scipy.io.loadmat(
-        "/home/sayanfaraz/Documents/NeurotechUofT/MindTypeClassifier/MindType/Code/BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
+        "/home/hisham/Documents/NeuroTech/MindType/BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
 
     all_data = Data(data)
     # print(np.shape(all_data.training_data['Signal']))
-    print "Row Col, data: ", all_data.row_col
+    # print "Row Col, data: ", all_data.row_col
     row_col_data = all_data.get_all_character_row_col()
-    print "row_colo_data", row_col_data
+    # print "row_colo_data", row_col_data
 
     classifier = CharacterClassification(all_data.character_signals,
                                          all_data.character_labels, row_col_data)
