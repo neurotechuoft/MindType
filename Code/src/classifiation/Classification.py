@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.io
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn import svm
 
 
 class Data:
@@ -31,6 +32,7 @@ class Data:
         # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
         # will use 10 repetitions only for epoch
         for flash in range(180):
+            # one flash is 8 x 240
             one_flash = []
             # getting data from 8 channels
             for channel in self.channels:
@@ -130,7 +132,19 @@ class CharacterClassification:
         for channel in range(self.num_channels):
             self.lda_classifiers[channel].fit(fit_data_arr[channel], fit_prediction_arr[channel])
 
-    def get_predictions(self, channels_data, expected_characters):
+    def get_predictions(self, channels_data, expected_characters=""):
+        """
+        Predicts the row or column based on the minimum distance of the row/col from the sample to the 
+        hyperplane. 
+
+
+        @param channels_data: 3d matrix of the data to be predicted (w, x, y, z)
+            w: number of trials
+            x: number of flashes per trial
+            y: number of channels per flash
+            z: number of data points per channel
+        @param expected_characters: string of the expected characters (optional)
+        """
         percentage = 0
         channels_data = np.array(channels_data)
         channels_data = np.swapaxes(channels_data, 1, 2)
@@ -192,7 +206,7 @@ class CharacterClassification:
                         button_name = str(character_number - 26)
                     buttons[row].append(button_name)
             
-            col, row = all_scores[0].index(max(all_scores[0])), all_scores[1].index(max(all_scores[1]))
+            col, row = all_scores[0].index(min(all_scores[0])), all_scores[1].index(min(all_scores[1]))
 
 
 
