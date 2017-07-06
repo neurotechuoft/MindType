@@ -2,12 +2,22 @@ import numpy as np
 import scipy.io
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import svm
+import random
 
 
 class Data:
-    """Preprocessing and data collection."""
+    """Preprocessing and data collection.
+    
+    @param all_data: the matlab data file opened
 
-    def __init__(self, all_data):
+    @param random_filter: whether we want to extract random no-s or the first no-s
+    note: if random_filter is set to True, the final accuracy will be in the range of 52-59%
+        if random_filter is set to False, the final accuracy will consistently be 59%
+        Setting it to True makes more logical sense but will yield inconsistent results.
+    
+    """
+
+    def __init__(self, all_data, random_filter=False):
 
         self.training_data = all_data
         self.epochs = 15
@@ -21,7 +31,10 @@ class Data:
         self.character_signals = self.get_all_character_signals()
         self.character_labels = self.get_all_character_labels()
         self.character_signals_unfiltered = self.get_all_character_signals()
-        self.filter_no(60)
+        if random_filter:
+            self.random_filter_no(60) 
+        else:
+            self.filter_no(60)
         self.turn_into_np()
         self.characters = self.training_data['TargetChar'][0]
         self.row_col = self.get_all_character_row_col()
@@ -40,8 +53,10 @@ class Data:
                 # will take 200 ms of signal (48)
                 for signal in range(240):
                     # 42 is 100 ms flash + 75 ms delay
+                    # The first x data points do not help the data
+                    x = 10
                     channel_signals.append(
-                        float(self.training_data['Signal'][epoch_index][(flash * 42) + signal][channel]))
+                        float(self.training_data['Signal'][epoch_index][x + (flash * 42) + signal][channel]))
                 one_flash.append(channel_signals)
             epoch.append(one_flash)
         np_one_character_signals = epoch
@@ -84,6 +99,18 @@ class Data:
         for extract in range(num_extracted):
             for epoch in range(85):
                 no_index = self.character_labels[epoch].index(0)
+                self.character_labels[epoch].pop(no_index)
+                self.character_signals[epoch].pop(no_index)
+    
+    def random_filter_no(self, total):
+        no_num = total - 30
+        num_extracted = 180 - total
+        for extract in range(num_extracted):
+            for epoch in range(85):
+                no_index = random.randint(0, 179 - num_extracted)
+                while self.character_labels[epoch][no_index] != 0:
+                    # print self.character_labels[epoch][no_index], no_index
+                    no_index = random.randint(0, 179 - num_extracted)
                 self.character_labels[epoch].pop(no_index)
                 self.character_signals[epoch].pop(no_index)
 
@@ -164,21 +191,12 @@ class CharacterClassification:
                     predictions[int(self.row_col[epoch][flash])] += flash_confidence
                 else:
                     predictions[self.row_col[epoch][flash]] = flash_confidence
-                # zero_predictions = 0
-                # one_predictions = 0
-                # for prediction in predictions:
-                #     if prediction == 0:
-                #         zero_predictions += 1
-                #     else:
-                #         one_predictions += 1
-                # if one_predictions > 4:
-                #     row_col_true.append(row_col_flashed)
                 confidence_scores.append(predictions)
             
             row_scores = list(np.zeros(6))
             col_scores = list(np.zeros(6))
             all_scores = [col_scores, row_scores]
-            # print confidence_scores, "Confidence scores passed"
+            
             for flash_score in confidence_scores:  
                 for row_col in range(12):
                     if row_col < 6:
@@ -189,10 +207,12 @@ class CharacterClassification:
         
             for row_col in range(12):
                 if row_col < 6:
-                    all_scores[0][row_col] /= 180 
-                elif row_col < 6:
-                    all_scores[1][row_col] /= 180
-                
+                    all_scores[0][row_col] = all_scores[0][row_col][0] / 180
+                    
+                elif row_col >= 6:
+                    all_scores[1][row_col-6] = all_scores[1][row_col-6][0] / 180
+
+            
             
             buttons = [[], [], [], [], [], []]
             for row in range(6):
@@ -206,10 +226,10 @@ class CharacterClassification:
                         button_name = str(character_number - 26)
                     buttons[row].append(button_name)
             
-            col, row = all_scores[0].index(min(all_scores[0])), all_scores[1].index(min(all_scores[1]))
+            col, row = all_scores[0].index(max(all_scores[0])), all_scores[1].index(max(all_scores[1]))
 
-
-
+            print "confidence: ", all_scores
+            
             # if len(row_col_true) > 1:
             #     # print epoch,
             #     track = np.zeros(12)
@@ -221,16 +241,16 @@ class CharacterClassification:
 
             col, row = int(col), int(row)
             print "row/col: ", col, row
-            print "predicted: ", buttons[col - 1][row - 1]
+            print "predicted: ", buttons[col][row]
             print "expected: ", expected_characters[0][epoch]
 
 
 
 
-            if buttons[col - 1][row - 1] == expected_characters[0][epoch]:
+            if buttons[row][col] == expected_characters[0][epoch]:
                 percentage += 1
                 
-            print "number correct: ", percentage, "percentage: ", percentage / 85
+            print "number correct: ", percentage, ", percentage: ", (percentage / 85.0) * 100
 
         print "\n"
         return percentage
