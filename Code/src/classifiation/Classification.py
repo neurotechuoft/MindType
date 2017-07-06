@@ -3,6 +3,7 @@ import scipy.io
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import svm
 import random
+import config as cfg
 
 
 class Data:
@@ -15,26 +16,30 @@ class Data:
         if random_filter is set to False, the final accuracy will consistently be 59%
         Setting it to True makes more logical sense but will yield inconsistent results.
     
+    Definitions:
+        epoch: the nth character in the list of characters
+        trial: a full iteration of 12 flashes
+        flash: whether a row or column flashed
     """
 
     def __init__(self, all_data, random_filter=False):
 
         self.training_data = all_data
-        self.epochs = 15
-        self.flashes_per_epoch = 12
-        self.flashes_per_character = self.epochs * self.flashes_per_epoch
-        self.data_points_per_flash = 96
-        self.points_btw_flashes = 42
-        self.channels = [8, 10, 12, 48, 50, 52, 60, 62]
+        self.trials = cfg.TRIALS_PER_EPOCH
+        self.flashes_per_epoch = cfg.FLASHES_PER_TRIAL
+        self.flashes_per_character = cfg.FLASHES_PER_EPOCH
+        self.data_points_per_flash = cfg.DATA_POINTS_PER_FLASH
+        self.points_btw_flashes = cfg.FLASH_MULTIPLIER
+        self.channels = cfg.CHANNELS
         self.characters = []
-        self.characters_number_training = 85
+        self.epochs = cfg.EPOCHS
         self.character_signals = self.get_all_character_signals()
         self.character_labels = self.get_all_character_labels()
         self.character_signals_unfiltered = self.get_all_character_signals()
         if random_filter:
-            self.random_filter_no(60) 
+            self.random_filter_no(cfg.TOTAL_FLASHES_W_FILTER) 
         else:
-            self.filter_no(60)
+            self.filter_no(cfg.TOTAL_FLASHES_W_FILTER)
         self.turn_into_np()
         self.characters = self.training_data['TargetChar'][0]
         self.row_col = self.get_all_character_row_col()
