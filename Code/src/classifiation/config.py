@@ -19,4 +19,6 @@ TRIALS_PER_EPOCH = 15
 
 FILE_PATH = os.path.join("BCI_Comp_III_Wads_2004", "Subject_A_Train.mat")
 
+TEST_FILE_PATH = os.path.join("BCI_Comp_III_Wads_2004", "Subject_A_Test.mat")
+
 FLASHES_PER_EPOCH = FLASHES_PER_TRIAL * TRIALS_PER_EPOCH

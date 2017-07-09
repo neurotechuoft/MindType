@@ -138,7 +138,7 @@ class CharacterClassification:
         self.row_col = row_col
         for channel in range(self.num_channels):
             self.predictions.append([])
-            self.lda_classifiers.append(LinearDiscriminantAnalysis())
+            self.lda_classifiers.append(LinearDiscriminantAnalysis(tol=1e-4))
 
             # self.lda = LinearDiscriminantAnalysis()
             # self.lda.fit_transform(channels_data, expected_result)
@@ -227,8 +227,10 @@ class CharacterClassification:
                     if character_number < 26:
                         button_name = chr(ord('a') + character_number).upper()
                     # 0-9 buttons
+                    elif character_number < 36:
+                        button_name = str(character_number - 25)
                     else:
-                        button_name = str(character_number - 26)
+                        button_name = '_'
                     buttons[row].append(button_name)
             
             col, row = all_scores[0].index(max(all_scores[0])), all_scores[1].index(max(all_scores[1]))
@@ -246,7 +248,7 @@ class CharacterClassification:
 
             col, row = int(col), int(row)
             print "row/col: ", col, row
-            print "predicted: ", buttons[col][row]
+            print "predicted: ", buttons[row][col]
             print "expected: ", expected_characters[0][epoch]
 
 
@@ -256,14 +258,15 @@ class CharacterClassification:
                 percentage += 1
                 
             print "number correct: ", percentage, ", percentage: ", (percentage / 85.0) * 100
+            print "\n"
 
         print "\n"
         return percentage
 
 
 if __name__ == '__main__':
-    data = scipy.io.loadmat(
-        "/home/hisham/Documents/NeuroTech/MindType/BCI_Comp_III_Wads_2004/Subject_A_Train.mat")
+    data = scipy.io.loadmat(cfg.FILE_PATH)
+    test_data = scipy.io.loadmat(cfg.TEST_FILE_PATH)
 
     all_data = Data(data)
     # print(np.shape(all_data.training_data['Signal']))
