@@ -38,9 +38,9 @@ class Data:
         self.character_signals = self.get_epoch()
         self.character_labels = self.get_one_character_labels()
         if not test_set:
-            self.character_signals_unfiltered = self.get_all_character_signals()
+            self.character_signals_unfiltered = self.get_epoch()
         if random_filter:
-            self.random_filter_no(cfg.TOTAL_FLASHES_W_FILTER) 
+            self.random_filter_no(cfg.TOTAL_FLASHES_W_FILTER)
         else:
             self.filter_no(cfg.TOTAL_FLASHES_W_FILTER)
         self.turn_into_np()
@@ -55,6 +55,7 @@ class Data:
         # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
         # will use 10 repetitions only for epoch
         for epoch in range(cfg.EPOCHS):
+            print epoch
             for flash in range(self.flashes_per_character):
                 # one flash is 8 x 240
                 one_flash = []
@@ -74,6 +75,7 @@ class Data:
     def get_one_character_labels(self, index=cfg.EPOCHS):
         one_character_labels = []
         for epoch in range(index):
+            print "label: ", epoch
             for flash in range(self.flashes_per_character):
                 one_character_labels.append(self.training_data['StimulusType'][epoch][flash * self.points_btw_flashes])
         return one_character_labels
@@ -262,7 +264,7 @@ class CharacterClassification:
 if __name__ == '__main__':
     print "-"*10 + " Loading Data " + "-"*10
     try:
-        data = scipy.io.loadmat(cfg.FILE_PATH)
+        data = scipy.io.loadmat("C:\\Users\\Abdelrahman\\Desktop\\Beedo\\Programming\\Python\\MindType\\Code\\src\\resources\\Subject_A_Train.mat")
     except IOError:
         print "\n" + "*" * 100 + "\n" " File could not be loaded. Make sure you have the file in the path \n \
 'BCI_Comp_III_Wads_2004/Subject_A_Train.mat' from where you are running it. " + "\n" + "*" * 100 + "\n"
