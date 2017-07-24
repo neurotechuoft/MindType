@@ -84,16 +84,20 @@ class EOG(BioSignal):
                                                 self.sample_rate)
 
             print("Processing data...")
-            # print(self.__peaks__)
+            # print(self.__eog_list_filtered__)
+            print(self.__peaks__)
             # Find gesture
-            # self.id_gestures()
-            # self.gesture_graph()
-            #
-            # self.left_gaze = False
-            # self.right_gaze = False
-            # self.up_gaze = False
-            # self.down_gaze = False
-            # self.blink = False
+            self.id_gestures()
+            self.gesture_graph()
+
+            self.reset_gestures()
+
+    def reset_gestures(self):
+        self.left_gaze = False
+        self.right_gaze = False
+        self.up_gaze = False
+        self.down_gaze = False
+        self.blink = False
 
     # def update_eog(self):
     #     '''
@@ -251,6 +255,21 @@ class EOG(BioSignal):
         else:
             self.gesture_list.append([curr_gesture, 0])
 
+    def print_gestures(self):
+        if (self.left_gaze == True):
+            print("Left gaze")
+
+        elif (self.right_gaze == True):
+            print("Right gaze")
+
+        elif (self.up_gaze == True):
+            print("Up gaze")
+
+        elif (self.down_gaze == True):
+            print("Down gaze")
+
+        elif (self.blink == True):
+            print("Blink gaze")
 
 if __name__ == '__main__':
     with open('./../packets_ffted.csv', 'rb') as ecg_file:

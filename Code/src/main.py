@@ -103,10 +103,8 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
 
 def process(biosignal, controller):
     while not controller.exited:
-        # print("processing")
         if not biosignal.is_paused():
             biosignal.process()
-            # print("processing")
         if biosignal.is_exit():
             controller.exited = True
 
@@ -203,6 +201,7 @@ def print_board_transmission_info(board):
 
 
 if __name__ == '__main__':
+    # VARIABLES
     controller = Controller()
 
     gui_thread = threading.Thread(target=make_gui, args=[controller])

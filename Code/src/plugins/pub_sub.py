@@ -33,8 +33,8 @@ class PluginPrint(plugintypes.IPluginExtended):
 
         data = row.split(",")
 
-        print(data)
-        # print("Received data")
+        # print(data)
+        print("Received data")
 
         # UPDATE OBJECTS
         if objects_to_update is not None:
