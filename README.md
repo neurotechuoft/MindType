@@ -19,6 +19,6 @@ EEG Speller
     - "Quadcopter control in three-dimensional space using a noninvasive motor imagery-based brain–computer interface"
 ### Phase 3 (Multiclass motor classification)
 - http://ieeexplore.ieee.org/document/6943840/?reload=true
-    - *"Discriminating hand gesture motor imagery tasks using cortical current density estimation"*
+    - **"Discriminating hand gesture motor imagery tasks using cortical current density estimation"**
 - http://www.sciencedirect.com/science/article/pii/S0167876015001749#fn0010
     - Explanation of surface laplacian and applications to EEG
