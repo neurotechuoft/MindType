@@ -2,17 +2,14 @@
 import argparse  # new in Python2.7
 import atexit
 import logging
-import string
 import sys
 import threading
 import time
-import sys
 
 from PyQt4 import QtGui
 
-from controller import Controller
-from keyboard.MindType import MindType
-
+from Code.src.gui.keyboard.MindType import MindType
+from Controller import Controller
 from biosignals.EOG import EOG
 
 logging.basicConfig(level=logging.ERROR)

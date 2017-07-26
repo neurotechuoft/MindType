@@ -1,4 +1,4 @@
-class Controller():
+class Controller:
 
     def __init__(self):
         self.made = False
