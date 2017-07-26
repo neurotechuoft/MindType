@@ -5,9 +5,9 @@ from PyQt4 import QtGui
 from Keyboard import Keyboard
 
 
-class MindType(QtGui.QWidget):
-    def __init__(self, controller):
-        super(MindType, self).__init__()
+class MindType(QtGui.QDialog):
+    def __init__(self, controller, parent=None):
+        super(MindType, self).__init__(parent)
 
         # variables used for pausing
         self.controller = controller
