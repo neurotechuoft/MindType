@@ -7,6 +7,8 @@ EEG Speller
 3. Install scipy, numpy using conda Install
 4. Install everything else using pip
 
+Whaddup yooo
+
 ## Plan
 ![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan")
 
