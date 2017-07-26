@@ -97,13 +97,11 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
             callback_list.append(plug.plugin_object)
 
 
-
 def process(biosignal, controller):
     while not controller.exited:
-        # print("processing")
         if not biosignal.is_paused():
             biosignal.process()
-            # print("processing")
+            # TODO: why does biosignal control the controller .-.
         if biosignal.is_exit():
             controller.exited = True
 
@@ -166,6 +164,7 @@ def execute_board(board, controller, biosignals):
         # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
         if board.getBoardType() == "cyton":
             while board.ser_inWaiting():
+                # TODO: refactor into method and pass in 'cyton' or 'ganglion'
                 c = board.ser_read().decode('utf-8',
                                             errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
                 line += c
@@ -176,7 +175,6 @@ def execute_board(board, controller, biosignals):
         elif board.getBoardType() == "ganglion":
             while board.ser_inWaiting():
                 board.waitForNotifications(0.001)
-
 
     controller.quit()
 
@@ -199,8 +197,22 @@ def print_board_transmission_info(board):
               board.getSampleRate(), "Hz.")
 
 
+def print_plugins(manager):
+    print("\n------------PLUGINS--------------")
+    # Loop round the plugins and print their names.
+    print("Found plugins:")
+    for plugin in manager.getAllPlugins():
+        print("[ " + plugin.name + " ]")
+    print("\n")
+
+
 if __name__ == '__main__':
+    # VARIABLES
     controller = Controller()
+    plugins_paths = ["plugins"]
+    plug_list = []
+    callback_list = []
+    eog = EOG(256, controller)
 
     gui_thread = threading.Thread(target=make_gui, args=[controller])
     gui_thread.daemon = True
@@ -224,7 +236,6 @@ if __name__ == '__main__':
     # Check AUTO port selection, a "None" parameter for the board API
     check_auto_port_selection(args)
 
-    plugins_paths = ["plugins"]
     manager.setPluginPlaces(plugins_paths)
     manager.collectPlugins()
 
@@ -236,19 +247,12 @@ if __name__ == '__main__':
                              log=args.log,
                              aux=args.aux)
 
-    #  Info about effective number of channels and sampling rate
+    #  Info about effective number of channels, sampling rate, plugins
     print_board_transmission_info(board)
 
-    print("\n------------PLUGINS--------------")
-    # Loop round the plugins and print their names.
-    print("Found plugins:")
-    for plugin in manager.getAllPlugins():
-        print("[ " + plugin.name + " ]")
-    print("\n")
+    print_plugins(manager)
 
     # Fetch plugins, try to activate them, add to the list if OK
-    plug_list = []
-    callback_list = []
 
     add_plugin('pub_sub', [], board, plug_list, callback_list)
 
@@ -267,8 +271,6 @@ if __name__ == '__main__':
 
 
     atexit.register(cleanUp)
-
-    eog = EOG(256, controller)
 
     process_thread = threading.Thread(target=process, args=[eog, controller])
     process_thread.start()

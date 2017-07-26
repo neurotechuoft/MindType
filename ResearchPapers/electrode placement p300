@@ -1,0 +1,30 @@
+In the studies done to determine optimal electrode placement for the P300 speller, it was determined that
+EEG signals are measured best by electrodes covering the parietal and occipital lobes 
+
+
+
+In a study, Batch Gibbs sampling used to find samples of distribution of electrodes best classifying EEG input 
+
+-results showed that only using 4 electrodes (posterior) was enough to be effective
+    -using 5 is better but not by much , etc
+-in summary, the study shows that the no of electrodes used can be reduced without significantly affecting system performance 
+-there is essentially a trade off between accuracy (increasing no of electrodes used) and improvement of set up time and reducing
+ computational requirements for processing
+ 
+ 
+ We will probably be using the max no of electrodes (8) 
+ 
+ Some placement examples that have been used before are: 
+ * refer to standard 10-20 EEG placement
+ 
+ { PO8, PO7, POz, Oz, CPz }
+ { C3, Cz, C4, P3, Pz, P4, O1, O2}
+ 
+ and many other combinations around thE P, C, PO regions
+ 
+ 
+ 
+ main sources: 
+ https://neuro.embs.org/files/2013/0659_FI.pdf
+ https://www.mii.ucla.edu/repository/303.pdf
+
