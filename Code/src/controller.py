@@ -20,7 +20,7 @@ class Controller():
         self.paused = True
 
     def resume(self):
-        print("Controller pausing")
+        print("Controller resuming")
         self.request_instruction()
         self.paused = False
 
