@@ -8,4 +8,4 @@
 - Decide on as threshould to get control signal
 
 # Meeting notes:
-- Musa: still working on fft transformation
+- Musa: Implemented FFT and got frequency bins amplitudes, needs to get meaningful toy data to test on it.
