@@ -186,7 +186,7 @@ def make_gui(controller):
     # mindType.show()
     # sys.exit(app.exec_())
     app = QtGui.QApplication(sys.argv)
-    main_scr = ChooseScreen()
+    main_scr = ChooseScreen(controller)
     main_scr.resize(500, 100)
     main_scr.show()
     sys.exit(app.exec_())
