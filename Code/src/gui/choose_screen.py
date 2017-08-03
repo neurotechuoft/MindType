@@ -3,9 +3,9 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
-from Code.src.Controller import Controller
-from Code.src.gui.DevTools import DevTools
-from Code.src.gui.keyboard.MindType import MindType
+from controller import Controller
+from gui.dev_tools import DevTools
+from gui.keyboard.MindType import MindType
 
 
 class ChooseScreen(QtGui.QWidget):
