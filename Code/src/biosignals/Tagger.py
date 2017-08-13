@@ -32,9 +32,9 @@ class Tagger(Biosignal):
             Save data values in 'data.csv' file in same folder
         """
 
-    with open('some.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerows(data)
+        with open('some.csv', 'wb') as f:
+            writer = csv.writer(f)
+            writer.writerows(data)
         
         
-    f.close()
+        f.close()
