@@ -1,5 +1,3 @@
-import csv
-
 class Tagger(Biosignal):
 
     # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
@@ -12,26 +10,22 @@ class Tagger(Biosignal):
             Sample: EEG data sample, array of 9 values
             Store this sample in samples
         """
+        samples.append(sample)
+
 
     def process(self):
         """
             Takes every sample in samples, store its values in data
             and tag it
         """
+        if len(samples) != 0:
+            for sample in samples:
+                for i in range(9):
+                    data[i].append(sample[i])
+                data[9].append(Controller.tag)
+                samples.remove(sample)
 
     def saveToCsv(data):
         """
             Save data values in 'data.csv' file in same folder
-            each nested list in data will be row
         """
-
-        with open('some.csv', 'wb') as f:
-            writer = csv.writer(f)
-            writer.writerows(data)
-
-
-        f.close()
-
-
-
-
