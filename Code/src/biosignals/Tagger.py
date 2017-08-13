@@ -1,3 +1,5 @@
+import csv
+
 class Tagger(Biosignal):
 
     # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
@@ -20,4 +22,16 @@ class Tagger(Biosignal):
     def saveToCsv(data):
         """
             Save data values in 'data.csv' file in same folder
+            each nested list in data will be row
         """
+
+        with open('some.csv', 'wb') as f:
+            writer = csv.writer(f)
+            writer.writerows(data)
+
+
+        f.close()
+
+
+
+
