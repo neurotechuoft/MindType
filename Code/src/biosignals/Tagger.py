@@ -29,7 +29,8 @@ class Tagger(Biosignal):
 
     def saveToCsv(data):
         """
-            Save data values in 'data.csv' file in same folder
+            Save data values in 'data.csv' file in same folder.
+            Each nested list in data will be a row in data.csv
         """
 
         with open('data.csv', 'wb') as f:
