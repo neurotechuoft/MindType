@@ -1,7 +1,7 @@
 import timeit
 
 import plugin_interface as plugintypes
-from biosignals.BioSignal import BioSignal
+from biosignals.biosignal import BioSignal
 
 
 class PluginPrint(plugintypes.IPluginExtended):

@@ -9,7 +9,7 @@ import time
 from PyQt4 import QtGui
 
 from controller import Controller
-from biosignals.EOG import EOG
+from biosignals.eog import EOG
 from gui.choose_screen import ChooseScreen
 
 logging.basicConfig(level=logging.ERROR)
@@ -180,11 +180,6 @@ def execute_board(board, controller, biosignals):
 
 
 def make_gui(controller):
-    # app = QtGui.QApplication(sys.argv)
-    # mindType = MindType(controller)
-    # mindType.resize(550, 550)
-    # mindType.show()
-    # sys.exit(app.exec_())
     app = QtGui.QApplication(sys.argv)
     main_scr = ChooseScreen(controller)
     main_scr.resize(500, 100)

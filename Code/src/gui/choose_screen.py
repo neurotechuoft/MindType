@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 
 from controller import Controller
 from gui.dev_tools import DevTools
-from gui.keyboard.MindType import MindType
+from gui.keyboard.mindtype import MindType
 
 
 class ChooseScreen(QtGui.QWidget):
