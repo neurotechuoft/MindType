@@ -1,13 +1,17 @@
 import csv
 
-class Tagger(Biosignal):
+from biosignals.biosignal import BioSignal
+
+
+class Tagger(BioSignal):
+    # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
 
     def __init__(self, controller):
-        # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
-        self.controller = controller
+        # SUPERCLASS
+        BioSignal.__init__(self, controller)
         self.samples = [[]]
-        self.data = [[]] # Array of 9 arrays, each of which represents a specific
-                    # channel, 0 time, 1-8 channels, 9 tag
+        self.data = [[]]  # Array of 9 arrays, each of which represents a
+        # specific channel, 0 time, 1-8 channels, 9 tag
 
     def update(self, sample):
         """
@@ -15,7 +19,6 @@ class Tagger(Biosignal):
             Store this sample in samples
         """
         self.samples.append(sample)
-
 
     def process(self):
         """
@@ -26,17 +29,17 @@ class Tagger(Biosignal):
             for sample in self.samples:
                 for i in range(9):
                     self.data[i].append(sample[i])
-                self.data[9].append(Controller.tag)
+                self.data[9].append(self.controller.tag)
                 self.samples.remove(sample)
 
-    def saveToCsv(data):
+    def save_to_csv(self):
         """
-            Save data values in 'data.csv' file in same folder
+            Save data values in 'data.csv' file in same folder.
+            Each nested list in data will be a row in data.csv
         """
 
-        with open('some.csv', 'wb') as f:
-            writer = csv.writer(f)
-            writer.writerows(data)
-        
-        
-        f.close()
+        with open('data.csv', 'wb') as file_to_write:
+            writer = csv.writer(file_to_write)
+            writer.writerows(self.data)
+
+        file_to_write.close()
