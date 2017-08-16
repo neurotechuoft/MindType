@@ -4,8 +4,10 @@ from PyQt4 import QtGui
 
 
 class DevTools(QtGui.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, controller, parent=None):
         super(DevTools, self).__init__(parent)
+
+        self.controller = controller
 
         # Creating main panel which contains everything
         self.main_panel = QtGui.QVBoxLayout()
@@ -73,6 +75,7 @@ class DevTools(QtGui.QDialog):
 
     def tag(self, tag_number):
         self.curr_tag = tag_number
+        self.controller.set_tag(tag_number)
 
     def get_current_tag(self):
         return self.curr_tag
