@@ -6,19 +6,26 @@ from biosignals.biosignal import BioSignal
 class Tagger(BioSignal):
     # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
 
-    def __init__(self, controller):
+    def __init__(self, controller, file_path):
         # SUPERCLASS
         BioSignal.__init__(self, controller)
-        self.samples = [[]]
+        self.samples = []
         self.data = [[]]  # Array of 9 arrays, each of which represents a
         # specific channel, 0 time, 1-8 channels, 9 tag
+
+        self.file_to_write = open(file_path, 'w')
+        self.csv_writer = csv.writer(self.file_to_write)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file_to_write.close()
 
     def update(self, sample):
         """
             Sample: EEG data sample, array of 9 values
             Store this sample in samples
         """
-        self.samples.append(sample)
+        tagged_sample = sample.append(self.controller.get_tag())
+        self.samples.append(tagged_sample)
 
     def process(self):
         """
@@ -26,20 +33,16 @@ class Tagger(BioSignal):
             and tag it
         """
         if len(self.samples) != 0:
-            for sample in self.samples:
-                for i in range(9):
-                    self.data[i].append(sample[i])
-                self.data[9].append(self.controller.tag)
-                self.samples.remove(sample)
+            self.csv_writer.writerow(self.samples.pop())
 
-    def save_to_csv(self):
-        """
-            Save data values in 'data.csv' file in same folder.
-            Each nested list in data will be a row in data.csv
-        """
-
-        with open('data.csv', 'wb') as file_to_write:
-            writer = csv.writer(file_to_write)
-            writer.writerows(self.data)
-
-        file_to_write.close()
+    # def save_to_csv(self):
+    #     """
+    #         Save data values in 'data.csv' file in same folder.
+    #         Each nested list in data will be a row in data.csv
+    #     """
+    #
+    #     with open('data.csv', 'wb') as file_to_write:
+    #         writer = csv.writer(file_to_write)
+    #         writer.writerows(self.data)
+    #
+    #     file_to_write.close()
