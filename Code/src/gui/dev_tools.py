@@ -63,9 +63,15 @@ class DevTools(QtGui.QDialog):
 
     def play_pause(self):
         print("play-pause")
+        if self.controller.paused:
+            self.controller.resume()
+        else: self.controller.pause()
+
 
     def stop(self):
         print("stop")
+        self.controller.quit()
+
 
     def load(self):
         print("load")

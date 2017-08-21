@@ -45,7 +45,7 @@ class ChooseScreen(QtGui.QWidget):
         self.setLayout(self.main_panel)
 
         self.keyboard_screen_gui = MindType(controller)
-        self.dev_tools_gui = DevTools(self)
+        self.dev_tools_gui = DevTools(controller)
 
     @QtCore.pyqtSlot()
     def start_dev_tools(self):

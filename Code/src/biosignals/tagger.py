@@ -16,7 +16,7 @@ class Tagger(BioSignal):
         self.file_to_write = open(file_path, 'w')
         self.csv_writer = csv.writer(self.file_to_write)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def exit(self):
         self.file_to_write.close()
 
     def update(self, sample):
