@@ -11,6 +11,7 @@ from PyQt4 import QtGui
 from controller import Controller
 from biosignals.eog import EOG
 from gui.choose_screen import ChooseScreen
+from gui.keyboard.mindtype import MindType
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -99,11 +100,11 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
 
 def process(biosignal, controller):
     while not controller.exited:
-        if not biosignal.is_paused():
+        if not controller.paused:
             biosignal.process()
             # TODO: why does biosignal control the controller .-.
-        if biosignal.is_exit():
-            controller.exited = True
+        # if controller.is_exit():
+        #     controller.exited = True
 
 
 def init_board(board):
@@ -181,7 +182,7 @@ def execute_board(board, controller, biosignals):
 
 def make_gui(controller):
     app = QtGui.QApplication(sys.argv)
-    main_scr = ChooseScreen(controller)
+    main_scr = MindType(controller)
     main_scr.resize(500, 100)
     main_scr.show()
     sys.exit(app.exec_())
