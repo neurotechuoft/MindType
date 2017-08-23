@@ -14,6 +14,7 @@ from biosignals.eog import EOG
 from gui.choose_screen import ChooseScreen
 from gui.dev_tools import DevTools
 from gui.keyboard.mindtype import MindType
+from datetime import datetime
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -218,7 +219,8 @@ if __name__ == '__main__':
     plug_list = []
     callback_list = []
     # biosignal = EOG(256, controller)
-    biosignal = Tagger(controller, "tagged_vals.csv")
+    biosignal = Tagger(controller, "tagged_vals" + str(datetime.now()) +
+                       ".csv")
 
     gui_thread = threading.Thread(target=make_gui, args=[controller])
     gui_thread.daemon = True
