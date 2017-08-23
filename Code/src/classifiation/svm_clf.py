@@ -11,9 +11,9 @@ class SVM_Classifier:
         # initializing class var
         self.num_channels = len(cfg.CHANNELS)
         self.training_data = np.array(channels_data)
-        self.training_data = np.swapaxes(self.training_data, 1, 2)
+        # self.training_data = np.swapaxes(self.training_data, 1, 2)
         self.training_results = np.array(expected_result)
-        svm_model = svm.SVC()
+        self.svm_model = svm.NuSVC()
         self.lda_classifiers = []
         self.row_col = row_col
         for channel in range(self.num_channels):
@@ -38,7 +38,7 @@ class SVM_Classifier:
         # self.fit_data_arr = np.array(fit_data_list)
         # self.fit_prediction_arr = np.array(fit_prediction_list)
 
-        self.svm_model.fit(self.fit_data_arr[channel], self.fit_prediction_arr[channel])
+        self.svm_model.fit(self.training_data, self.training_results)
 
     def get_predictions(self, channels_data, expected_characters=""):
         """
@@ -62,17 +62,16 @@ class SVM_Classifier:
             # row/col that predicted yes
             row_col_true = []
             predictions = {}
-            for flash in range(180):
-                flash_confidence = 0
-                for channel in range(self.num_channels):
-                    to_predict = [channels_data[epoch][channel][flash]]
-                    # print len(self.row_col[0])
-                    flash_confidence += self.lda_classifiers[channel].decision_function(to_predict)
-                if self.row_col[epoch][flash] in predictions:
-                    predictions[int(self.row_col[epoch][flash])] += flash_confidence
-                else:
-                    predictions[self.row_col[epoch][flash]] = flash_confidence
-                confidence_scores.append(predictions)
+        
+            flash_confidence = 0
+            to_predict = [channels_data[epoch]]
+                # print len(self.row_col[0])
+            flash_confidence += self.svm_model.decision_function(to_predict)
+            if self.row_col[epoch / 180][flash] in predictions:
+                predictions[int(self.row_col[epoch][flash])] += flash_confidence
+            else:
+                predictions[self.row_col[epoch][flash]] = flash_confidence
+            confidence_scores.append(predictions)
             
             row_scores = list(np.zeros(6))
             col_scores = list(np.zeros(6))

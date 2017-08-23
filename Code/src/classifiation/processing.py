@@ -19,8 +19,9 @@ class Data:
         flash: whether a row or column flashed
     """
 
-    def __init__(self, all_data, random_filter=False, test_set=False):
+    def __init__(self, all_data, random_filter=False, test_set=False, load_data=False):
 
+        
         self.training_data = all_data
         self.trials = cfg.TRIALS_PER_EPOCH
         self.flashes_per_epoch = cfg.FLASHES_PER_TRIAL
@@ -29,10 +30,20 @@ class Data:
         self.points_btw_flashes = cfg.FLASH_MULTIPLIER
         self.channels = cfg.CHANNELS
         self.epochs = cfg.EPOCHS
-        self.training_signals = self.all_flashes()
-        self.training_labels = self.all_labels()
         self.characters = self.training_data['TargetChar'][0]
-        print np.array(self.training_signals).shape
+        self.total_data_points = self.epochs * len(self.channels) * self.flashes_per_character
+        if load_data == False:
+            self.training_signals = self.all_flashes()
+            self.training_labels = self.all_labels()
+            print np.array(self.training_signals).shape
+            self.filter_flashes()
+            self.character_prediction_signals = self.get_all_character_signals()
+            self.character_prediction_labels = self.get_all_character_labels()
+        else:
+            self.character_prediction_labels = None
+            self.character_prediction_signals = None
+            self.training_signals = None
+            self.training_labels = None
 
 
     # There are 85 characters (epochs)
@@ -45,7 +56,6 @@ class Data:
         # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
         # will use 10 repetitions only for epoch
         for epoch in range(self.epochs):
-            print epoch
             for flash in range(180):
                 # one flash is 8 x 240
                 # getting data from 8 channels
@@ -54,7 +64,7 @@ class Data:
                     for i in range(240):
                         channel_signals.append(swapped_data[epoch][channel][x + (flash * 42) + i])
                     epochs.append(np.array(channel_signals))
-        return np.array(epochs)
+        return epochs
 
     def all_labels(self):
             one_character_labels = []
@@ -65,59 +75,68 @@ class Data:
                         one_character_labels.append(self.training_data['StimulusType'][epoch][flash * self.points_btw_flashes])
             return one_character_labels
     
-    # def get_epoch(self, epoch_index):
-    #     epoch = []
-    #     # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
-    #     # will use 10 repetitions only for epoch
-    #     for flash in range(180):
-    #         # one flash is 8 x 240
-    #         one_flash = []
-    #         # getting data from 8 channels
-    #         for channel in self.channels:
-    #             channel_signals = []
-    #             # will take 200 ms of signal (48)
-    #             for signal in range(240):
-    #                 # 42 is 100 ms flash + 75 ms delay
-    #                 # The first x data points do not help the data
-    #                 x = 10
-    #                 channel_signals.append(
-    #                     float(self.training_data['Signal'][epoch_index][x + (flash * 42) + signal][channel]))
-    #             one_flash.append(channel_signals)
-    #         epoch.append(one_flash)
-    #     np_one_character_signals = epoch
-    #     return np_one_character_signals
+    def filter_flashes(self):
+        for filter_number in range(120 * 8 * 85):
+            print filter_number
+            index = self.training_labels.index(0)
+            self.training_labels[index], self.training_labels[-1] = self.training_labels[-1], self.training_labels[index]
+            self.training_signals[index], self.training_signals[-1] = self.training_signals[-1], self.training_signals[index]
+            self.training_labels.pop(-1)
+            self.training_signals.pop(-1)
+            
+                
 
-    # def get_one_character_labels(self, index=cfg.EPOCHS):
-    #     one_character_labels = []
-    #     for epoch in range(index):
-    #         # print "label: ", epoch
-    #         for flash in range(self.flashes_per_character):
-    #             one_character_labels.append(self.training_data['StimulusType'][epoch][flash * self.points_btw_flashes])
-    #     return one_character_labels
+    def get_epoch(self, epoch_index):
+        epoch = []
+        # there are 15 character flashes in an epoch, each is 12 flashes (1 for each row/com)
+        # will use 10 repetitions only for epoch
+        for flash in range(180):
+            # one flash is 8 x 240
+            one_flash = []
+            # getting data from 8 channels
+            for channel in self.channels:
+                channel_signals = []
+                # will take 200 ms of signal (48)
+                for signal in range(240):
+                    # 42 is 100 ms flash + 75 ms delay
+                    # The first x data points do not help the data
+                    x = 10
+                    channel_signals.append(
+                        float(self.training_data['Signal'][epoch_index][x + (flash * 42) + signal][channel]))
+                one_flash.append(channel_signals)
+            epoch.append(one_flash)
+        np_one_character_signals = epoch
+        return np_one_character_signals
 
-    
+    def get_one_character_labels(self, index=cfg.EPOCHS):
+        one_character_labels = []
+        for epoch in range(index):
+            # print "label: ", epoch
+            for flash in range(self.flashes_per_character):
+                one_character_labels.append(self.training_data['StimulusType'][epoch][flash * self.points_btw_flashes])
+        return one_character_labels
 
-    # def get_all_character_signals(self):
-    #     all_character_signals = []
-    #     for character in range(self.epochs):
-    #         for i in range(len(self.channels)):
-    #             all_character_signals.append(self.get_epoch(character))
-    #     return all_character_signals
 
-    # def get_all_character_labels(self):
-    #     all_character_labels = []
-    #     for character in range(self.epochs):
-    #         all_character_labels.append(self.get_one_character_labels(character))
-    #     return all_character_labels
+    def get_all_character_signals(self):
+        all_character_signals = []
+        for character in range(self.epochs):
+            all_character_signals.append(self.get_epoch(character))
+        return all_character_signals
 
-    # def get_all_character_row_col(self):
-    #     all_character_row_col = []
-    #     for epoch in range(self.epochs):
-    #         one_character_row_col = []
-    #         for flash in range(180):
-    #             one_character_row_col.append(self.training_data['StimulusCode'][epoch][flash * 42])
-    #         all_character_row_col.append(one_character_row_col)
-    #     return all_character_row_col
+    def get_all_character_labels(self):
+        all_character_labels = []
+        for character in range(self.epochs):
+            all_character_labels.append(self.get_one_character_labels(character))
+        return all_character_labels
+
+    def get_all_character_row_col(self):
+        all_character_row_col = []
+        for epoch in range(self.epochs):
+            one_character_row_col = []
+            for flash in range(180):
+                one_character_row_col.append(self.training_data['StimulusCode'][epoch][flash * 42])
+            all_character_row_col.append(one_character_row_col)
+        return all_character_row_col
 
     # def filter_no(self, total):
     #     no_num = total - 30
