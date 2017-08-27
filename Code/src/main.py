@@ -143,7 +143,7 @@ def init_board(board):
         time.sleep(0.100)
 
 
-def execute_board(board, controller, biosignals):
+def execute_board(board, controller, biosignals, fun):
     print("Execute-board")
     lapse = -1
 
@@ -284,4 +284,4 @@ if __name__ == '__main__':
     process_thread.start()
 
     init_board(board)
-    execute_board(board, controller, [biosignal])
+    execute_board(board, controller, [biosignal], fun)
