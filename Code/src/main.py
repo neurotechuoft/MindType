@@ -143,7 +143,7 @@ def init_board(board):
         time.sleep(0.100)
 
 
-def execute_board(board, controller, biosignals, fun):
+def execute_board(board, controller, biosignals):
     print("Execute-board")
     lapse = -1
 
@@ -264,7 +264,6 @@ if __name__ == '__main__':
 
     add_plugin('pub_sub', [], board, plug_list, callback_list)
  
-    fun = []
     if len(plug_list) == 0:
         fun = None
     else:
