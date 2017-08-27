@@ -263,7 +263,8 @@ if __name__ == '__main__':
     # Fetch plugins, try to activate them, add to the list if OK
 
     add_plugin('pub_sub', [], board, plug_list, callback_list)
-
+ 
+    fun = []
     if len(plug_list) == 0:
         fun = None
     else:
