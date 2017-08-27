@@ -284,4 +284,4 @@ if __name__ == '__main__':
     process_thread.start()
 
     init_board(board)
-    execute_board(board, controller, [biosignal], fun)
+    execute_board(board, controller, [biosignal])
