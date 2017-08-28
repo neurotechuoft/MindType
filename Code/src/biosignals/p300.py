@@ -1,6 +1,6 @@
 import csv
 from biosppy.signals import tools as st
-from biosignals.BioSignal import BioSignal
+from biosignals.biosignal import BioSignal
 from scipy.signal import butter, lfilter
 import numpy as np
 #from scipy.fftpack import rfft, irfft

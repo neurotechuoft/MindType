@@ -3,13 +3,13 @@ import sys
 
 from PyQt4 import QtGui, QtCore
 
-from Code.src.Controller import Controller
-from Code.src.gui.DevTools import DevTools
-from Code.src.gui.keyboard.MindType import MindType
+from controller import Controller
+from gui.dev_tools import DevTools
+from gui.keyboard.mindtype import MindType
 
 
 class ChooseScreen(QtGui.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, controller, parent=None):
         super(ChooseScreen, self).__init__(parent)
 
         # Creating main panel which contains everything
@@ -44,8 +44,8 @@ class ChooseScreen(QtGui.QWidget):
         # setting layout to main_panel
         self.setLayout(self.main_panel)
 
-        self.keyboard_screen_gui = MindType(Controller())
-        self.dev_tools_gui = DevTools(self)
+        self.keyboard_screen_gui = MindType(controller)
+        self.dev_tools_gui = DevTools(controller)
 
     @QtCore.pyqtSlot()
     def start_dev_tools(self):
@@ -59,7 +59,7 @@ class ChooseScreen(QtGui.QWidget):
 if __name__ == '__main__':
     # Running gui
     app = QtGui.QApplication(sys.argv)
-    main_scr = ChooseScreen()
+    main_scr = ChooseScreen(Controller())
     main_scr.resize(500, 100)
     main_scr.show()
     sys.exit(app.exec_())

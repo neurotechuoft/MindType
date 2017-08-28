@@ -5,6 +5,7 @@ class Controller:
         self.paused = True
         self.exited = False
         self.instruction_request = False
+        self.tag = 0
 
     def __str__(self):
         return "Made: " + str(self.made) \
@@ -34,3 +35,9 @@ class Controller:
 
     def confirm_instruction_executed(self):
         self.instruction_request = False
+
+    def set_tag(self, tag):
+        self.tag = tag
+
+    def get_tag(self):
+        return self.tag

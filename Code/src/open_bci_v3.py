@@ -203,8 +203,8 @@ class OpenBCIBoard(object):
             elif controller.instruction_request:
                 self.stop()
                 controller.confirm_instruction_executed()
-            else:
-                print("Waiting...")
+            # else:
+                # print("Waiting...")
         # self.disconnect()
 
 

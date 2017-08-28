@@ -1,7 +1,7 @@
 import timeit
 
 import plugin_interface as plugintypes
-from biosignals.BioSignal import BioSignal
+from biosignals.biosignal import BioSignal
 
 
 class PluginPrint(plugintypes.IPluginExtended):
@@ -34,10 +34,12 @@ class PluginPrint(plugintypes.IPluginExtended):
         data = row.split(",")
 
         # print(data)
-        print("Received data")
 
         # UPDATE OBJECTS
         if objects_to_update is not None:
             for obj in objects_to_update:
                 if isinstance(obj, BioSignal):
+                    print("Received data")
                     obj.update(data)
+                else:
+                    print("Object isn't a biosignal!")

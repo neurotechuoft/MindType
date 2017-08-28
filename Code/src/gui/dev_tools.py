@@ -4,8 +4,10 @@ from PyQt4 import QtGui
 
 
 class DevTools(QtGui.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, controller, parent=None):
         super(DevTools, self).__init__(parent)
+
+        self.controller = controller
 
         # Creating main panel which contains everything
         self.main_panel = QtGui.QVBoxLayout()
@@ -41,6 +43,9 @@ class DevTools(QtGui.QDialog):
         self.main_panel.addLayout(self.grid)
 
         self.tag_buttons = []
+
+        self.curr_tag = 0
+
         # adding keyboard buttons to the grid)
         for row in range(2):
             for col in range(5):
@@ -58,9 +63,15 @@ class DevTools(QtGui.QDialog):
 
     def play_pause(self):
         print("play-pause")
+        if self.controller.paused:
+            self.controller.resume()
+        else: self.controller.pause()
+
 
     def stop(self):
         print("stop")
+        self.controller.quit()
+
 
     def load(self):
         print("load")
@@ -69,4 +80,8 @@ class DevTools(QtGui.QDialog):
         print("save")
 
     def tag(self, tag_number):
-        print str(tag_number)
+        self.curr_tag = tag_number
+        self.controller.set_tag(tag_number)
+
+    def get_current_tag(self):
+        return self.curr_tag

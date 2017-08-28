@@ -7,7 +7,7 @@ import sys
 import threading
 import time
 
-from biosignals.EOG import EOG
+from biosignals.eog import EOG
 
 logging.basicConfig(level=logging.ERROR)
 

@@ -8,9 +8,13 @@ import time
 
 from PyQt4 import QtGui
 
-from Code.src.gui.keyboard.MindType import MindType
-from Controller import Controller
-from biosignals.EOG import EOG
+from biosignals.tagger import Tagger
+from controller import Controller
+from biosignals.eog import EOG
+from gui.choose_screen import ChooseScreen
+from gui.dev_tools import DevTools
+from gui.keyboard.mindtype import MindType
+from datetime import datetime
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -98,12 +102,13 @@ def add_plugin(plugin_name, plugin_args, board, plug_list, callback_list):
 
 
 def process(biosignal, controller):
+    print("Starting processing thread")
     while not controller.exited:
-        if not biosignal.is_paused():
+        if not controller.paused:
             biosignal.process()
-            # TODO: why does biosignal control the controller .-.
-        if biosignal.is_exit():
-            controller.exited = True
+        else:
+            print("Processing is paused...")
+    biosignal.exit()
 
 
 def init_board(board):
@@ -181,9 +186,10 @@ def execute_board(board, controller, biosignals):
 
 def make_gui(controller):
     app = QtGui.QApplication(sys.argv)
-    mindType = MindType(controller)
-    mindType.resize(550, 550)
-    mindType.show()
+    # main_scr = MindType(controller)
+    main_scr = DevTools(controller)
+    main_scr.resize(500, 100)
+    main_scr.show()
     sys.exit(app.exec_())
 
 
@@ -212,7 +218,9 @@ if __name__ == '__main__':
     plugins_paths = ["plugins"]
     plug_list = []
     callback_list = []
-    eog = EOG(256, controller)
+    # biosignal = EOG(256, controller)
+    biosignal = Tagger(controller, "tagged_vals" + str(datetime.now()) +
+                       ".csv")
 
     gui_thread = threading.Thread(target=make_gui, args=[controller])
     gui_thread.daemon = True
@@ -255,7 +263,7 @@ if __name__ == '__main__':
     # Fetch plugins, try to activate them, add to the list if OK
 
     add_plugin('pub_sub', [], board, plug_list, callback_list)
-
+ 
     if len(plug_list) == 0:
         fun = None
     else:
@@ -272,8 +280,8 @@ if __name__ == '__main__':
 
     atexit.register(cleanUp)
 
-    process_thread = threading.Thread(target=process, args=[eog, controller])
+    process_thread = threading.Thread(target=process, args=[biosignal, controller])
     process_thread.start()
 
     init_board(board)
-    execute_board(board, controller, [eog])
+    execute_board(board, controller, [biosignal])
