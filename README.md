@@ -1,8 +1,33 @@
-# MindType
+# OPENBCI NODE SDK TO PYTHON
 EEG Speller
 
-## Setup
-1. Install Miniconda
-2. Create a Conda environment
-3. Install scipy, numpy using conda Install
-4. Install everything else using pip
+## Prerequisites
+
+* [Python 2.7](https://www.python.org/downloads/)
+* [ZeroMQ](http://zeromq.org/bindings:python)
+
+  ```py
+  pip install pyzmq
+  ```
+* [Node.js LTS](https://nodejs.org/en/)
+
+
+## Installation
+For Python 2.7 do:
+```bash
+python setup.py install
+```
+For Node:
+```bash
+npm install
+```
+
+## Running
+Running the python module:
+```
+python handoff.py
+```
+Running the Node module:
+```
+node index.js
+```
