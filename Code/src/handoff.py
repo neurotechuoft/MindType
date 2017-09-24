@@ -291,7 +291,7 @@ class Interface:
     def __init__(self, verbose=False):
         context = zmq.Context()
         self._socket = context.socket(zmq.PAIR)
-        self._socket.connect("tcp://localhost:3004")
+        self._socket.connect("tcp://127.0.0.1:3004")
 
         self.verbose = verbose
 
@@ -357,10 +357,6 @@ def main(argv):
     num = 0
 
     while True:
-        if start_process == True:
-            interface.send(json.dumps({'action': 'alive', 'command': 'start',
-            'message': time.time() * 1000.0}))
-            start_process = False
 
         msg = interface.recv()
 
@@ -368,11 +364,7 @@ def main(argv):
         action = dicty.get('action')
         command = dicty.get('command')
         message = dicty.get('message')
-        if pause_process == True:
-            interface.send(json.dumps({'action': 'alive', 'command': 'pause',
-            'message': time.time() * 1000.0}))
-            pause_process = False
-            start_process = True
+
         if command == 'sample':
             if action == 'process':
                 sample = message.get('channelData')
