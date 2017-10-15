@@ -1,6 +1,4 @@
 import numpy as np
-#from scipy.fftpack import fft
-#from scipy.fftpack import fftfreq
 import numpy.fft as fft
 import matplotlib.pyplot as plt
 import math
@@ -24,11 +22,11 @@ right_hand_data = [[], []]
 left_hand_data = [[], []]
 both_hand_data = [[], []]
 
-'''
-    Parse labelled data from channels 3 & 4 and add it to the global
-    arrays specifid above to prepare for training
-'''
 def parse_dataset(data_set):
+    '''
+        Parse labelled data from channels 3 & 4 and add it to the global
+        arrays specifid above to prepare for training
+    '''
     for i in range(len(data_set[0])):
     #parsing the data set based on the tag for each data sample
         if data_set[TAG_INDEX][i] == REST:
@@ -49,8 +47,9 @@ def parse_dataset(data_set):
 
     return 0
 
+
 def find_mean_of_rest_data(data):
-    """Find the mean of the rest data set"""
+    ''' Find the mean of the rest data set '''
     #create array for the average sample in rest state
     mean_rest_data = [[0 for x in range(NO_FREQUENCY_BINS)] for y in range(2)]
     no_samples = int(math.ceil(len(data[0])/NO_FREQUENCY_BINS))
@@ -76,37 +75,17 @@ def find_mean_of_rest_data(data):
 
     return mean_rest_data
 
-"""
-    @brief Compares the values of the two arrays element wise and
+
+def find_most_frequent_highest_diff(mean_rest_data_freq, other_data_freq):
+    ''' Compares the values of the two arrays element wise and
     returns the index (i.e. frequency bin) of the values (amplitudes)
     with highest absolute difference |x2 - x1| in the two data sets
-    provided
-
-    @param mean_rest_data_freq array of the mean amplitudes among
-            rest data samples
-    @param other_data_freq array of the amplitudes of the other sample
-
-    @return the index of highest differential
-"""
-def find_highest_differential(mean_rest_data_freq, other_data_freq):
-
-    return 0
-
-
-"""
-    @brief Compares each sample with the mean_rest_data and returns
-            the most frequent index with the highest differential
-
-    @param mean_rest_data_freq array of mean amplitudes of rest data
-    @param other_data_freq 2 dimensional array, its elements are arrays
-            of same length as mean_rest_data_freq representing the data
-            samples.
-
-    @return the most frequent index with highest differential among
-            the samples
-"""
-def find_most_frequent_highest_diff(mean_rest_data_freq, other_data_freq):
-
+    provided.
+        Compares each sample with the mean_rest_data and returns
+    the most frequent index with the highest differential
+        Returns the most frequent index with highest differential among
+    the samples.
+    ''''
     max_diff_1, max_diff_2 = 0, 0
     max_index_1, max_index_2 = 0, 0
     highest_index1, highest_index2 = 0, 0
