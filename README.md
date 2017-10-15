@@ -7,6 +7,17 @@ EEG Speller
 3. Install scipy, numpy using conda Install
 4. Install everything else using pip
 
+## Usage:
+To use multithreaded framework:
+'''
+    sudo python main.py -p /dev/ttyUSB0 --add pub_sub
+'''
+
+To use multithreaded framework and save to CSV (temporary solution):
+'''
+    sudo python main.py -p /dev/ttyUSB0 --add pub_sub csv_collect
+'''
+
 ## Plan
 ![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan")
 
