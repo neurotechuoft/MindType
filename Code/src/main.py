@@ -18,10 +18,6 @@ logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
 
-# Load the plugins from the plugin directory.
-manager = PluginManager()
-
-
 def make_gui(controller):
     app = QtGui.QApplication(sys.argv)
     # main_scr = MindType(controller)
@@ -39,7 +35,21 @@ def safe_exit(board, biosignals=None):
         biosignal.exit()
 
 
-def board_action(board, controller, fun, s, biosignal=None):
+def board_action(board, controller, pub_sub_fct, biosignal=None):
+    """
+    Reads message from controller, and executes required action on the board.
+        Examples include starting, pausing, and exiting the board.
+
+    Args:
+        board:
+        controller:
+        pub_sub_fct:
+        biosignal:
+
+    Returns:
+
+    """
+
     message = controller.read()
     print("Incoming message: " + str(message))
 
@@ -50,10 +60,10 @@ def board_action(board, controller, fun, s, biosignal=None):
     if message is Message.START:
         board.setImpedance(False)
         # TODO: should we also add 'and not  baord.streaming'
-        if fun is not None:
+        if pub_sub_fct is not None:
             # start streaming in a separate thread so we could always send commands in here
             boardThread = threading.Thread(
-                target=board.start_streaming, args=(fun, lapse, [biosignal]))
+                target=board.start_streaming, args=(pub_sub_fct, lapse, [biosignal]))
             boardThread.daemon = True  # will stop on exit
             try:
                 boardThread.start()
@@ -119,7 +129,7 @@ $$$ signals end of message")
     # while (s != "/exit"):
 
     while controller.peek() is not Message.EXIT:
-        board_action(board, controller, fun, s, biosignal)
+        board_action(board, controller, fun, biosignal)
 
         s = get_user_input([controller, biosignal.controller, processor.controller])
 
@@ -169,15 +179,19 @@ def run_processor(processor):
 
 
 if __name__ == '__main__':
-
+    # VARIABLES-----------------------------------------------------------------
+    # Load the plugins from the plugin directory.
+    manager = PluginManager()
     main_controller = Controller()
     biosignal = PrintBiosignal()
     processor = Processor([biosignal])
 
+    # SET UP GUI----------------------------------------------------------------
     gui_thread = threading.Thread(target=make_gui, args=[main_controller])
     gui_thread.daemon = True
     gui_thread.start()
 
+    # SET UP BOARD--------------------------------------------------------------
     parser = setup_parser()
 
     args = parser.parse_args()
@@ -248,6 +262,7 @@ if __name__ == '__main__':
 
     atexit.register(cleanUp)
 
+    # EXECUTE APPLICATION-------------------------------------------------------
     process_thread = threading.Thread(target=run_processor, args=(processor,))
     process_thread.start()
 
