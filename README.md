@@ -1,4 +1,4 @@
-# OPENBCI NODE SDK TO PYTHON
+# OPENBCI NODE SDK TO PYTHON(NOT currently working, for future use)
 EEG Speller
 
 ## Prerequisites
