@@ -3,6 +3,16 @@ from MESSAGE import Message
 
 
 class Controllable(object):
+    """
+        Controllable objects contain a Controller through which they receive
+        Messages, and execute corresponding instructions.
+
+        Attributes:
+            controller (Controller): Receives messages
+            __paused__ (bool): Is controllable paused?
+            __exit__ (bool): Is controllable exited?
+
+    """
 
     def __init__(self):
         # Multithreading

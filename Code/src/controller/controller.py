@@ -5,24 +5,46 @@ from MESSAGE import Message
 
 
 class Controller:
+    """
+        Object that receives messages and stores them from oldest to newest.
+    """
 
     def __init__(self):
-        self.msg_queue = deque(maxlen=10)
+        self.__msg_queue__ = deque(maxlen=10)
         self.send(Message.PAUSE)
 
     def send(self, msg):
-        self.msg_queue.append(msg)
+        """
+        Send a message to the controller.
+
+        Args:
+            msg (Message): message
+
+        Returns:
+
+        """
+        self.__msg_queue__.append(msg)
 
     def read(self):
-        return self.msg_queue.popleft() if self.msg_queue else None
+        """
+        Return latest message, and remove from controller.
+        Returns: Message
+
+        """
+        return self.__msg_queue__.popleft() if self.__msg_queue__ else None
 
     def peek(self):
+        """
+        See latest message without removing from controller.
+        Returns: Message
+
+        """
         msg = None
 
-        if self.msg_queue:
+        if self.__msg_queue__:
             msg = self.read()
 
             if msg:
-                self.msg_queue.appendleft(msg)
+                self.__msg_queue__.appendleft(msg)
 
         return msg

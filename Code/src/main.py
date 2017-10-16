@@ -155,6 +155,7 @@ def get_user_input(controllers):
     elif "/exit" in s:
         send_msg_to_controllers(controllers, Message.EXIT)
         # controller.send(Message.EXIT)
+    # TODO: Finish for tagger
     else:
         try:
             code = int(s)

@@ -3,6 +3,9 @@ from controllable import Controllable
 
 
 class Processor(Controllable):
+    """
+        Processes biosignals if status is active.
+    """
 
     def __init__(self, biosignals):
         Controllable.__init__(self)

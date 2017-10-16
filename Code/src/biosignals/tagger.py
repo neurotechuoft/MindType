@@ -18,7 +18,8 @@ class Tagger(BioSignal):
         self.csv_writer = csv.writer(self.file_to_write)
 
     def exit(self):
-        BioSignal.exit(self)
+        super(BioSignal, self).exit()
+
         while len(self.samples) > 0:
             self.process()
         self.file_to_write.close()
@@ -41,27 +42,11 @@ class Tagger(BioSignal):
             Takes every sample in samples, store its values in data
             and tag it
         """
-        # pass
-        # print("Processing...")
         if len(self.samples) > 0:
             print("Sample written")
             sample = self.samples.pop()
             self.csv_writer.writerow(sample)
             print(sample)
-        # else:
-        #     print("No samples found :'(")
-
-    # def save_to_csv(self):
-    #     """
-    #         Save data values in 'data.csv' file in same folder.
-    #         Each nested list in data will be a row in data.csv
-    #     """
-    #
-    #     with open('data.csv', 'wb') as file_to_write:
-    #         writer = csv.writer(file_to_write)
-    #         writer.writerows(self.data)
-    #
-    #     file_to_write.close()
 
     def update_tag(self):
         try:
