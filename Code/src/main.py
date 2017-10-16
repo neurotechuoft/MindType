@@ -63,7 +63,8 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         if pub_sub_fct is not None:
             # start streaming in a separate thread so we could always send commands in here
             boardThread = threading.Thread(
-                target=board.start_streaming, args=(pub_sub_fct, lapse, [biosignal]))
+                target=board.start_streaming, args=(pub_sub_fct, lapse,
+                                                    [biosignal,]))
             boardThread.daemon = True  # will stop on exit
             try:
                 boardThread.start()
@@ -99,9 +100,6 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
 
     if not flush:
         print(line)
-
-    # controller.read()
-    # print("Message read")
 
 
 def execute_board(board, controller, fun, biosignal, processor):
