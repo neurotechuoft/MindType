@@ -151,7 +151,7 @@ class OpenBCIBoard(object):
     def getNbImpChannels(self):
         return self.imp_channels_per_sample
 
-    def start_streaming(self, callback, lapse=-1, biosignal=None):
+    def start_streaming(self, callback, lapse=-1, biosignals=None):
         """
         Start handling streaming data from the board. Call a provided callback
         for every single sample that is processed (every two samples with daisy module).
@@ -191,14 +191,14 @@ class OpenBCIBoard(object):
                                                  sample.channel_data + self.last_odd_sample.channel_data,
                                                  avg_aux_data)
                     for call in callback:
-                        if biosignal is not None:
-                            call(whole_sample, biosignal)
+                        if biosignals is not None:
+                            call(whole_sample, biosignals)
                         else:
                             call(whole_sample)
             else:
                 for call in callback:
-                    if biosignal is not None:
-                        call(sample, biosignal)
+                    if biosignals is not None:
+                        call(sample, biosignals)
                     else:
                         call(sample)
 

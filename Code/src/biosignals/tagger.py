@@ -4,7 +4,6 @@ from biosignals.biosignal import BioSignal
 
 
 class Tagger(BioSignal):
-    # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
 
     def __init__(self, file_path):
         # SUPERCLASS
