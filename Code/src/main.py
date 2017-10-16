@@ -114,54 +114,59 @@ Board outputs are automatically printed as: \n\
 %  <tab>  message\n\
 $$$ signals end of message")
     print("\n-------------BEGIN---------------")
-    # Init board state
-    # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
-    s = 'sv'
-    # Tell the board to enable or not daisy module
-    if board.daisy:
-        s = s + 'C'
-    else:
-        s = s + 'c'
-    # d: Channels settings back to default
-    s = s + 'd'
-    # while (s != "/exit"):
+    # # Init board state
+    # # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
+    # s = 'sv'
+    # # Tell the board to enable or not daisy module
+    # if board.daisy:
+    #     s = s + 'C'
+    # else:
+    #     s = s + 'c'
+    # # d: Channels settings back to default
+    # s = s + 'd'
 
     while controller.peek() is not Message.EXIT:
         board_action(board, controller, fun, biosignal)
 
-        s = get_user_input([controller, biosignal.controller, processor.controller])
+        user_control([controller, biosignal.controller, processor.controller])
 
     safe_exit(board, [biosignal,])
 
 
-def get_user_input(controllers):
+def user_control(controllers):
+    s = get_user_input()
+
+    message = parse_user_input(s)
+
+    if message is not None:
+        send_msg_to_controllers(controllers, message)
+
+
+def get_user_input():
     # Take user input
-    # s = input('--> ')
     if sys.hexversion > 0x03000000:
         s = input('--> ')
     else:
         s = raw_input('--> ')
-        # return s
+    return s
+
+
+def parse_user_input(s):
     if not s:
         pass
     elif "/start" in s:
-        # controller.send(Message.START)
-        send_msg_to_controllers(controllers, Message.START)
+        return Message.START
     elif "/stop" in s:
-        send_msg_to_controllers(controllers, Message.PAUSE)
-        # controller.send(Message.PAUSE)
+        return Message.PAUSE
     elif "/exit" in s:
-        send_msg_to_controllers(controllers, Message.EXIT)
-        # controller.send(Message.EXIT)
+        return Message.EXIT
     # TODO: Finish for tagger
     else:
         try:
             code = int(s)
-            send_msg_to_controllers(controllers, code)
+            return code
         except ValueError:
             pass
-
-    return s
 
 
 def send_msg_to_controllers(controllers, message):
