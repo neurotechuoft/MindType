@@ -2,6 +2,10 @@ from controller.controllable import Controllable
 
 
 class BioSignal(Controllable):
+    """
+        Biosignal is a Controllabe object that can update itself with incoming
+        signal samples, and process these signals.
+    """
     def __init__(self):
         super(Controllable, self).__init__()
 

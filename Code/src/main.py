@@ -184,8 +184,7 @@ def run_processor(processor):
 
 if __name__ == '__main__':
     # VARIABLES-----------------------------------------------------------------
-    # Load the plugins from the plugin directory.
-    manager = PluginManager()
+    manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
     biosignal = PrintBiosignal()
     processor = Processor([biosignal])
@@ -197,7 +196,6 @@ if __name__ == '__main__':
 
     # SET UP BOARD--------------------------------------------------------------
     parser = setup_parser()
-
     args = parser.parse_args()
 
     if not(args.add):
@@ -214,7 +212,8 @@ if __name__ == '__main__':
 
     # Check AUTO port selection, a "None" parameter for the board API
     check_auto_port_selection(args)
-    
+
+    # Collect plugins
     plugins_paths = ["plugins"]
     if args.plugins_path:
         plugins_paths += args.plugins_path
@@ -235,9 +234,7 @@ if __name__ == '__main__':
                              log=args.log,
                              aux=args.aux)
 
-    #  Info about effective number of channels and sampling rate
     print_board_setup(board)
-
     print_plugins_found(manager)
 
     # Fetch plugins, try to activate them, add to the list if OK

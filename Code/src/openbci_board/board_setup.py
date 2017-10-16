@@ -98,6 +98,14 @@ def print_plugins_found(manager):
 
 
 def print_board_setup(board):
+    """
+    Print info about effective number of channels and sampling rate
+    Args:
+        board:
+
+    Returns:
+
+    """
     if board.daisy:
         print ("Force daisy mode:")
     else:
