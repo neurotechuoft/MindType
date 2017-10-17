@@ -80,27 +80,34 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         board.stop()
         recognized = True
         flush = True
+
+        # We shouldn't be waiting to get messages every single time a message
+        #  is sent to controller, because messages can be sent while the board is
+        #  still running.
+        # TODO: Move this block of code under Message.PAUSE
+        line = ''
+        time.sleep(0.1)  # Wait to see if the board has anything to report
+        # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
+        if board.getBoardType() == "cyton":
+            while board.ser_inWaiting():
+                c = board.ser_read().decode('utf-8',
+                                            errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
+                line += c
+                time.sleep(0.001)
+                if (c == '\n') and not flush:
+                    print('%\t' + line[:-1])
+                    line = ''
+        elif board.getBoardType() == "ganglion":
+            while board.ser_inWaiting():
+                board.waitForNotifications(0.001)
+
+        if not flush:
+            print(line)
+
     if recognized == False:
         print("Command not recognized...")
 
-    line = ''
-    time.sleep(0.1)  # Wait to see if the board has anything to report
-    # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
-    if board.getBoardType() == "cyton":
-        while board.ser_inWaiting():
-            c = board.ser_read().decode('utf-8',
-                                        errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
-            line += c
-            time.sleep(0.001)
-            if (c == '\n') and not flush:
-                print('%\t' + line[:-1])
-                line = ''
-    elif board.getBoardType() == "ganglion":
-        while board.ser_inWaiting():
-            board.waitForNotifications(0.001)
 
-    if not flush:
-        print(line)
 
 
 def execute_board(board, controller, fun, biosignal, processor):
@@ -181,8 +188,8 @@ if __name__ == '__main__':
     # VARIABLES-----------------------------------------------------------------
     manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
-    biosignal = PrintBiosignal()
-    # biosignal = Tagger("./test_results/data.csv")
+    # biosignal = PrintBiosignal()
+    biosignal = Tagger("./test_results/data.csv")
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
