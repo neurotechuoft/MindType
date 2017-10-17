@@ -7,7 +7,7 @@ class Tagger(BioSignal):
 
     def __init__(self, file_path):
         # SUPERCLASS
-        super(BioSignal, self).__init__()
+        super(Tagger, self).__init__()
         self.samples = []
         self.current_tag = 0
         # self.data = [[]]  # Array of 9 arrays, each of which represents a
@@ -17,7 +17,7 @@ class Tagger(BioSignal):
         self.csv_writer = csv.writer(self.file_to_write)
 
     def exit(self):
-        super(BioSignal, self).exit()
+        super(Tagger, self).exit()
 
         while len(self.samples) > 0:
             self.process()
