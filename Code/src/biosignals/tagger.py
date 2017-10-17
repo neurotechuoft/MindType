@@ -29,6 +29,7 @@ class Tagger(BioSignal):
             Sample: EEG data sample, array of 9 values
             Store this sample in samples
         """
+        super(Tagger, self).update(sample)
         self.update_tag()
         tagged_sample = sample
         tagged_sample.append(self.current_tag)
