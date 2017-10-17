@@ -17,7 +17,7 @@ class BioSignal(Controllable):
 
     # METHODS-------------------------------------------------------------------
     def update(self, sample):
-        self.control()
+        return self.control()
 
     def process(self):
         raise NotImplementedError("Subclass must implement abstract method")
