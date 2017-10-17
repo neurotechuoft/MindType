@@ -7,6 +7,7 @@ import time
 from PyQt4 import QtGui
 
 from biosignals.print_biosignal import PrintBiosignal
+from biosignals.tagger import Tagger
 from controller.MESSAGE import Message
 from controller.controller import Controller
 from controller.processor import Processor
@@ -152,8 +153,8 @@ def get_user_input():
 
 
 def parse_user_input(s):
-    if not s:
-        pass
+    if s is None:
+        return None
     elif "/start" in s:
         return Message.START
     elif "/stop" in s:
@@ -181,6 +182,7 @@ if __name__ == '__main__':
     manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
     biosignal = PrintBiosignal()
+    # biosignal = Tagger("./test_results/data.csv")
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------

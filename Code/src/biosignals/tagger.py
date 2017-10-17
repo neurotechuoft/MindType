@@ -29,8 +29,9 @@ class Tagger(BioSignal):
             Sample: EEG data sample, array of 9 values
             Store this sample in samples
         """
-        super(Tagger, self).update(sample)
-        self.update_tag()
+        message = super(Tagger, self).update(sample)
+        self.update_tag(message)
+
         tagged_sample = sample
         tagged_sample.append(self.current_tag)
         # print("Updating with sample..." + str(tagged_sample))
@@ -48,9 +49,9 @@ class Tagger(BioSignal):
             self.csv_writer.writerow(sample)
             print(sample)
 
-    def update_tag(self):
+    def update_tag(self, message):
         try:
-            self.current_tag = int(self.controller.peek())
+            self.current_tag = int(message)
             self.controller.read()
             print("Tag changed to " + str(self.current_tag))
         except ValueError:
