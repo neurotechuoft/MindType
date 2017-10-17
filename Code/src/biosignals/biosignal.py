@@ -7,7 +7,7 @@ class BioSignal(Controllable):
         signal samples, and process these signals.
     """
     def __init__(self):
-        super(Controllable, self).__init__()
+        super(BioSignal, self).__init__()
 
         # CONSTANTS-------------------------------------------------------------
         # CSV
