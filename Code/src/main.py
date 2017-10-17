@@ -160,13 +160,7 @@ def parse_user_input(s):
         return Message.PAUSE
     elif "/exit" in s:
         return Message.EXIT
-    # TODO: Finish for tagger
-    else:
-        try:
-            code = int(s)
-            return code
-        except ValueError:
-            pass
+    else: return s
 
 
 def send_msg_to_controllers(controllers, message):
