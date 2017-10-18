@@ -7,6 +7,7 @@ import time
 from PyQt4 import QtGui
 
 from biosignals.print_biosignal import PrintBiosignal
+from biosignals.tagger import Tagger
 from controller.MESSAGE import Message
 from controller.controller import Controller
 from controller.processor import Processor
@@ -79,9 +80,18 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         board.stop()
         recognized = True
         flush = True
+
+        # We shouldn't be waiting to get messages every single time a message
+        #  is sent to controller, because messages can be sent while the board is
+        #  still running.
+        # TODO: Move this block of code under Message.PAUSE
+        poll_board_for_messages(board, flush)
+
     if recognized == False:
         print("Command not recognized...")
 
+
+def poll_board_for_messages(board, flush):
     line = ''
     time.sleep(0.1)  # Wait to see if the board has anything to report
     # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
@@ -97,7 +107,6 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
     elif board.getBoardType() == "ganglion":
         while board.ser_inWaiting():
             board.waitForNotifications(0.001)
-
     if not flush:
         print(line)
 
@@ -152,21 +161,15 @@ def get_user_input():
 
 
 def parse_user_input(s):
-    if not s:
-        pass
+    if s is None:
+        return None
     elif "/start" in s:
         return Message.START
     elif "/stop" in s:
         return Message.PAUSE
     elif "/exit" in s:
         return Message.EXIT
-    # TODO: Finish for tagger
-    else:
-        try:
-            code = int(s)
-            return code
-        except ValueError:
-            pass
+    else: return s
 
 
 def send_msg_to_controllers(controllers, message):
@@ -186,7 +189,8 @@ if __name__ == '__main__':
     # VARIABLES-----------------------------------------------------------------
     manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
-    biosignal = PrintBiosignal()
+    # biosignal = PrintBiosignal()
+    biosignal = Tagger("./test_results/data.csv")
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------

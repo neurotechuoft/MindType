@@ -23,6 +23,7 @@ class Controllable(object):
     def control(self):
         message = self.controller.read()
         self.execute_message_instruction(message)
+        return message
 
     def execute_message_instruction(self, message):
         if message is Message.PAUSE:
