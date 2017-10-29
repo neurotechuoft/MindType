@@ -19,7 +19,6 @@ class PluginPrint(plugintypes.IPluginExtended):
         # print timeSinceStart|Sample Id
         # if self.verbose:
         # 	print("CSV: %f | %d" % (t, sample.id))
-        data = []
         row = ''
         row += str(t)
         row += self.delim
@@ -32,15 +31,11 @@ class PluginPrint(plugintypes.IPluginExtended):
             row += self.delim
 
         data = row.split(",")
-        # print("Pub-sub")
-        # print(sample)
-        # print(data)
 
         # UPDATE OBJECTS
         if objects_to_update is not None:
             for obj in objects_to_update:
                 if isinstance(obj, BioSignal):
-                    # print("Pub-sub: received data")
                     obj.update(data)
                 else:
                     print("Object isn't a biosignal!")

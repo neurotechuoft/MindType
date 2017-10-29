@@ -3,8 +3,7 @@ from biosignals.biosignal import BioSignal
 
 class PrintBiosignal(BioSignal):
     def __init__(self):
-        super(BioSignal, self).__init__()
-        # BioSignal.__init__(self)
+        super(PrintBiosignal, self).__init__()
 
         # CONSTANTS-------------------------------------------------------------
         # CSV

@@ -7,6 +7,17 @@ EEG Speller
 3. Install scipy, numpy using conda Install
 4. Install everything else using pip
 
+## Usage:
+To use multithreaded framework:
+```
+    sudo python main.py -p /dev/ttyUSB0 --add pub_sub
+```
+
+To use multithreaded framework and save to CSV (temporary solution):
+```
+    sudo python main.py -p /dev/ttyUSB0 --add pub_sub csv_collect
+```
+
 ## Plan
 ![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan")
 
@@ -20,5 +31,9 @@ EEG Speller
 ### Phase 3 (Multiclass motor classification)
 - http://ieeexplore.ieee.org/document/6943840/?reload=true
     - **"Discriminating hand gesture motor imagery tasks using cortical current density estimation"**
-- http://www.sciencedirect.com/science/article/pii/S0167876015001749#fn0010
-    - Explanation of surface laplacian and applications to EEG
+        - Method 1 of doing MMC
+        - http://www.sciencedirect.com/science/article/pii/S0167876015001749#fn0010
+            - Explanation of surface laplacian and applications to EEG
+- http://www.tandfonline.com/doi/abs/10.1080/10790268.2017.1369215
+    - **"Prediction of specific hand movements using EEG signals"**
+        - Method 2 of doing MMC

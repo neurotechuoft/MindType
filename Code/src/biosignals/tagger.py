@@ -4,11 +4,10 @@ from biosignals.biosignal import BioSignal
 
 
 class Tagger(BioSignal):
-    # Have access to Controller.tag: 0 REST /1 LEFT /2 RIGHT /3 BOTH
 
     def __init__(self, file_path):
         # SUPERCLASS
-        super(BioSignal, self).__init__()
+        super(Tagger, self).__init__()
         self.samples = []
         self.current_tag = 0
         # self.data = [[]]  # Array of 9 arrays, each of which represents a
@@ -18,7 +17,8 @@ class Tagger(BioSignal):
         self.csv_writer = csv.writer(self.file_to_write)
 
     def exit(self):
-        BioSignal.exit(self)
+        super(Tagger, self).exit()
+
         while len(self.samples) > 0:
             self.process()
         self.file_to_write.close()
@@ -29,7 +29,9 @@ class Tagger(BioSignal):
             Sample: EEG data sample, array of 9 values
             Store this sample in samples
         """
-        self.update_tag()
+        message = super(Tagger, self).update(sample)
+        self.update_tag(message)
+
         tagged_sample = sample
         tagged_sample.append(self.current_tag)
         # print("Updating with sample..." + str(tagged_sample))
@@ -41,31 +43,15 @@ class Tagger(BioSignal):
             Takes every sample in samples, store its values in data
             and tag it
         """
-        # pass
-        # print("Processing...")
         if len(self.samples) > 0:
             print("Sample written")
             sample = self.samples.pop()
             self.csv_writer.writerow(sample)
             print(sample)
-        # else:
-        #     print("No samples found :'(")
 
-    # def save_to_csv(self):
-    #     """
-    #         Save data values in 'data.csv' file in same folder.
-    #         Each nested list in data will be a row in data.csv
-    #     """
-    #
-    #     with open('data.csv', 'wb') as file_to_write:
-    #         writer = csv.writer(file_to_write)
-    #         writer.writerows(self.data)
-    #
-    #     file_to_write.close()
-
-    def update_tag(self):
+    def update_tag(self, message):
         try:
-            self.current_tag = int(self.controller.peek())
+            self.current_tag = int(message)
             self.controller.read()
             print("Tag changed to " + str(self.current_tag))
         except ValueError:

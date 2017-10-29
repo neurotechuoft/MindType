@@ -7,6 +7,7 @@ import time
 from PyQt4 import QtGui
 
 from biosignals.print_biosignal import PrintBiosignal
+from biosignals.tagger import Tagger
 from controller.MESSAGE import Message
 from controller.controller import Controller
 from controller.processor import Processor
@@ -17,10 +18,6 @@ from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
 logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
-
-# Load the plugins from the plugin directory.
-manager = PluginManager()
-
 
 def make_gui(controller):
     app = QtGui.QApplication(sys.argv)
@@ -39,7 +36,21 @@ def safe_exit(board, biosignals=None):
         biosignal.exit()
 
 
-def board_action(board, controller, fun, s, biosignal=None):
+def board_action(board, controller, pub_sub_fct, biosignal=None):
+    """
+    Reads message from controller, and executes required action on the board.
+        Examples include starting, pausing, and exiting the board.
+
+    Args:
+        board:
+        controller:
+        pub_sub_fct:
+        biosignal:
+
+    Returns:
+
+    """
+
     message = controller.read()
     print("Incoming message: " + str(message))
 
@@ -50,10 +61,11 @@ def board_action(board, controller, fun, s, biosignal=None):
     if message is Message.START:
         board.setImpedance(False)
         # TODO: should we also add 'and not  baord.streaming'
-        if fun is not None:
+        if pub_sub_fct is not None:
             # start streaming in a separate thread so we could always send commands in here
             boardThread = threading.Thread(
-                target=board.start_streaming, args=(fun, lapse, [biosignal]))
+                target=board.start_streaming, args=(pub_sub_fct, lapse,
+                                                    [biosignal,]))
             boardThread.daemon = True  # will stop on exit
             try:
                 boardThread.start()
@@ -68,9 +80,18 @@ def board_action(board, controller, fun, s, biosignal=None):
         board.stop()
         recognized = True
         flush = True
+
+        # We shouldn't be waiting to get messages every single time a message
+        #  is sent to controller, because messages can be sent while the board is
+        #  still running.
+        # TODO: Move this block of code under Message.PAUSE
+        poll_board_for_messages(board, flush)
+
     if recognized == False:
         print("Command not recognized...")
 
+
+def poll_board_for_messages(board, flush):
     line = ''
     time.sleep(0.1)  # Wait to see if the board has anything to report
     # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
@@ -86,12 +107,8 @@ def board_action(board, controller, fun, s, biosignal=None):
     elif board.getBoardType() == "ganglion":
         while board.ser_inWaiting():
             board.waitForNotifications(0.001)
-
     if not flush:
         print(line)
-
-    # controller.read()
-    # print("Message read")
 
 
 def execute_board(board, controller, fun, biosignal, processor):
@@ -106,53 +123,53 @@ Board outputs are automatically printed as: \n\
 %  <tab>  message\n\
 $$$ signals end of message")
     print("\n-------------BEGIN---------------")
-    # Init board state
-    # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
-    s = 'sv'
-    # Tell the board to enable or not daisy module
-    if board.daisy:
-        s = s + 'C'
-    else:
-        s = s + 'c'
-    # d: Channels settings back to default
-    s = s + 'd'
-    # while (s != "/exit"):
+    # # Init board state
+    # # s: stop board streaming; v: soft reset of the 32-bit board (no effect with 8bit board)
+    # s = 'sv'
+    # # Tell the board to enable or not daisy module
+    # if board.daisy:
+    #     s = s + 'C'
+    # else:
+    #     s = s + 'c'
+    # # d: Channels settings back to default
+    # s = s + 'd'
 
     while controller.peek() is not Message.EXIT:
-        board_action(board, controller, fun, s, biosignal)
+        board_action(board, controller, fun, biosignal)
 
-        s = get_user_input([controller, biosignal.controller, processor.controller])
+        user_control([controller, biosignal.controller, processor.controller])
 
     safe_exit(board, [biosignal,])
 
 
-def get_user_input(controllers):
+def user_control(controllers):
+    s = get_user_input()
+
+    message = parse_user_input(s)
+
+    if message is not None:
+        send_msg_to_controllers(controllers, message)
+
+
+def get_user_input():
     # Take user input
-    # s = input('--> ')
     if sys.hexversion > 0x03000000:
         s = input('--> ')
     else:
         s = raw_input('--> ')
-        # return s
-    if not s:
-        pass
-    elif "/start" in s:
-        # controller.send(Message.START)
-        send_msg_to_controllers(controllers, Message.START)
-    elif "/stop" in s:
-        send_msg_to_controllers(controllers, Message.PAUSE)
-        # controller.send(Message.PAUSE)
-    elif "/exit" in s:
-        send_msg_to_controllers(controllers, Message.EXIT)
-        # controller.send(Message.EXIT)
-    else:
-        try:
-            code = int(s)
-            send_msg_to_controllers(controllers, code)
-        except ValueError:
-            pass
-
     return s
+
+
+def parse_user_input(s):
+    if s is None:
+        return None
+    elif "/start" in s:
+        return Message.START
+    elif "/stop" in s:
+        return Message.PAUSE
+    elif "/exit" in s:
+        return Message.EXIT
+    else: return s
 
 
 def send_msg_to_controllers(controllers, message):
@@ -169,17 +186,20 @@ def run_processor(processor):
 
 
 if __name__ == '__main__':
-
+    # VARIABLES-----------------------------------------------------------------
+    manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
-    biosignal = PrintBiosignal()
+    # biosignal = PrintBiosignal()
+    biosignal = Tagger("./test_results/data.csv")
     processor = Processor([biosignal])
 
+    # SET UP GUI----------------------------------------------------------------
     gui_thread = threading.Thread(target=make_gui, args=[main_controller])
     gui_thread.daemon = True
     gui_thread.start()
 
+    # SET UP BOARD--------------------------------------------------------------
     parser = setup_parser()
-
     args = parser.parse_args()
 
     if not(args.add):
@@ -196,7 +216,8 @@ if __name__ == '__main__':
 
     # Check AUTO port selection, a "None" parameter for the board API
     check_auto_port_selection(args)
-    
+
+    # Collect plugins
     plugins_paths = ["plugins"]
     if args.plugins_path:
         plugins_paths += args.plugins_path
@@ -217,9 +238,7 @@ if __name__ == '__main__':
                              log=args.log,
                              aux=args.aux)
 
-    #  Info about effective number of channels and sampling rate
     print_board_setup(board)
-
     print_plugins_found(manager)
 
     # Fetch plugins, try to activate them, add to the list if OK
@@ -248,6 +267,7 @@ if __name__ == '__main__':
 
     atexit.register(cleanUp)
 
+    # EXECUTE APPLICATION-------------------------------------------------------
     process_thread = threading.Thread(target=run_processor, args=(processor,))
     process_thread.start()
 
