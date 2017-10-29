@@ -6,11 +6,12 @@ Communication, especially via keyboard, is very difficult if not impossible for 
 MindType seeks to improve the bit rate of mind-controlled keyboards. It also uses a grid system, like traditional P300 spellers. However, each row and column would have a numerical id (1-6), which is mapped to a hand gesture. A letter is selected by imagining the appropriate gesture for each hand (left controls rows, right controls columns). This ensures that it takes 1 operation to choose each letter (current systems take at least 3 operations per gesture from our initial research). NLP would allow many cases where the user wouldn't have to type the full word, boosting the bit rate as well.
 
 [1] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3679217/
+
 [2] https://www.ncbi.nlm.nih.gov/pubmed/12853169
 
 
 ## Setup
-* deprecated :'( *
+**deprecated :'(**
 1. Install Miniconda
 2. Create a Conda environment
 3. Install scipy, numpy using conda Install
@@ -48,12 +49,10 @@ To use multithreaded framework, tag data, and save to CSV (temporary solution):
         - Method 2 of doing MMC
         
 ## Multithreaded architecture (MTA)
-(insert diagram here)
-
 The whole program has two basic functions: collect data from the board, and process it somehow. If this were to be done in a single-threaded application, if one iteration of processing were to take too long, it would block the program from receiving data from the board. Due to this, the program uses a multithreaded architecture, with one thread responsible for collecting data and one thread responsible for processing it.
 
-The MTA uses a variant of the publish-subscribe design pattern. A messaging queue is implemented in the Controller class. Controllable classes *can be controlled* by receiving messages in their Controller, and handing the message however appropriate. A master Controller is responsible for receiving instructions from the user and passing them along to each Controllable.
+The MTA uses a variant of the publish-subscribe design pattern. A messaging queue is implemented in the Controller class. Controllable classes **can be controlled** by receiving messages in their Controller, and handing the message however appropriate. A master Controller is responsible for receiving instructions from the user and passing them along to each Controllable.
 
-A BioSignal is a Controllable that can also *update* itself with the latest data sample from the board, and *process* data somehow. During each update cycle, it also calls its *control()* method. The updating and processing will occur on separate threads instantiated in the *main()* function. (Look at the Tagger class for an example of a BioSignal).
+A BioSignal is a Controllable that can also **update** itself with the latest data sample from the board, and **process** data somehow. During each update cycle, it also calls its **control()** method. The updating and processing will occur on separate threads instantiated in the **main()** function. (Look at the Tagger class for an example of a BioSignal).
 
-*main.py* executes the entire program. It first sets up the OpenBCI board, and then sets up a thread for processing. The main function then handles parsing commands from the user in the *execute_board()* function (which instantiates a thread for calling each BioSignals's *update()* function), and handles processing of the BioSignals in *process_thread* which runs *run_processor()*. The *execute_board()* function calls *start_streaming()* from openbci_v3, which obtains a sample and calls whatever callback function provided when instantiating the program from command line (in this case, pubsub.py). 
+**main.py** executes the entire program. It first sets up the OpenBCI board, and then sets up a thread for processing. The main function then handles parsing commands from the user in the **execute_board()** function (which instantiates a thread for calling each BioSignals's **update()** function), and handles processing of the BioSignals in **process_thread** which runs **run_processor()**. The **execute_board()** function calls **start_streaming()** from openbci_v3, which obtains a sample and calls whatever callback function provided when instantiating the program from command line (in this case, *pubsub.py*). *pub_sub.py* is responsible for providing all the BioSignals with samples that are coming in.
