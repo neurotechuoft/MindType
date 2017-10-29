@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import math
 import GenerateToyData as td
 import math
+import csv
 
 # Macros for tags' positions of data points corresponding to:
 REST = 0
@@ -13,7 +14,7 @@ BOTH = 3
 # Macors for index of desired channel in data_set:
 CHANNEL_3 = 2
 CHANNEL_4 = 3
-TAG_INDEX = 8
+TAG_INDEX = 10
 NO_FREQUENCY_BINS = 2
 
 # Arrays to extract labelled data from data_set
@@ -27,23 +28,23 @@ def parse_dataset(data_set):
         Parse labelled data from channels 3 & 4 and add it to the global
         arrays specifid above to prepare for training
     '''
-    for i in range(len(data_set[0])):
+    for i in range(len(data_set)):
     #parsing the data set based on the tag for each data sample
-        if data_set[TAG_INDEX][i] == REST:
-            rest_data[0].append(data_set[CHANNEL_3][i])
-            rest_data[1].append(data_set[CHANNEL_4][i])
+        if data_set[i][TAG_INDEX] == REST:
+            rest_data[0].append(data_set[i][CHANNEL_3])
+            rest_data[1].append(data_set[i][CHANNEL_4])
 
-        elif data_set[TAG_INDEX][i] == LEFT_HAND:
-            left_hand_data[0].append(data_set[CHANNEL_3][i])
-            left_hand_data[1].append(data_set[CHANNEL_4][i])
+        elif data_set[i][TAG_INDEX] == LEFT_HAND:
+            left_hand_data[0].append(data_set[i][CHANNEL_3])
+            left_hand_data[1].append(data_set[i][CHANNEL_4])
 
-        elif data_set[TAG_INDEX][i] == RIGHT_HAND:
-            right_hand_data[0].append(data_set[CHANNEL_3][i])
-            right_hand_data[1].append(data_set[CHANNEL_4][i])
+        elif data_set[i][TAG_INDEX] == RIGHT_HAND:
+            right_hand_data[0].append(data_set[i][CHANNEL_3])
+            right_hand_data[1].append(data_set[i][CHANNEL_4])
 
-        elif data_set[TAG_INDEX][i] == BOTH:
-            both_hand_data[0].append(data_set[CHANNEL_3][i])
-            both_hand_data[1].append(data_set[CHANNEL_4][i])
+        elif data_set[i][TAG_INDEX] == BOTH:
+            both_hand_data[0].append(data_set[i][CHANNEL_3])
+            both_hand_data[1].append(data_set[i][CHANNEL_4])
 
     return 0
 
@@ -85,7 +86,7 @@ def find_most_frequent_highest_diff(mean_rest_data_freq, other_data_freq):
     the most frequent index with the highest differential
         Returns the most frequent index with highest differential among
     the samples.
-    ''''
+    '''
     max_diff_1, max_diff_2 = 0, 0
     max_index_1, max_index_2 = 0, 0
     highest_index1, highest_index2 = 0, 0
@@ -168,7 +169,25 @@ def time_to_frequency(data):
    # fig.savefig("graph.png")
    #return np.fft.fft(data)
 
+def str_to_float(number):
+    try:
+        return int(number)
+    except ValueError:
+        return float(number)
+
 def main():
+    '''with open('../test_results/test_data.csv', 'r') as data_file:
+        data = [[]]
+        data_reader = csv.reader(data_file, delimiter=',')
+        for row in data_reader:
+            row.pop(10)
+            data.append(map(str_to_float, row))
+        data.pop(0)
+        parse_dataset(data)
+        print(rest_data[0])
+        print(left_hand_data[0])
+        #time_to_frequency(data)
+        '''
     # data = td.getHarmonicData(8, 1024)
     # print(data[:][:10])
     # parse_dataset(data)
