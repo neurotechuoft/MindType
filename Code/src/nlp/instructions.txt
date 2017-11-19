@@ -1,0 +1,10 @@
+The autocomplete works fine. The only thing you need to do is to get 2n-grams file from http://ngrams.info, and put it in the folder with the setup.py.
+Also, since we are using Cython, you have to execute "python setup.py build_ext --inplace".
+The usage of the script itself is "python trie_run.py (part of)word".
+
+So far, the runtime is below 2ms.
+
+TODO: 
+Add other n-grams, and check if the performance improves.
+
+
