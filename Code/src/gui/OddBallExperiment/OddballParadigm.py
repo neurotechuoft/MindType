@@ -5,9 +5,9 @@ Pratham Desai
 """
 import pygame
 from random import randint
+import sys
 
-
-def binary_experiment(delay_time=200):
+def binary_experiment(delay_time=100):
 
     RED = (255, 0, 0)
     WHITE = (255, 255, 255)
@@ -24,12 +24,14 @@ def binary_experiment(delay_time=200):
 
     # binary grid set to white
     grid = [[0 for _ in range(num_rows)] for _ in range(num_cols)]
-
+    times = [0.0]
     pygame.init()
-
+    clock = pygame.time.Clock()
     surface = pygame.display.set_mode((surface_width, surface_height))
 
     while True:
+
+        pygame.time.delay(60)
 
         random_row = randint(0, 4)
         random_col = randint(0, 4)
@@ -38,6 +40,10 @@ def binary_experiment(delay_time=200):
 
             # blue square
             grid[random_row][random_col] = 2
+            times.append(clock.tick() + times[-1])
+            sys.stdout("enter_file_name_here.txt", "w")
+            print(times)
+
 
         else:
 
