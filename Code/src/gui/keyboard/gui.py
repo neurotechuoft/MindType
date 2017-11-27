@@ -6,9 +6,9 @@ from Keyboard import Keyboard
 from controller.MESSAGE import Message
 
 
-class MindType(QtGui.QDialog):
+class GUI(QtGui.QDialog):
     def __init__(self, controllers, parent=None):
-        super(MindType, self).__init__(parent)
+        super(GUI, self).__init__(parent)
 
         # variables used for pausing
         self.controllers = controllers

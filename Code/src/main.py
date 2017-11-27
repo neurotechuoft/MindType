@@ -11,8 +11,9 @@ from biosignals.tagger import Tagger
 from controller.MESSAGE import Message
 from controller.controller import Controller
 from controller.processor import Processor
+from feature_flags.feature_flags import FeatureFlags
 from gui.dev_tools import DevTools
-from gui.keyboard.mindtype import MindType
+from gui.keyboard.gui import GUI
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
     add_plugin, print_logging_info, print_plugins_found, print_board_setup
 
@@ -22,10 +23,14 @@ from yapsy.PluginManager import PluginManager
 
 def make_gui(controllers):
     app = QtGui.QApplication(sys.argv)
-    # main_scr = MindType(controllers)
-    main_scr = DevTools(controllers)
-    main_scr.resize(500, 100)
-    main_scr.show()
+    main_scr = None
+    if FeatureFlags.GUI:
+        main_scr = GUI(controllers)
+    if FeatureFlags.DEV_TOOLS:
+        main_scr = DevTools(controllers)
+    if main_scr is not None:
+        main_scr.resize(500, 100)
+        main_scr.show()
     sys.exit(app.exec_())
 
 
@@ -144,7 +149,10 @@ $$$ signals end of message")
 
         if controller.peek() is not None:
             board_action(board, controller, fun, biosignal)
-            user_control([controller, biosignal.controller, processor.controller])
+            if FeatureFlags.COMMAND_LINE:
+                user_control([controller,
+                              biosignal.controller,
+                              processor.controller]) # don't need this
 
 
 def user_control(controllers):
@@ -199,11 +207,12 @@ if __name__ == '__main__':
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
-    # gui_thread = threading.Thread(target=make_gui, args=[[main_controller,
-    #                                                       biosignal.controller,
-    #                                                       processor.controller]])
-    # gui_thread.daemon = True
-    # gui_thread.start()
+    if not FeatureFlags.COMMAND_LINE:
+        gui_thread = threading.Thread(target=make_gui, args=[[main_controller,
+                                                              biosignal.controller,
+                                                              processor.controller]])
+        gui_thread.daemon = True
+        gui_thread.start()
 
     # SET UP BOARD--------------------------------------------------------------
     parser = setup_parser()
