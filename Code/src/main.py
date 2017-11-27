@@ -22,8 +22,8 @@ from yapsy.PluginManager import PluginManager
 
 def make_gui(controllers):
     app = QtGui.QApplication(sys.argv)
-    main_scr = MindType(controllers)
-    # main_scr = DevTools(controller)
+    # main_scr = MindType(controllers)
+    main_scr = DevTools(controllers)
     main_scr.resize(500, 100)
     main_scr.show()
     sys.exit(app.exec_())
@@ -144,7 +144,7 @@ $$$ signals end of message")
 
         if controller.peek() is not None:
             board_action(board, controller, fun, biosignal)
-            # user_control([controller, biosignal.controller, processor.controller])
+            user_control([controller, biosignal.controller, processor.controller])
 
 
 def user_control(controllers):
@@ -199,11 +199,11 @@ if __name__ == '__main__':
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
-    gui_thread = threading.Thread(target=make_gui, args=[[main_controller,
-                                                          biosignal.controller,
-                                                          processor.controller]])
-    gui_thread.daemon = True
-    gui_thread.start()
+    # gui_thread = threading.Thread(target=make_gui, args=[[main_controller,
+    #                                                       biosignal.controller,
+    #                                                       processor.controller]])
+    # gui_thread.daemon = True
+    # gui_thread.start()
 
     # SET UP BOARD--------------------------------------------------------------
     parser = setup_parser()
