@@ -87,6 +87,8 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         #  still running.
         # TODO: Move this block of code under Message.PAUSE
         poll_board_for_messages(board, flush)
+    elif message is Message.EXIT:
+        return
 
     if recognized == False:
         print("Command not recognized...")
@@ -142,7 +144,7 @@ $$$ signals end of message")
 
         if controller.peek() is not None:
             board_action(board, controller, fun, biosignal)
-            user_control([controller, biosignal.controller, processor.controller])
+            # user_control([controller, biosignal.controller, processor.controller])
 
 
 def user_control(controllers):
