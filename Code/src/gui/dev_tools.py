@@ -71,6 +71,8 @@ class DevTools(QtGui.QDialog):
             self.send_msg_to_controllers(Message.START)
         else:
             self.send_msg_to_controllers(Message.PAUSE)
+
+        self.pause_state = not self.pause_state
         # if self.controller.peek() is Message.PAUSE:
         #     self.controller.send(Message.START)
         # else: self.controller.pause()
