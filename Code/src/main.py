@@ -12,6 +12,7 @@ from controller.MESSAGE import Message
 from controller.controller import Controller
 from controller.processor import Processor
 from gui.dev_tools import DevTools
+from gui.keyboard.mindtype import MindType
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
     add_plugin, print_logging_info, print_plugins_found, print_board_setup
 
@@ -19,10 +20,10 @@ logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
 
-def make_gui(controller):
+def make_gui(controllers):
     app = QtGui.QApplication(sys.argv)
-    # main_scr = MindType(controller)
-    main_scr = DevTools(controller)
+    main_scr = MindType(controllers)
+    # main_scr = DevTools(controller)
     main_scr.resize(500, 100)
     main_scr.show()
     sys.exit(app.exec_())
@@ -134,12 +135,14 @@ $$$ signals end of message")
     # # d: Channels settings back to default
     # s = s + 'd'
 
-    while controller.peek() is not Message.EXIT:
-        board_action(board, controller, fun, biosignal)
+    while True:
+        if controller.peek() is Message.EXIT:
+            safe_exit(board, [biosignal, ])
+            return
 
-        user_control([controller, biosignal.controller, processor.controller])
-
-    safe_exit(board, [biosignal,])
+        if controller.peek() is not None:
+            board_action(board, controller, fun, biosignal)
+            user_control([controller, biosignal.controller, processor.controller])
 
 
 def user_control(controllers):
@@ -194,7 +197,9 @@ if __name__ == '__main__':
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
-    gui_thread = threading.Thread(target=make_gui, args=[main_controller])
+    gui_thread = threading.Thread(target=make_gui, args=[[main_controller,
+                                                          biosignal.controller,
+                                                          processor.controller]])
     gui_thread.daemon = True
     gui_thread.start()
 
