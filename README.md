@@ -56,3 +56,15 @@ The MTA uses a variant of the publish-subscribe design pattern. A messaging queu
 A BioSignal is a Controllable that can also **update** itself with the latest data sample from the board, and **process** data somehow. During each update cycle, it also calls its **control()** method. The updating and processing will occur on separate threads instantiated in the **main()** function. (Look at the Tagger class for an example of a BioSignal).
 
 **main.py** executes the entire program. It first sets up the OpenBCI board, and then sets up a thread for processing. The main function then handles parsing commands from the user in the **execute_board()** function (which instantiates a thread for calling each BioSignals's **update()** function), and handles processing of the BioSignals in **process_thread** which runs **run_processor()**. The **execute_board()** function calls **start_streaming()** from openbci_v3, which obtains a sample and calls whatever callback function provided when instantiating the program from command line (in this case, *pub_sub.py*). *pub_sub.py* is responsible for providing all the BioSignals with samples that are coming in.
+
+## Contributing
+We follow trunk-based development to avoid merge conflicts as much as
+possible, and to ensure that code in our master branch is always works.
+
+1. Make a new branch for your **small** feature.
+2. Code :D
+3. Once your **small** feature is done, make a pull request. If your feature
+isn't fully ready, use feature toggling to turn it off
+(*feature_flags/feature_flags.py*)
+4. Your code will go through a review. Once it passes, merge the pull reqest!
+5. Repeat :D

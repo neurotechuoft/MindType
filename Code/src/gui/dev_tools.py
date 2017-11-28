@@ -6,10 +6,10 @@ from controller.MESSAGE import Message
 
 
 class DevTools(QtGui.QDialog):
-    def __init__(self, controller, parent=None):
+    def __init__(self, controllers, parent=None):
         super(DevTools, self).__init__(parent)
 
-        self.controller = controller
+        self.controllers = controllers
 
         self.pause_state = True
 
@@ -68,9 +68,11 @@ class DevTools(QtGui.QDialog):
     def play_pause(self):
         print("play-pause")
         if self.pause_state:
-            self.controller.send(Message.START)
+            self.send_msg_to_controllers(Message.START)
         else:
-            self.controller.send(Message.PAUSE)
+            self.send_msg_to_controllers(Message.PAUSE)
+
+        self.pause_state = not self.pause_state
         # if self.controller.peek() is Message.PAUSE:
         #     self.controller.send(Message.START)
         # else: self.controller.pause()
@@ -79,7 +81,7 @@ class DevTools(QtGui.QDialog):
     def stop(self):
         print("stop")
         # self.controller.quit()
-        self.controller.send(Message.EXIT)
+        self.send_msg_to_controllers(Message.EXIT)
 
     def load(self):
         print("load")
@@ -93,3 +95,12 @@ class DevTools(QtGui.QDialog):
 
     def get_current_tag(self):
         return self.curr_tag
+
+    def send_msg_to_controllers(self, message):
+        for controller in self.controllers:
+            controller.send(message)
+
+    def closeEvent(self, event):
+        self.send_msg_to_controllers(Message.EXIT)
+        print("Exiting...")
+        event.accept()
