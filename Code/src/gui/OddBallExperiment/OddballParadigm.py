@@ -41,7 +41,7 @@ def binary_experiment(delay_time=100):
             # blue square
             grid[random_row][random_col] = 2
             times.append(clock.tick() + times[-1])
-            sys.stdout("enter_file_name_here.txt", "w")
+            sys.stdout = open("test-test-test.txt", "w")
             print(times)
 
 
