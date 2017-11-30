@@ -7,11 +7,14 @@ import pickle
 import sys
 
 
+# TODO: Need to rewrite the file read. Right now it assumes that only one text file is used.
+# TODO: The easiest way is to probably change load_data to combine 2 and 3-grams(and maybe more)
+
+
 def autocomplete(word, data_path, triee=None):
     start = time.time()
     if triee is None:
         triee = check_cache(data_path, word)
-    print((time.time() - start) * 1000.0)
 
     maxi = 0
     compl = ''
@@ -19,7 +22,6 @@ def autocomplete(word, data_path, triee=None):
         if val[0] > maxi:
             maxi = val[0]
             compl = key
-
     if compl == '':
         return "Couldn't find autocomplete for \"{}\"".format(word)
     longer = compl.split(' ')
@@ -76,7 +78,6 @@ def load_data(path_to_data):
 
 
 def one_letter(data_path):
-
     with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
 
@@ -104,7 +105,6 @@ def one_letter(data_path):
 
 
 def popular_trie(data_path):
-
     with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
 
@@ -135,6 +135,3 @@ def popular_trie(data_path):
         pickle.dump(big_ones, output, pickle.HIGHEST_PROTOCOL)
 
     return triee
-
-
-
