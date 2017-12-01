@@ -202,8 +202,10 @@ if __name__ == '__main__':
     # VARIABLES-----------------------------------------------------------------
     manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
-    # biosignal = PrintBiosignal()
-    biosignal = Tagger("./test_results/data.csv")
+    if FeatureFlags.DEV_TOOLS:
+        biosignal = Tagger("./test_results/data.csv")
+    else:
+        biosignal = PrintBiosignal()
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
