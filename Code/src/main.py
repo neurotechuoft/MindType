@@ -93,6 +93,7 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         # TODO: Move this block of code under Message.PAUSE
         poll_board_for_messages(board, flush)
     elif message is Message.EXIT:
+        controller.send(Message.EXIT)
         return
 
     if recognized == False:
@@ -202,8 +203,10 @@ if __name__ == '__main__':
     # VARIABLES-----------------------------------------------------------------
     manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
-    # biosignal = PrintBiosignal()
-    biosignal = Tagger("./test_results/data.csv")
+    if FeatureFlags.DEV_TOOLS:
+        biosignal = Tagger("./test_results/data.csv")
+    else:
+        biosignal = PrintBiosignal()
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
