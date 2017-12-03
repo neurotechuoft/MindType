@@ -7,11 +7,12 @@ from controller.MESSAGE import Message
 
 
 class GUI(QtGui.QDialog):
-    def __init__(self, controllers, parent=None):
+    def __init__(self, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
 
         # variables used for pausing
-        self.controllers = controllers
+        self.main_controller = main_controller
+        self.controllers = [main_controller] + controllers
         self.interval = 100
 
         # Creating main panel which contains everything
@@ -79,9 +80,17 @@ class GUI(QtGui.QDialog):
         return pause_resume_function
 
     def closeEvent(self, event):
+        safe_exit_confirmed = False
+
         self.send_msg_to_controllers(Message.EXIT)
-        print("Exiting...")
+
+        while not safe_exit_confirmed:
+            message = self.main_controller.peek()
+            if message is Message.SAFE_TO_EXIT:
+                safe_exit_confirmed = True
+
         event.accept()
+        print("Exiting...")
 
     def send_msg_to_controllers(self, message):
         for controller in self.controllers:
