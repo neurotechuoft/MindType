@@ -44,6 +44,9 @@ def safe_exit(board, main_controller, biosignals=None):
     for biosignal in biosignals:
         biosignal.exit()
     print("Biosignals exited")
+
+    cleanUp()
+
     main_controller.send(Message.SAFE_TO_EXIT)
 
 
@@ -151,6 +154,7 @@ $$$ signals end of message")
     while True:
         if controller.peek() is Message.EXIT:
             safe_exit(board, controller, [biosignal, ])
+            print("Execute board exiting")
             return
 
         if controller.peek() is not None:
@@ -159,6 +163,7 @@ $$$ signals end of message")
                 user_control([controller,
                               biosignal.controller,
                               processor.controller]) # don't need this
+
 
 
 def user_control(controllers):
@@ -202,6 +207,7 @@ def run_processor(processor):
     while message is not Message.EXIT:
         # print("Processing...")
         message = processor.process()
+    print("Processor exited")
 
 
 if __name__ == '__main__':
@@ -290,7 +296,7 @@ if __name__ == '__main__':
             plug.deactivate()
         print ("User.py exiting...")
 
-    atexit.register(cleanUp)
+    # atexit.register(cleanUp)
 
     # EXECUTE APPLICATION-------------------------------------------------------
     process_thread = threading.Thread(target=run_processor, args=(processor,))

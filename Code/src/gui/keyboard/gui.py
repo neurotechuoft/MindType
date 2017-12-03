@@ -89,8 +89,8 @@ class GUI(QtGui.QDialog):
             if message is Message.SAFE_TO_EXIT:
                 safe_exit_confirmed = True
 
-        event.accept()
         print("Exiting...")
+        event.accept()
 
     def send_msg_to_controllers(self, message):
         for controller in self.controllers:
