@@ -1,13 +1,31 @@
+from server import PylibloServer, ServerError
 import numpy as np
 import bitstring
 
 class Muse2014:
 
-    def __init__(self, address, port=4000, process_func):
+    def __init__(self, address, process_func, port):
 
         self.address = address
         self.port = port
         self.process_func = process_func
+        self.muse_server = None
+
+    def startServer(self):
+        try:
+            # Trys to connect to server
+            self.muse_server = PylibloServer(self.PORT)
+        except ServerError, err:
+            # print >> sys.stderr, str(err)
+            # sys.exit()
+            return
+        # start server and block server entry
+        self.portEdit.setDisabled(True)
+        self.btnStartServer.setDisabled(True)
+        self.muse_server.start()
+        # Start timer Update Graph
+        self.timer.start()
+
 
     def _unpack_eeg_channel(self, packet):
         """Decode data packet of one eeg channel.
