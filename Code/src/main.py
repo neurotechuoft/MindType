@@ -21,25 +21,33 @@ logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
 
-def make_gui(controllers):
+def make_gui(main_controller, controllers):
     app = QtGui.QApplication(sys.argv)
     main_scr = None
     if FeatureFlags.GUI:
-        main_scr = GUI(controllers)
+        main_scr = GUI(main_controller, controllers)
     if FeatureFlags.DEV_TOOLS:
-        main_scr = DevTools(controllers)
+        main_scr = DevTools(main_controller, controllers)
     if main_scr is not None:
         main_scr.resize(500, 100)
         main_scr.show()
     sys.exit(app.exec_())
 
 
-def safe_exit(board, biosignals=None):
+def safe_exit(board, main_controller, biosignals=None):
+    print("Attempting to safe-exit")
     if board.streaming:
         board.stop()
 
+    print("Board stopped")
+
     for biosignal in biosignals:
         biosignal.exit()
+    print("Biosignals exited")
+
+    cleanUp()
+
+    main_controller.send(Message.SAFE_TO_EXIT)
 
 
 def board_action(board, controller, pub_sub_fct, biosignal=None):
@@ -145,7 +153,8 @@ $$$ signals end of message")
 
     while True:
         if controller.peek() is Message.EXIT:
-            safe_exit(board, [biosignal, ])
+            safe_exit(board, controller, [biosignal, ])
+            print("Execute board exiting")
             return
 
         if controller.peek() is not None:
@@ -154,6 +163,7 @@ $$$ signals end of message")
                 user_control([controller,
                               biosignal.controller,
                               processor.controller]) # don't need this
+
 
 
 def user_control(controllers):
@@ -197,6 +207,7 @@ def run_processor(processor):
     while message is not Message.EXIT:
         # print("Processing...")
         message = processor.process()
+    print("Processor exited")
 
 
 if __name__ == '__main__':
@@ -211,9 +222,10 @@ if __name__ == '__main__':
 
     # SET UP GUI----------------------------------------------------------------
     if not FeatureFlags.COMMAND_LINE:
-        gui_thread = threading.Thread(target=make_gui, args=[[main_controller,
-                                                              biosignal.controller,
-                                                              processor.controller]])
+        gui_thread = threading.Thread(target=make_gui,
+                                      args=[main_controller,
+                                            [biosignal.controller,
+                                             processor.controller]])
         gui_thread.daemon = True
         gui_thread.start()
 
@@ -291,3 +303,11 @@ if __name__ == '__main__':
     process_thread.start()
 
     execute_board(board, main_controller, fun, biosignal, processor)
+
+    # FINISH EXIT PROCESS
+    ready_for_exit = False
+    while not ready_for_exit:
+        if main_controller.search(Message.GUI_EXIT):
+            ready_for_exit = True
+
+    print("Final goodbye!")

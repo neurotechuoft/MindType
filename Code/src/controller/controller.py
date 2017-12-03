@@ -48,3 +48,23 @@ class Controller:
                 self.__msg_queue__.appendleft(msg)
 
         return msg
+
+    def search(self, message):
+        """
+        Search for a particular message in the controller
+        Args:
+            message (Message): message to search
+
+        Returns: bool
+
+        """
+        # Using the string representation for search allows us to search for
+        # a string safely when multi-threading. A regular search
+        # (ie: message in self.__msg_qeue__) could result in a runtime error
+        # if another process tries to add to / remove from the queue. Using
+        # the string repr allows us to cicumvent that, as the returned string
+        # repr can't change.
+        return str(message) in self.__str__()
+
+    def __str__(self):
+        return self.__msg_queue__.__str__()
