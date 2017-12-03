@@ -296,10 +296,18 @@ if __name__ == '__main__':
             plug.deactivate()
         print ("User.py exiting...")
 
-    # atexit.register(cleanUp)
+    atexit.register(cleanUp)
 
     # EXECUTE APPLICATION-------------------------------------------------------
     process_thread = threading.Thread(target=run_processor, args=(processor,))
     process_thread.start()
 
     execute_board(board, main_controller, fun, biosignal, processor)
+
+    # FINISH EXIT PROCESS
+    ready_for_exit = False
+    while not ready_for_exit:
+        if main_controller.search(Message.GUI_EXIT):
+            ready_for_exit = True
+
+    print("Final goodbye!")

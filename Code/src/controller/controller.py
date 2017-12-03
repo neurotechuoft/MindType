@@ -48,3 +48,17 @@ class Controller:
                 self.__msg_queue__.appendleft(msg)
 
         return msg
+
+    def search(self, message):
+        """
+        Search for a particular message in the controller
+        Args:
+            message (Message): message to search
+
+        Returns: bool
+
+        """
+        return str(message) in self.__str__()
+
+    def __str__(self):
+        return self.__msg_queue__.__str__()
