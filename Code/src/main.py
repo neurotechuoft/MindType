@@ -98,6 +98,7 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         # TODO: Move this block of code under Message.PAUSE
         poll_board_for_messages(board, flush)
     elif message is Message.EXIT:
+        controller.send(Message.EXIT)
         return
 
     if recognized == False:
