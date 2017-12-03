@@ -27,7 +27,7 @@ def make_gui(main_controller, controllers):
     if FeatureFlags.GUI:
         main_scr = GUI(main_controller, controllers)
     if FeatureFlags.DEV_TOOLS:
-        main_scr = DevTools(controllers)
+        main_scr = DevTools(main_controller, controllers)
     if main_scr is not None:
         main_scr.resize(500, 100)
         main_scr.show()

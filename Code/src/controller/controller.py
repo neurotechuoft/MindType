@@ -58,6 +58,12 @@ class Controller:
         Returns: bool
 
         """
+        # Using the string representation for search allows us to search for
+        # a string safely when multi-threading. A regular search
+        # (ie: message in self.__msg_qeue__) could result in a runtime error
+        # if another process tries to add to / remove from the queue. Using
+        # the string repr allows us to cicumvent that, as the returned string
+        # repr can't change.
         return str(message) in self.__str__()
 
     def __str__(self):

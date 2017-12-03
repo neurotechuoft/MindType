@@ -6,10 +6,11 @@ from controller.MESSAGE import Message
 
 
 class DevTools(QtGui.QDialog):
-    def __init__(self, controllers, parent=None):
+    def __init__(self, main_controller, controllers, parent=None):
         super(DevTools, self).__init__(parent)
 
-        self.controllers = controllers
+        self.main_controller = main_controller
+        self.controllers = [main_controller] + controllers
 
         self.pause_state = True
 
@@ -101,6 +102,13 @@ class DevTools(QtGui.QDialog):
             controller.send(message)
 
     def closeEvent(self, event):
+        safe_exit_confirmed = False
+
         self.send_msg_to_controllers(Message.EXIT)
-        print("Exiting...")
+
+        while not safe_exit_confirmed:
+            if self.main_controller.search(Message.SAFE_TO_EXIT):
+                safe_exit_confirmed = True
+
+        self.main_controller.send(Message.GUI_EXIT)
         event.accept()
