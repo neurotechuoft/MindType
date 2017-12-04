@@ -2,7 +2,6 @@ import marisa_trie as marisa
 import pandas as pd
 import numpy as np
 import codecs
-import time
 import pickle
 import sys
 
@@ -12,7 +11,6 @@ import sys
 
 
 def autocomplete(word, data_path, triee=None):
-    start = time.time()
     if triee is None:
         triee = check_cache(data_path, word)
 

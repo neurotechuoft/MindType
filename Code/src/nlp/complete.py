@@ -1,9 +1,8 @@
 import trie_funcs
 import sys
-import time
 
 
-def compl(complete: str) -> float:
+def compl(complete: str) -> str:
     """
     Autocomplete the word/phrase.
     If it's an incomplete word, then return the most likely completion.
@@ -11,9 +10,7 @@ def compl(complete: str) -> float:
     :param complete: (part of) a word
     :return: completed string
     """
-    start = time.time()
-    trie_funcs.autocomplete(complete, "/home/igor/nlp/ngrams/w2_.txt")
-    return (time.time() - start) * 1000.0
+    return trie_funcs.autocomplete(complete, "w2_.txt")
 
 
 if __name__ == '__main__':
@@ -23,7 +20,5 @@ if __name__ == '__main__':
     # popular_trie("/home/igor/nlp/ngrams/w2_.txt")
     if len(sys.argv) != 2:
         print("Usage: python complete.py phrase_to_complete")
-    start = time.time()
+    print(compl(sys.argv[1]))
 
-    print(trie_funcs.autocomplete(sys.argv[1], "w2_.txt"))
-    print((time.time() - start) * 1000.0)
