@@ -12,6 +12,11 @@ from PyQt4.QtCore import QTimer
 class Keyboard:
     # constructor
     def __init__(self, main_panel, character_display_panel, interval):
+        # Style sheets
+        self.default_stylesheet = "QPushButton {background-color: #444444; " \
+                                     "color: white; font-size: 65px;}"
+        self.darken_stylesheet = "QPushButton {background-color: #444444; " \
+                                 "color: blue; font-size: 65px;}"
 
         # variables used for pausing
         self.flashing_interval = interval
@@ -33,7 +38,7 @@ class Keyboard:
                     button_name = str(character_number - 26)
 
                 button = QtGui.QPushButton(button_name)
-                button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+                button.setStyleSheet(self.default_stylesheet)
 
                 # adding button listener
                 button.clicked.connect(functools.partial(self.print_char, button_name, character_display_panel))
@@ -67,7 +72,7 @@ class Keyboard:
             timer.stop()
             self.time_elapsed = (time.time() - self.time_start)
         for button in self.character_buttons:
-            button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+            button.setStyleSheet(self.default_stylesheet)
 
         print self.time_elapsed
 
@@ -131,9 +136,9 @@ class Keyboard:
                 keyboard_button = keyboard_buttons[(index * 6) + row_col]
 
             if color == "lighten":
-                keyboard_button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+                keyboard_button.setStyleSheet(self.default_stylesheet)
             elif color == "darken":
-                keyboard_button.setStyleSheet("QPushButton {background-color: black; color: blue; font-size: 65px;}")
+                keyboard_button.setStyleSheet(self.darken_stylesheet)
 
     # pause between each character flashing
     def run_again(self):
