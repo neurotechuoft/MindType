@@ -2,9 +2,8 @@ The autocomplete works fine. The only thing you need to do is to get 2n-grams fi
 Also, since we are using Cython, you have to execute "python setup.py build_ext --inplace".
 The usage of the script itself is "python trie_run.py (part of)word".
 
-So far, the runtime is below 30ms.
+So far, the average runtime is arount 10ms.
 
 TODO:
 Add other n-grams, and check if the performance improves.
-Test code with python2 and change print statements. This shouldn't be too hard, since no python3 exclusive libraries or functions were used.
-N-grams doesn't work well for words that aren't infinitive, like "walks". This could be fixed by doing some pre-processing of the word, but the performance will most likely suffer.
+N-grams doesn't work well for words that aren't infinitive, i.e. "walks". This could be fixed by doing some pre-processing of the word, but the performance will most likely suffer.
