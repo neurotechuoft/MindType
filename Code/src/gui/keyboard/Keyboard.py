@@ -15,15 +15,31 @@ class Keyboard:
         # Style sheets
         self.default_stylesheet = "QPushButton {background-color: #444444; " \
                                      "color: white; font-size: 65px;}"
+        self.predict_stylesheet = "QPushButton {background-color: #444444; " \
+                                  "color: white; font-size: 50px;}"
         self.darken_stylesheet = "QPushButton {background-color: #444444; " \
                                  "color: blue; font-size: 65px;}"
-
-        # variables used for pausing
-        self.flashing_interval = interval
 
         # creating a button grid
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(0)
+
+        # Top 3 Word Predictions
+        self.predict_grid = QtGui.QGridLayout()
+        self.predict_grid.setSpacing(0)
+
+        self.predict_buttons = []
+
+        for pred in range(3):
+            button_name = "pred" + str(pred)
+            button = QtGui.QPushButton(button_name)
+            button.setStyleSheet(self.predict_stylesheet)
+
+            self.predict_grid.addWidget(button, 0, pred)
+            self.predict_buttons.append(button)
+
+        # variables used for pausing
+        self.flashing_interval = interval
 
         self.character_buttons = []
         # adding keyboard buttons to the grid)
@@ -46,6 +62,7 @@ class Keyboard:
                 self.character_buttons.append(button)
 
         # attaching grid to main panel
+        main_panel.addLayout(self.predict_grid)
         main_panel.addLayout(self.grid)
 
         # variables used for flashing

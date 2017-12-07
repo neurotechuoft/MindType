@@ -100,3 +100,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Test Results
+/Code/src/test_results/**.csv
