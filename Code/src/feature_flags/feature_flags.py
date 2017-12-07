@@ -7,4 +7,4 @@ class FeatureFlags():
     DEV_TOOLS = False
     GUI = True
     COMMAND_LINE = False
-    BOARD = False
+    BOARD = True
