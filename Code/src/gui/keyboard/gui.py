@@ -1,7 +1,8 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
+
 from Keyboard import Keyboard
 from controller.MESSAGE import Message
 
@@ -9,6 +10,9 @@ from controller.MESSAGE import Message
 class GUI(QtGui.QDialog):
     def __init__(self, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
+
+        self.char_display_panel_stylesheet = "background-color: rgba(" \
+                "255,255,255,220)"
 
         # variables used for pausing
         self.main_controller = main_controller
@@ -22,10 +26,13 @@ class GUI(QtGui.QDialog):
         # creating header panel which has start, pause/resume and text display
         self.header_panel = QtGui.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
         # creating header panel buttons
-        self.character_display_panel = QtGui.QLabel("Enter Text!")
         self.start_button = QtGui.QPushButton("Start")
+        self.character_display_panel = QtGui.QLabel("Enter Text!")
+        self.character_display_panel.setStyleSheet(
+            self.char_display_panel_stylesheet)
         self.end_button = QtGui.QPushButton("Pause")
 
         # setting button click listeners
@@ -45,6 +52,10 @@ class GUI(QtGui.QDialog):
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
+
+        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+
 
     # signal functions (on click listeners)
     # -------------------------------------
@@ -80,15 +91,15 @@ class GUI(QtGui.QDialog):
         return pause_resume_function
 
     def closeEvent(self, event):
-        safe_exit_confirmed = False
-
-        self.send_msg_to_controllers(Message.EXIT)
-
-        while not safe_exit_confirmed:
-            if self.main_controller.search(Message.SAFE_TO_EXIT):
-                safe_exit_confirmed = True
-
-        self.main_controller.send(Message.GUI_EXIT)
+        # safe_exit_confirmed = False
+        #
+        # self.send_msg_to_controllers(Message.EXIT)
+        #
+        # while not safe_exit_confirmed:
+        #     if self.main_controller.search(Message.SAFE_TO_EXIT):
+        #         safe_exit_confirmed = True
+        #
+        # self.main_controller.send(Message.GUI_EXIT)
         event.accept()
 
     def send_msg_to_controllers(self, message):

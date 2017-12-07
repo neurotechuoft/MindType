@@ -12,13 +12,34 @@ from PyQt4.QtCore import QTimer
 class Keyboard:
     # constructor
     def __init__(self, main_panel, character_display_panel, interval):
-
-        # variables used for pausing
-        self.flashing_interval = interval
+        # Style sheets
+        self.default_stylesheet = "QPushButton {background-color: #444444; " \
+                                     "color: white; font-size: 65px;}"
+        self.predict_stylesheet = "QPushButton {background-color: #444444; " \
+                                  "color: white; font-size: 50px;}"
+        self.darken_stylesheet = "QPushButton {background-color: #444444; " \
+                                 "color: blue; font-size: 65px;}"
 
         # creating a button grid
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(0)
+
+        # Top 3 Word Predictions
+        self.predict_grid = QtGui.QGridLayout()
+        self.predict_grid.setSpacing(0)
+
+        self.predict_buttons = []
+
+        for pred in range(3):
+            button_name = "pred" + str(pred)
+            button = QtGui.QPushButton(button_name)
+            button.setStyleSheet(self.predict_stylesheet)
+
+            self.predict_grid.addWidget(button, 0, pred)
+            self.predict_buttons.append(button)
+
+        # variables used for pausing
+        self.flashing_interval = interval
 
         self.character_buttons = []
         # adding keyboard buttons to the grid)
@@ -33,7 +54,7 @@ class Keyboard:
                     button_name = str(character_number - 26)
 
                 button = QtGui.QPushButton(button_name)
-                button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+                button.setStyleSheet(self.default_stylesheet)
 
                 # adding button listener
                 button.clicked.connect(functools.partial(self.print_char, button_name, character_display_panel))
@@ -41,6 +62,7 @@ class Keyboard:
                 self.character_buttons.append(button)
 
         # attaching grid to main panel
+        main_panel.addLayout(self.predict_grid)
         main_panel.addLayout(self.grid)
 
         # variables used for flashing
@@ -67,7 +89,7 @@ class Keyboard:
             timer.stop()
             self.time_elapsed = (time.time() - self.time_start)
         for button in self.character_buttons:
-            button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+            button.setStyleSheet(self.default_stylesheet)
 
         print self.time_elapsed
 
@@ -131,9 +153,9 @@ class Keyboard:
                 keyboard_button = keyboard_buttons[(index * 6) + row_col]
 
             if color == "lighten":
-                keyboard_button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
+                keyboard_button.setStyleSheet(self.default_stylesheet)
             elif color == "darken":
-                keyboard_button.setStyleSheet("QPushButton {background-color: black; color: blue; font-size: 65px;}")
+                keyboard_button.setStyleSheet(self.darken_stylesheet)
 
     # pause between each character flashing
     def run_again(self):
