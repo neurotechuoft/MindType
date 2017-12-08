@@ -24,25 +24,23 @@ class GUI(QtGui.QDialog):
         self.main_panel = QtGui.QVBoxLayout()
         self.main_panel.setContentsMargins(0, 0, 0, 0)
 
-        # creating header panel which has start, pause/resume and text display
+        # creating header panel which has pause/resume and text display
         self.header_panel = QtGui.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
         # creating header panel buttons
-        self.start_button = QtGui.QPushButton("Start")
         self.character_display_panel = QtGui.QLabel("Enter Text!")
         self.character_display_panel.setStyleSheet(
             self.CHAR_DISPLAY_PANEL_SHEET)
-        self.end_button = QtGui.QPushButton("Pause")
+        self.end_button = QtGui.QPushButton("Resume")
+        self.__PAUSED__ = True
 
         # setting button click listeners
-        self.start_button.clicked.connect(self.start())
         self.end_button.clicked.connect(self.pause_resume())
 
         # adding buttons to header panel
         self.header_panel.addWidget(self.character_display_panel)
-        self.header_panel.addWidget(self.start_button)
         self.header_panel.addWidget(self.end_button)
 
         # adding keyboard gui to main panel
@@ -57,28 +55,21 @@ class GUI(QtGui.QDialog):
 
     # signal functions (on click listeners)
     # -------------------------------------
-    def start(self):
-        def start_function():
-            # setting / resetting variables
-            self.start_button.setDisabled(True)
-            self.send_msg_to_controllers(Message.START)
-            self.keyboard.start()
-
-        return start_function
 
     def pause_resume(self):
 
         def pause_resume_function():
-
             button_pause_resume = self.end_button
-            if button_pause_resume.text() == "Pause":
-                button_pause_resume.setText("Resume")
-                self.send_msg_to_controllers(Message.PAUSE)
-                self.keyboard.pause()
-            else:
+            if self.__PAUSED__:
                 button_pause_resume.setText("Pause")
+                self.__PAUSED__ = False
                 self.send_msg_to_controllers(Message.START)
                 self.keyboard.resume()
+            else:
+                button_pause_resume.setText("Resume")
+                self.__PAUSED__ = True
+                self.send_msg_to_controllers(Message.PAUSE)
+                self.keyboard.pause()
 
         return pause_resume_function
 
