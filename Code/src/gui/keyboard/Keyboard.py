@@ -13,11 +13,11 @@ class Keyboard:
     # constructor
     def __init__(self, main_panel, character_display_panel, interval):
         # Style sheets
-        self.default_stylesheet = "QPushButton {background-color: #444444; " \
+        self.DEFAULT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                      "color: white; font-size: 65px;}"
-        self.predict_stylesheet = "QPushButton {background-color: #444444; " \
+        self.PREDICT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                   "color: white; font-size: 50px;}"
-        self.darken_stylesheet = "QPushButton {background-color: #444444; " \
+        self.DARKEN_STYLESHEET = "QPushButton {background-color: #444444; " \
                                  "color: blue; font-size: 65px;}"
 
         # creating a button grid
@@ -33,7 +33,7 @@ class Keyboard:
         for pred in range(3):
             button_name = "pred" + str(pred)
             button = QtGui.QPushButton(button_name)
-            button.setStyleSheet(self.predict_stylesheet)
+            button.setStyleSheet(self.PREDICT_STYLESHEET)
 
             self.predict_grid.addWidget(button, 0, pred)
             self.predict_buttons.append(button)
@@ -54,7 +54,7 @@ class Keyboard:
                     button_name = str(character_number - 26)
 
                 button = QtGui.QPushButton(button_name)
-                button.setStyleSheet(self.default_stylesheet)
+                button.setStyleSheet(self.DEFAULT_STYLESHEET)
 
                 # adding button listener
                 button.clicked.connect(functools.partial(self.print_char, button_name, character_display_panel))
@@ -89,7 +89,7 @@ class Keyboard:
             timer.stop()
             self.time_elapsed = (time.time() - self.time_start)
         for button in self.character_buttons:
-            button.setStyleSheet(self.default_stylesheet)
+            button.setStyleSheet(self.DEFAULT_STYLESHEET)
 
         print self.time_elapsed
 
@@ -153,9 +153,9 @@ class Keyboard:
                 keyboard_button = keyboard_buttons[(index * 6) + row_col]
 
             if color == "lighten":
-                keyboard_button.setStyleSheet(self.default_stylesheet)
+                keyboard_button.setStyleSheet(self.DEFAULT_STYLESHEET)
             elif color == "darken":
-                keyboard_button.setStyleSheet(self.darken_stylesheet)
+                keyboard_button.setStyleSheet(self.DARKEN_STYLESHEET)
 
     # pause between each character flashing
     def run_again(self):

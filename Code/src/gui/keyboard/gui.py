@@ -12,7 +12,7 @@ class GUI(QtGui.QDialog):
     def __init__(self, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
 
-        self.char_display_panel_stylesheet = "background-color: rgba(" \
+        self.CHAR_DISPLAY_PANEL_SHEET = "background-color: rgba(" \
                                              "255,255,255,220)"
 
         # variables used for pausing
@@ -33,7 +33,7 @@ class GUI(QtGui.QDialog):
         self.start_button = QtGui.QPushButton("Start")
         self.character_display_panel = QtGui.QLabel("Enter Text!")
         self.character_display_panel.setStyleSheet(
-            self.char_display_panel_stylesheet)
+            self.CHAR_DISPLAY_PANEL_SHEET)
         self.end_button = QtGui.QPushButton("Pause")
 
         # setting button click listeners
