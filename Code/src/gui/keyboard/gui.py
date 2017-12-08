@@ -5,6 +5,7 @@ from PyQt4 import QtGui, QtCore
 
 from Keyboard import Keyboard
 from controller.MESSAGE import Message
+from feature_flags.feature_flags import FeatureFlags
 
 
 class GUI(QtGui.QDialog):
@@ -12,7 +13,7 @@ class GUI(QtGui.QDialog):
         super(GUI, self).__init__(parent)
 
         self.char_display_panel_stylesheet = "background-color: rgba(" \
-                "255,255,255,220)"
+                                             "255,255,255,220)"
 
         # variables used for pausing
         self.main_controller = main_controller
@@ -48,14 +49,11 @@ class GUI(QtGui.QDialog):
         # creating a button grid
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(0)
-        self.keyboard = Keyboard(self.main_panel, self.character_display_panel, self.interval)
+        self.keyboard = Keyboard(self.main_panel, self.character_display_panel,
+                                 self.interval)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
-
-        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-
-
 
     # signal functions (on click listeners)
     # -------------------------------------
@@ -64,19 +62,15 @@ class GUI(QtGui.QDialog):
             # setting / resetting variables
             self.start_button.setDisabled(True)
             self.send_msg_to_controllers(Message.START)
-            # print(self.controller)
             self.keyboard.start()
 
         return start_function
 
     def pause_resume(self):
-        # print("Pause resume")
 
         def pause_resume_function():
 
             button_pause_resume = self.end_button
-            # print("Before pause-resume")
-            # print(self.controller)
             if button_pause_resume.text() == "Pause":
                 button_pause_resume.setText("Resume")
                 self.send_msg_to_controllers(Message.PAUSE)
@@ -85,21 +79,21 @@ class GUI(QtGui.QDialog):
                 button_pause_resume.setText("Pause")
                 self.send_msg_to_controllers(Message.START)
                 self.keyboard.resume()
-            # print("After pause-resume")
-            # print(self.controller)
 
         return pause_resume_function
 
     def closeEvent(self, event):
-        # safe_exit_confirmed = False
-        #
-        # self.send_msg_to_controllers(Message.EXIT)
-        #
-        # while not safe_exit_confirmed:
-        #     if self.main_controller.search(Message.SAFE_TO_EXIT):
-        #         safe_exit_confirmed = True
-        #
-        # self.main_controller.send(Message.GUI_EXIT)
+        if FeatureFlags.BOARD:
+            safe_exit_confirmed = False
+
+            self.send_msg_to_controllers(Message.EXIT)
+
+            while not safe_exit_confirmed:
+                if self.main_controller.search(Message.SAFE_TO_EXIT):
+                    safe_exit_confirmed = True
+
+            self.main_controller.send(Message.GUI_EXIT)
+
         event.accept()
 
     def send_msg_to_controllers(self, message):
