@@ -11,7 +11,9 @@ from biosignals.tagger import Tagger
 from controller.MESSAGE import Message
 from controller.controller import Controller
 from controller.processor import Processor
+from feature_flags.feature_flags import FeatureFlags
 from gui.dev_tools import DevTools
+from gui.keyboard.gui import GUI
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
     add_plugin, print_logging_info, print_plugins_found, print_board_setup
 
@@ -19,21 +21,33 @@ logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
 
-def make_gui(controller):
+def make_gui(main_controller, controllers):
     app = QtGui.QApplication(sys.argv)
-    # main_scr = MindType(controller)
-    main_scr = DevTools(controller)
-    main_scr.resize(500, 100)
-    main_scr.show()
+    main_scr = None
+    if FeatureFlags.GUI:
+        main_scr = GUI(main_controller, controllers)
+    if FeatureFlags.DEV_TOOLS:
+        main_scr = DevTools(main_controller, controllers)
+    if main_scr is not None:
+        main_scr.resize(500, 100)
+        main_scr.show()
     sys.exit(app.exec_())
 
 
-def safe_exit(board, biosignals=None):
+def safe_exit(board, main_controller, biosignals=None):
+    print("Attempting to safe-exit")
     if board.streaming:
         board.stop()
 
+    print("Board stopped")
+
     for biosignal in biosignals:
         biosignal.exit()
+    print("Biosignals exited")
+
+    cleanUp()
+
+    main_controller.send(Message.SAFE_TO_EXIT)
 
 
 def board_action(board, controller, pub_sub_fct, biosignal=None):
@@ -86,6 +100,9 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         #  still running.
         # TODO: Move this block of code under Message.PAUSE
         poll_board_for_messages(board, flush)
+    elif message is Message.EXIT:
+        controller.send(Message.EXIT)
+        return
 
     if recognized == False:
         print("Command not recognized...")
@@ -134,12 +151,19 @@ $$$ signals end of message")
     # # d: Channels settings back to default
     # s = s + 'd'
 
-    while controller.peek() is not Message.EXIT:
-        board_action(board, controller, fun, biosignal)
+    while True:
+        if controller.peek() is Message.EXIT:
+            safe_exit(board, controller, [biosignal, ])
+            print("Execute board exiting")
+            return
 
-        user_control([controller, biosignal.controller, processor.controller])
+        if controller.peek() is not None:
+            board_action(board, controller, fun, biosignal)
+            if FeatureFlags.COMMAND_LINE:
+                user_control([controller,
+                              biosignal.controller,
+                              processor.controller]) # don't need this
 
-    safe_exit(board, [biosignal,])
 
 
 def user_control(controllers):
@@ -183,20 +207,27 @@ def run_processor(processor):
     while message is not Message.EXIT:
         # print("Processing...")
         message = processor.process()
+    print("Processor exited")
 
 
 if __name__ == '__main__':
     # VARIABLES-----------------------------------------------------------------
     manager = PluginManager() # Load the plugins from the plugin directory.
     main_controller = Controller()
-    # biosignal = PrintBiosignal()
-    biosignal = Tagger("./test_results/data.csv")
+    if FeatureFlags.DEV_TOOLS:
+        biosignal = Tagger("./test_results/data.csv")
+    else:
+        biosignal = PrintBiosignal()
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
-    gui_thread = threading.Thread(target=make_gui, args=[main_controller])
-    gui_thread.daemon = True
-    gui_thread.start()
+    if not FeatureFlags.COMMAND_LINE:
+        gui_thread = threading.Thread(target=make_gui,
+                                      args=[main_controller,
+                                            [biosignal.controller,
+                                             processor.controller]])
+        gui_thread.daemon = True
+        gui_thread.start()
 
     # SET UP BOARD--------------------------------------------------------------
     parser = setup_parser()
@@ -272,3 +303,11 @@ if __name__ == '__main__':
     process_thread.start()
 
     execute_board(board, main_controller, fun, biosignal, processor)
+
+    # FINISH EXIT PROCESS
+    ready_for_exit = False
+    while not ready_for_exit:
+        if main_controller.search(Message.GUI_EXIT):
+            ready_for_exit = True
+
+    print("Final goodbye!")

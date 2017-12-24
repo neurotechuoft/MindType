@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 
 from controller import Controller
 from gui.dev_tools import DevTools
-from gui.keyboard.mindtype import MindType
+from gui.keyboard.gui import GUI
 
 
 class ChooseScreen(QtGui.QWidget):
@@ -44,7 +44,7 @@ class ChooseScreen(QtGui.QWidget):
         # setting layout to main_panel
         self.setLayout(self.main_panel)
 
-        self.keyboard_screen_gui = MindType(controller)
+        self.keyboard_screen_gui = GUI(controller)
         self.dev_tools_gui = DevTools(controller)
 
     @QtCore.pyqtSlot()

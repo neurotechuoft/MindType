@@ -3,14 +3,16 @@ from PyQt4 import QtGui
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
 from Keyboard import Keyboard
+from controller.MESSAGE import Message
 
 
-class MindType(QtGui.QDialog):
-    def __init__(self, controller, parent=None):
-        super(MindType, self).__init__(parent)
+class GUI(QtGui.QDialog):
+    def __init__(self, main_controller, controllers, parent=None):
+        super(GUI, self).__init__(parent)
 
         # variables used for pausing
-        self.controller = controller
+        self.main_controller = main_controller
+        self.controllers = [main_controller] + controllers
         self.interval = 100
 
         # Creating main panel which contains everything
@@ -50,8 +52,8 @@ class MindType(QtGui.QDialog):
         def start_function():
             # setting / resetting variables
             self.start_button.setDisabled(True)
-            self.controller.resume()
-            print(self.controller)
+            self.send_msg_to_controllers(Message.START)
+            # print(self.controller)
             self.keyboard.start()
 
         return start_function
@@ -62,22 +64,33 @@ class MindType(QtGui.QDialog):
         def pause_resume_function():
 
             button_pause_resume = self.end_button
-            print("Before pause-resume")
-            print(self.controller)
+            # print("Before pause-resume")
+            # print(self.controller)
             if button_pause_resume.text() == "Pause":
                 button_pause_resume.setText("Resume")
-                self.controller.pause()
+                self.send_msg_to_controllers(Message.PAUSE)
                 self.keyboard.pause()
             else:
                 button_pause_resume.setText("Pause")
-                self.controller.resume()
+                self.send_msg_to_controllers(Message.START)
                 self.keyboard.resume()
-            print("After pause-resume")
-            print(self.controller)
+            # print("After pause-resume")
+            # print(self.controller)
 
         return pause_resume_function
 
     def closeEvent(self, event):
-        self.controller.quit()
-        print("Exiting...")
+        safe_exit_confirmed = False
+
+        self.send_msg_to_controllers(Message.EXIT)
+
+        while not safe_exit_confirmed:
+            if self.main_controller.search(Message.SAFE_TO_EXIT):
+                safe_exit_confirmed = True
+
+        self.main_controller.send(Message.GUI_EXIT)
         event.accept()
+
+    def send_msg_to_controllers(self, message):
+        for controller in self.controllers:
+            controller.send(message)

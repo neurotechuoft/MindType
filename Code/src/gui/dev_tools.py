@@ -6,10 +6,11 @@ from controller.MESSAGE import Message
 
 
 class DevTools(QtGui.QDialog):
-    def __init__(self, controller, parent=None):
+    def __init__(self, main_controller, controllers, parent=None):
         super(DevTools, self).__init__(parent)
 
-        self.controller = controller
+        self.main_controller = main_controller
+        self.controllers = [main_controller] + controllers
 
         self.pause_state = True
 
@@ -68,9 +69,11 @@ class DevTools(QtGui.QDialog):
     def play_pause(self):
         print("play-pause")
         if self.pause_state:
-            self.controller.send(Message.START)
+            self.send_msg_to_controllers(Message.START)
         else:
-            self.controller.send(Message.PAUSE)
+            self.send_msg_to_controllers(Message.PAUSE)
+
+        self.pause_state = not self.pause_state
         # if self.controller.peek() is Message.PAUSE:
         #     self.controller.send(Message.START)
         # else: self.controller.pause()
@@ -79,7 +82,7 @@ class DevTools(QtGui.QDialog):
     def stop(self):
         print("stop")
         # self.controller.quit()
-        self.controller.send(Message.EXIT)
+        self.send_msg_to_controllers(Message.EXIT)
 
     def load(self):
         print("load")
@@ -93,3 +96,19 @@ class DevTools(QtGui.QDialog):
 
     def get_current_tag(self):
         return self.curr_tag
+
+    def send_msg_to_controllers(self, message):
+        for controller in self.controllers:
+            controller.send(message)
+
+    def closeEvent(self, event):
+        safe_exit_confirmed = False
+
+        self.send_msg_to_controllers(Message.EXIT)
+
+        while not safe_exit_confirmed:
+            if self.main_controller.search(Message.SAFE_TO_EXIT):
+                safe_exit_confirmed = True
+
+        self.main_controller.send(Message.GUI_EXIT)
+        event.accept()

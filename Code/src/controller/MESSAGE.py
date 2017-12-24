@@ -6,3 +6,5 @@ class Message(Enum):
     EXIT = "EXIT"
     ACTIVE = "ACTIVE"
     IDLE = "IDLE"
+    SAFE_TO_EXIT = "SAFE_TO_EXIT"
+    GUI_EXIT = "GUI_EXIT"
