@@ -1,9 +1,13 @@
-from complete import compl
+from complete import autocomplete
 import time
 
 
 def benchmark(file: str) -> float:
-
+    """
+    Benchmark the average time it takes to find the next word from a file
+    :param file: A file that lists the words to complete, separated by newline
+    :return: the average time to predict the words
+    """
     with open(file) as f:
         content = f.readlines()
 
@@ -13,8 +17,13 @@ def benchmark(file: str) -> float:
 
 
 def outer(word: str) -> float:
+    """
+    A wrapper for the autocomplete function, to make it time each call
+    :param word: A word to complete
+    :return: time it takes to complete the word
+    """
     start = time.time()
-    compl(word)
+    autocomplete(word)
     return (time.time() - start) * 1000.0
 
 

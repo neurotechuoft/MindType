@@ -7,28 +7,52 @@ import sys
 
 
 # TODO: Need to rewrite the file read. Right now it assumes that only one text file is used.
-# TODO: The easiest way is to probably change load_data to combine 2 and 3-grams(and maybe more)
+# The easiest way is to probably change load_data to combine 2 and 3-grams(and maybe more)
 
 
-def autocomplete(word, data_path, triee=None):
+def autocomplete(start_word, data_path, triee=None):
+    """
+    Autocomplete a word by finding the most widely used n-gram starting with it.
+
+    :param start_word: a word to autocomplete
+    :param data_path: path to the word corpus
+    :param triee: an optional argument in special case where a trie already exists, main purpose
+    is debugging
+    :return: a string with the autocompleted word
+    """
+
+    highest_freq = 0
+    complete_word = ''
+
+    # Get an appropriate trie
     if triee is None:
-        triee = check_cache(data_path, word)
+        triee = check_cache(data_path, start_word)
 
-    maxi = 0
-    compl = ''
-    for key, val in triee.items(word):
-        if val[0] > maxi:
-            maxi = val[0]
-            compl = key
-    if compl == '':
-        return "Couldn't find autocomplete for \"{}\"".format(word)
-    longer = compl.split(' ')
-    if len(longer) > 1 and longer[-2] in word:
+    # Iterate over the trie elements that start with the start_word
+    # and store the one with the highest score.
+    for key, val in triee.items(start_word):
+        # The values are singular tuples, where val[0] is the actual frequency
+        if val[0] > highest_freq:
+            highest_freq = val[0]
+            complete_word = key
+    if complete_word == '':
+        return "Couldn't find autocomplete for \"{}\"".format(start_word)
+    # For the case where the autocomplete predicts the next word
+    longer = complete_word.split(' ')
+    if len(longer) > 1 and longer[-2] in start_word:
+        # Ignore the first word, which was given as an input, return only the next one
         return longer[-1]
     return longer[0]
 
 
-def check_cache(data_path, word):
+def check_cache(data_path, start_word):
+    """
+    Analyze the word and the cached tries. Choose the appropriate category for the word
+    and create(and store)/load associated trie.
+    :param data_path: path to the n-gram corpus
+    :param start_word: word to complete
+    :return: the loaded trie
+    """
     try:
         short = open('short_trie.pkl', 'rb')
     except IOError:
@@ -44,38 +68,59 @@ def check_cache(data_path, word):
         pop_trie = open('popular_trie.pkl', 'rb')
         pop_dict = open('dict.pkl', 'rb')
         popular_dict = pickle.load(pop_dict)
+
     except IOError:
         popular_trie(data_path)
         pop_trie = open('popular_trie.pkl', 'rb')
         pop_dict = open('dict.pkl', 'rb')
         popular_dict = pickle.load(pop_dict)
 
-    if len(word) == 1:
+    if len(start_word) == 1:
         return pickle.load(short)
-    if word in popular_dict:
+    if start_word in popular_dict:
         return pickle.load(pop_trie)
 
     return pickle.load(long)
 
 
-def load_data(path_to_data):
+def load_data(path_to_data, branch_limit=10000):
+    """
+    Load the longest version of the trie, containing most n-grams(limited by the branch_limit)
+    :param path_to_data: path to the n-gram corpus
+    :param branch_limit: the limit of children for each node of the trie. Default 10000
+    :return: the trie, which also gets stored on the drive
+    """
+
     with codecs.open(path_to_data, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
 
     grams = grams.sort_values(by='freq', ascending=False)
-    grams = grams.groupby("first").head(10000)
+
+    # Limit the number of children for each node
+    grams = grams.groupby("first").head(branch_limit)
+
+    # The transformation from int to a singular tuple is required by the trie API
     grams['freq'] = grams['freq'].apply(lambda x: (x,))
 
     freqs = grams['freq'].values
     phrases = grams['first'] + " " + grams['second']
     fmt = "@i"
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
+
+    # Store the trie
     with open('trie.pkl', 'wb') as output:
         pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
     return triee
 
 
 def one_letter(data_path):
+    """
+    Generate a trie that is used for a special case where only one letter is given
+    to the autocomplete function. Since it's very expensive to go over all combinations
+    each time, this function does it once and stores the result.
+    :param data_path: path to the n-gram corpus
+    :return: a one-letter trie, which also gets stored on the drive
+    """
     with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
 
@@ -103,6 +148,12 @@ def one_letter(data_path):
 
 
 def popular_trie(data_path):
+    """
+    Generate a trie for the most popular words, like "to", "the", etc.
+    Popular trie should be used if the branching factor for the long trie is large (>1000)
+    :param data_path: path to the n-gram corpus
+    :return: a popular trie, which also gets stored on the drive
+    """
     with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
 
