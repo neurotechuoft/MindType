@@ -4,7 +4,13 @@ import pytrie
 import pickle
 
 
-def load_data_native(path_to_data):
+def native_load_data(path_to_data):
+    """
+    Load the longest version of the trie, containing most n-grams
+    :param path_to_data: path to the n-gram corpus
+    :return: the trie, which also gets stored on the drive
+    """
+
     with codecs.open(path_to_data, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
 
@@ -18,7 +24,18 @@ def load_data_native(path_to_data):
     return pytrie1
 
 
-def otherAuto(trie1, word):
+def native_autocomplete(trie1, word):
+    """
+    Autocomplete the word/phrase using native python implementation of trie.
+    If it's an incomplete word, then return the most likely completion.
+    If it's a complete word, return the next word that is most likely.
+
+    For now it's slower and less memory efficient than the C++ version,
+    so use that one instead.
+
+    :param word: (part of) a word
+    :return: completed string
+    """
     maxi = 0
     compl = ''
     for item in trie1.items(prefix = word):
