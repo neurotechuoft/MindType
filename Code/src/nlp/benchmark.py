@@ -11,12 +11,12 @@ def benchmark(file: str) -> float:
     with open(file) as f:
         content = f.readlines()
 
-    time_total = [outer(x) for x in content]
+    time_total = [time_wrapper(x) for x in content]
 
     return (sum(time_total) * 1.0) / len(time_total)
 
 
-def outer(word: str) -> float:
+def time_wrapper(word: str) -> float:
     """
     A wrapper for the autocomplete function, to make it time each call
     :param word: A word to complete
