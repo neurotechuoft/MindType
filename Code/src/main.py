@@ -178,9 +178,9 @@ def user_control(controllers):
 def get_user_input():
     # Take user input
     if sys.hexversion > 0x03000000:
-        s = input('--> ')
+        s = eval(input('--> '))
     else:
-        s = raw_input('--> ')
+        s = input('--> ')
     return s
 
 
