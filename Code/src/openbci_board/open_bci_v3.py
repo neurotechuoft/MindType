@@ -31,7 +31,7 @@ import pdb
 import glob
 
 SAMPLE_RATE = 250.0     # Hz
-START_BYTE = 0xA0       # start of data packet
+START_BYTE = b'0xA0'    # start of data packet
 END_BYTE = 0xC0         # end of data packet
 ADS1299_Vref = 4.5      # reference voltage for ADC in ADS1299.  set by its hardware
 ADS1299_gain = 24.0     # assumed gain setting for ADS1299.  set by its Arduino code
@@ -252,14 +252,14 @@ class OpenBCIBoard(object):
             # process at START_BYTE
             if self.read_state == 0:
                 b = read(1)
-                if struct.unpack('B', b)[0] == START_BYTE:
+                if b == START_BYTE:
 
                     # found rep bytes before START_BYTE
                     if rep != 0:
                         self.warn('Skipped %d bytes before start found' % rep)
                         rep = 0
 
-                    packet_id = struct.unpack('B', read(1))[0]  # packet id goes from 0-255
+                    packet_id = struct.unpack('B', b)[0]  # packet id goes from 0-255
                     log_bytes_in = str(packet_id)
 
                     # start at START_BYTE, regardless of if bytes before
@@ -329,6 +329,15 @@ class OpenBCIBoard(object):
                     self.warn("ID:<%d> <Unexpected END_BYTE found <%s> instead of <%s>" % (packet_id, val, END_BYTE))
                     logging.debug(log_bytes_in)
                     self.packets_dropped = self.packets_dropped + 1
+
+    # temporary -- unneeded if START_BYTE is Byte object
+    def unicode_to_byte(byte_to_convert):
+        """Converts START_BYTE or END_BYTE to Python's Byte object
+
+        :param byte_to_convert:
+        :return: Byte
+        """
+        return int(self.START_BYTE.encode('hex'), 16)
 
     """
 
