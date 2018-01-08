@@ -278,14 +278,12 @@ class OpenBCIBoard(object):
 
                     # 3-byte int in 2's complement
                     if unpacked[0] > 127:
-                        pre_fix = bytes(bytearray.fromhex('FF'))
+                        pre_fix = b'\xff'
                     else:
-                        pre_fix = bytes(bytearray.fromhex('00'))
-
-                    literal_read = pre_fix + literal_read
+                        pre_fix = b'\x00'
 
                     # unpack little endian(>) signed integer(i) (makes unpacking platform independent)
-                    myInt = struct.unpack('>i', literal_read)[0]
+                    myInt = struct.unpack('>i', (pre_fix + literal_read))[0]
 
                     # myInt is data for individual channel -- added to channel_data in channel order
                     if self.scaling_output:
@@ -336,7 +334,7 @@ class OpenBCIBoard(object):
         :param byte_to_convert:
         :return: Byte
         """
-        return int(byte_to_convert.encode('hex'), 16)
+        return struct.pack("B", byte_to_convert)
 
     """
 
