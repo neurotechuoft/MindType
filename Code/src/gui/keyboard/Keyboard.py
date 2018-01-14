@@ -69,7 +69,7 @@ class Keyboard:
         for button in self.character_buttons:
             button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
 
-        print self.time_elapsed
+        print(self.time_elapsed)
 
     def resume(self):
         # Resuming

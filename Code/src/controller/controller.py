@@ -1,7 +1,6 @@
 # from Queue import Queue
 from collections import deque
-
-from MESSAGE import Message
+from .MESSAGE import Message
 
 
 class Controller:

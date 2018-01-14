@@ -2,7 +2,7 @@ from PyQt4 import QtGui
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
-from Keyboard import Keyboard
+from .Keyboard import Keyboard
 from controller.MESSAGE import Message
 
 
