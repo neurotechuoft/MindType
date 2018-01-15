@@ -21,8 +21,8 @@ class Keyboard:
                                  "color: blue; font-size: 65px;}"
 
         # creating a button grid
-        self.grid = QtGui.QGridLayout()
-        self.grid.setSpacing(0)
+        self.key_grid = QtGui.QGridLayout()
+        self.key_grid.setSpacing(0)
 
         # Top 3 Word Predictions
         self.predict_grid = QtGui.QGridLayout()
@@ -43,33 +43,53 @@ class Keyboard:
 
         self.character_buttons = []
         # adding keyboard buttons to the grid)
+
+
         for row in range(6):
             for col in range(6):
+                # button_name = ""
                 character_number = (row * 6) + col
                 # a-z buttons
                 if character_number < 26:
                     button_name = chr(ord('a') + character_number)
-                # 0-9 buttons
+                    self.add_key_to_keyboard(button_name,
+                                             character_display_panel,
+                                             col, row)
+
+                elif character_number is 26:
+                    button_name = "0"
+                    self.add_key_to_keyboard(button_name,
+                                             character_display_panel,
+                                             col, row)
+
                 else:
-                    button_name = str(character_number - 26)
+                    pass
 
-                button = QtGui.QPushButton(button_name)
-                button.setStyleSheet(self.DEFAULT_STYLESHEET)
+                # # 0-9 buttons
+                # else:
+                #     button_name = str(character_number - 26)
 
-                # adding button listener
-                button.clicked.connect(functools.partial(self.print_char, button_name, character_display_panel))
-                self.grid.addWidget(button, row, col)
-                self.character_buttons.append(button)
+
 
         # attaching grid to main panel
         main_panel.addLayout(self.predict_grid)
-        main_panel.addLayout(self.grid)
+        main_panel.addLayout(self.key_grid)
 
         # variables used for flashing
         self.flash_timer_queue = []
         self.row_col_flash_order = []
         self.time_start = 0
         self.time_elapsed = 0
+
+    def add_key_to_keyboard(self, button_name, character_display_panel, col,
+                            row):
+        button = QtGui.QPushButton(button_name)
+        button.setStyleSheet(self.DEFAULT_STYLESHEET)
+        # adding button listener
+        button.clicked.connect(functools.partial(self.print_char, button_name,
+                                                 character_display_panel))
+        self.key_grid.addWidget(button, row, col)
+        self.character_buttons.append(button)
 
     def print_char(self, name, character_display_panel):
         # printing characters on same line
