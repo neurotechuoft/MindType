@@ -5,7 +5,7 @@ import math
 import random
 import time
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QTimer
 
 
@@ -57,9 +57,9 @@ class Keyboard:
                     button.setStyleSheet(self.DEFAULT_STYLESHEET)
                     # adding button listener
                     button.clicked.connect(
-                        functools.partial(self.print_char, button_name,
+                        functools.partial(self.start_number_context,
                                           character_display_panel))
-                    self.key_grid.addWidget(button, row, col)
+                    self.key_grid.addWidget(button, row, col, alignment = QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)
 
                 else:
@@ -102,7 +102,7 @@ class Keyboard:
         # adding button listener
         button.clicked.connect(functools.partial(self.print_char, button_name,
                                                  character_display_panel))
-        self.key_grid.addWidget(button, row, col)
+        self.key_grid.addWidget(button, row, col, alignment = QtCore.Qt.AlignTop)
         self.character_buttons.append(button)
 
     def print_char(self, name, character_display_panel):
@@ -113,8 +113,21 @@ class Keyboard:
         else:
             character_display_panel.setText(character_display_panel.text() + name)
 
-    def start_number_context(self):
-        pass
+    def start_number_context(self, character_display_panel):
+        num = 0
+
+        for btn in self.character_buttons:
+            btn.deleteLater()
+
+        self.character_buttons = []
+
+        for i in range(6):
+            for j in range(6):
+                num = i * 6 + j
+                if num < 10:
+                    self.add_key_to_keyboard(str(num), character_display_panel,
+                                             i, j)
+
 
     def start(self):
         self.row_col_flash_order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
