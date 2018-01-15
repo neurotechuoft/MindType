@@ -29,19 +29,13 @@ class Keyboard:
         self.predict_grid.setSpacing(0)
 
         self.predict_buttons = []
+        self.character_buttons = []
 
-        for pred in range(3):
-            button_name = "pred" + str(pred)
-            button = QtGui.QPushButton(button_name)
-            button.setStyleSheet(self.PREDICT_STYLESHEET)
-
-            self.predict_grid.addWidget(button, 0, pred)
-            self.predict_buttons.append(button)
+        self.make_predictions_widget()
 
         # variables used for pausing
         self.flashing_interval = interval
 
-        self.character_buttons = []
         # adding keyboard buttons to the grid)
 
 
@@ -54,13 +48,19 @@ class Keyboard:
                     button_name = chr(ord('a') + character_number)
                     self.add_key_to_keyboard(button_name,
                                              character_display_panel,
-                                             col, row)
+                                             row, col)
 
                 elif character_number is 26:
                     button_name = "0"
-                    self.add_key_to_keyboard(button_name,
-                                             character_display_panel,
-                                             col, row)
+
+                    button = QtGui.QPushButton(button_name)
+                    button.setStyleSheet(self.DEFAULT_STYLESHEET)
+                    # adding button listener
+                    button.clicked.connect(
+                        functools.partial(self.print_char, button_name,
+                                          character_display_panel))
+                    self.key_grid.addWidget(button, row, col)
+                    self.character_buttons.append(button)
 
                 else:
                     pass
@@ -68,6 +68,9 @@ class Keyboard:
                 # # 0-9 buttons
                 # else:
                 #     button_name = str(character_number - 26)
+                #     self.add_key_to_keyboard(button_name,
+                #                          character_display_panel,
+                #                          row, col)
 
 
 
@@ -81,8 +84,19 @@ class Keyboard:
         self.time_start = 0
         self.time_elapsed = 0
 
-    def add_key_to_keyboard(self, button_name, character_display_panel, col,
-                            row):
+    def make_predictions_widget(self):
+        for pred in range(3):
+            button_name = "pred" + str(pred)
+            button = QtGui.QPushButton(button_name)
+            button.setStyleSheet(self.PREDICT_STYLESHEET)
+
+            self.predict_grid.addWidget(button, 0, pred)
+            self.predict_buttons.append(button)
+
+    def add_key_to_keyboard(self,
+                            button_name,
+                            character_display_panel,
+                            row, col):
         button = QtGui.QPushButton(button_name)
         button.setStyleSheet(self.DEFAULT_STYLESHEET)
         # adding button listener
@@ -98,6 +112,9 @@ class Keyboard:
             character_display_panel.setText(name)
         else:
             character_display_panel.setText(character_display_panel.text() + name)
+
+    def start_number_context(self):
+        pass
 
     def start(self):
         self.row_col_flash_order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -165,17 +182,15 @@ class Keyboard:
             is_row = True
 
         for index in range(6):
-            # displaying rows
-            if is_row:
-                keyboard_button = keyboard_buttons[index + (row_col * 6)]
-            # displaying col
-            else:
-                keyboard_button = keyboard_buttons[(index * 6) + row_col]
 
-            if color == "lighten":
-                keyboard_button.setStyleSheet(self.DEFAULT_STYLESHEET)
-            elif color == "darken":
-                keyboard_button.setStyleSheet(self.DARKEN_STYLESHEET)
+            btn_id = index + (row_col * 6) if is_row else (index * 6) + row_col
+            stylesheet = self.DEFAULT_STYLESHEET if color is "lighten" \
+                else self.DARKEN_STYLESHEET
+
+            if btn_id < len(keyboard_buttons):
+                keyboard_button = keyboard_buttons[btn_id]
+                keyboard_button.setStyleSheet(stylesheet)
+
 
     # pause between each character flashing
     def run_again(self):
