@@ -26,8 +26,21 @@ def getData(numChannels, numSamples):
 
 def getHarmonicData(numbChannels, numSamples):
     data = []
-
     N = numSamples
+
+    #n = np.arange(0, N)
+    for n in range(numSamples):
+        value = 0
+        for frequency in range(20):
+            if (frequency >= 8 and frequency <= 12):
+                value += random.randint(50, 100) * np.sin(2*np.pi * frequency * n / numSamples)
+            else:
+                value += random.randint(0, 5) * np.sin(2*np.pi * frequency * n / numSamples)
+
+        data.append(value)
+
+    return data
+    '''
     Delta = 2* np.pi / N
     n = np.arange(0, N)
 
@@ -40,7 +53,7 @@ def getHarmonicData(numbChannels, numSamples):
     data.append([])
     for sample in range(numSamples):
         data[-1].append(random.randint(0, 3))
-
+    '''
     return data
 
 def main():
