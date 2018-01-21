@@ -221,7 +221,7 @@ if __name__ == '__main__':
     processor = Processor([biosignal])
 
     # SET UP GUI----------------------------------------------------------------
-    if not FeatureFlags.COMMAND_LINE:
+    if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
         gui_thread = threading.Thread(target=make_gui,
                                       args=[main_controller,
                                             [biosignal.controller,
@@ -229,85 +229,89 @@ if __name__ == '__main__':
         gui_thread.daemon = True
         gui_thread.start()
 
+    if not FeatureFlags.BOARD:
+        make_gui(main_controller, [biosignal.controller, processor.controller])
+
     # SET UP BOARD--------------------------------------------------------------
-    parser = setup_parser()
-    args = parser.parse_args()
+    if FeatureFlags.BOARD:
+        parser = setup_parser()
+        args = parser.parse_args()
 
-    if not(args.add):
-        print ("WARNING: no plugin selected, you will only be able to communicate with the board. You should select at least one plugin with '--add [plugin_name]'. Use '--list' to show available plugins or '--info [plugin_name]' to get more information.")
+        if not(args.add):
+            print ("WARNING: no plugin selected, you will only be able to communicate with the board. You should select at least one plugin with '--add [plugin_name]'. Use '--list' to show available plugins or '--info [plugin_name]' to get more information.")
 
-    if args.board == "cyton":
-        print ("Board type: OpenBCI Cyton (v3 API)")
-        import openbci_board.open_bci_v3 as bci
-    elif args.board == "ganglion":
-        print ("Board type: OpenBCI Ganglion")
-        import openbci_board.open_bci_ganglion as bci
-    else:
-        raise ValueError('Board type %r was not recognized. Known are 3 and 4' % args.board)
+        if args.board == "cyton":
+            print ("Board type: OpenBCI Cyton (v3 API)")
+            import openbci_board.open_bci_v3 as bci
+        elif args.board == "ganglion":
+            print ("Board type: OpenBCI Ganglion")
+            import openbci_board.open_bci_ganglion as bci
+        else:
+            raise ValueError('Board type %r was not recognized. Known are 3 and 4' % args.board)
 
-    # Check AUTO port selection, a "None" parameter for the board API
-    check_auto_port_selection(args)
+        # Check AUTO port selection, a "None" parameter for the board API
+        check_auto_port_selection(args)
 
-    # Collect plugins
-    plugins_paths = ["plugins"]
-    if args.plugins_path:
-        plugins_paths += args.plugins_path
-    manager.setPluginPlaces(plugins_paths)
-    manager.collectPlugins()
+        # Collect plugins
+        plugins_paths = ["plugins"]
+        if args.plugins_path:
+            plugins_paths += args.plugins_path
+        manager.setPluginPlaces(plugins_paths)
+        manager.collectPlugins()
 
-    print ("\n------------SETTINGS-------------")
-    print ("Notch filtering:" + str(args.filtering))
+        print ("\n------------SETTINGS-------------")
+        print ("Notch filtering:" + str(args.filtering))
 
-    # Logging
-    print_logging_info(args, logging)
+        # Logging
+        print_logging_info(args, logging)
 
-    print ("\n-------INSTANTIATING BOARD-------")
-    board = bci.OpenBCIBoard(port=args.port,
-                             daisy=args.daisy,
-                             filter_data=args.filtering,
-                             scaled_output=True,
-                             log=args.log,
-                             aux=args.aux)
+        print ("\n-------INSTANTIATING BOARD-------")
+        board = bci.OpenBCIBoard(port=args.port,
+                                 daisy=args.daisy,
+                                 filter_data=args.filtering,
+                                 scaled_output=True,
+                                 log=args.log,
+                                 aux=args.aux)
 
-    print_board_setup(board)
-    print_plugins_found(manager)
+        print_board_setup(board)
+        print_plugins_found(manager)
 
-    # Fetch plugins, try to activate them, add to the list if OK
-    plug_list = []
-    callback_list = []
-    if args.add:
-        for plug_candidate in args.add:
-            # first value: plugin name, then optional arguments
-            plug_name = plug_candidate[0]
-            plug_args = plug_candidate[1:]
-            add_plugin(manager, plug_name, plug_args, plug_list, callback_list,
-                       board)
+        # Fetch plugins, try to activate them, add to the list if OK
+        plug_list = []
+        callback_list = []
+        if args.add:
+            for plug_candidate in args.add:
+                # first value: plugin name, then optional arguments
+                plug_name = plug_candidate[0]
+                plug_args = plug_candidate[1:]
+                add_plugin(manager, plug_name, plug_args, plug_list, callback_list,
+                           board)
 
-    if len(plug_list) == 0:
-        fun = None
-        print("No function loaded!")
-    else:
-        fun = callback_list
+        if len(plug_list) == 0:
+            fun = None
+            print("No function loaded!")
+        else:
+            fun = callback_list
 
-    def cleanUp():
-        board.disconnect()
-        print ("Deactivating Plugins...")
-        for plug in plug_list:
-            plug.deactivate()
-        print ("User.py exiting...")
+        def cleanUp():
+            board.disconnect()
+            print ("Deactivating Plugins...")
+            for plug in plug_list:
+                plug.deactivate()
+            print ("User.py exiting...")
 
-    atexit.register(cleanUp)
+        atexit.register(cleanUp)
 
-    # EXECUTE APPLICATION-------------------------------------------------------
-    process_thread = threading.Thread(target=run_processor, args=(processor,))
-    process_thread.start()
+        # EXECUTE APPLICATION-------------------------------------------------------
+        process_thread = threading.Thread(target=run_processor, args=(processor,))
+        process_thread.start()
 
-    execute_board(board, main_controller, fun, biosignal, processor)
+        execute_board(board, main_controller, fun, biosignal, processor)
 
-    # FINISH EXIT PROCESS
-    ready_for_exit = False
-    while not ready_for_exit:
-        if main_controller.search(Message.GUI_EXIT):
-            ready_for_exit = True
+        # FINISH EXIT PROCESS
+        ready_for_exit = False
+        while not ready_for_exit:
+            if main_controller.search(Message.GUI_EXIT):
+                ready_for_exit = True
 
-    print("Final goodbye!")
+        print("Final goodbye!")
