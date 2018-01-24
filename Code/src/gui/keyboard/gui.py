@@ -2,8 +2,7 @@ from PyQt4 import QtGui, QtCore
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
-
-from Keyboard import Keyboard
+from .Keyboard import Keyboard
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 

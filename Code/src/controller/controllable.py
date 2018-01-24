@@ -1,5 +1,5 @@
-from controller import Controller
-from MESSAGE import Message
+from .controller import Controller
+from .MESSAGE import Message
 
 
 class Controllable(object):

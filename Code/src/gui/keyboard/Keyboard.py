@@ -91,7 +91,7 @@ class Keyboard:
         for button in self.character_buttons:
             button.setStyleSheet(self.DEFAULT_STYLESHEET)
 
-        print self.time_elapsed
+        print(self.time_elapsed)
 
     def resume(self):
         # Resuming

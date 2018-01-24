@@ -1,5 +1,5 @@
-from MESSAGE import Message
-from controllable import Controllable
+from .MESSAGE import Message
+from .controllable import Controllable
 
 
 class Processor(Controllable):
