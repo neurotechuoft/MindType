@@ -29,10 +29,8 @@ def native_autocomplete(trie1, word):
     Autocomplete the word/phrase using native python implementation of trie.
     If it's an incomplete word, then return the most likely completion.
     If it's a complete word, return the next word that is most likely.
-
     For now it's slower and less memory efficient than the C++ version,
     so use that one instead.
-
     :param word: (part of) a word
     :return: completed string
     """
@@ -43,8 +41,10 @@ def native_autocomplete(trie1, word):
             maxi = item[1]
             compl = item[0]
     if compl == '':
-        return "Couldn't find autocomplete for \"{}\"".format(word)
+       return "couldn't find autocomplete for \"{}\"".format(word)
     longer = compl.split(' ')
     if len(longer) > 1 and longer[-2] in word:
         return longer[-1]
     return longer[0]
+
+

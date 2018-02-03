@@ -1,6 +1,9 @@
 import trie_funcs
 import sys
-
+import codecs
+import pandas as pd
+import random
+import benchmark
 
 def autocomplete(word: str) -> str:
     """
@@ -20,5 +23,16 @@ if __name__ == '__main__':
     # popular_trie("/home/igor/nlp/ngrams/w2_.txt")
     if len(sys.argv) != 2:
         print("Usage: python complete.py phrase_to_complete")
-    print(autocomplete(sys.argv[1]))
+        #print(len(sys.argv))
+    #print(autocomplete(sys.argv[1]))
+
+    #print(autocomplete('i'))
+
+    # Benchmarks
+    # Time
+    t = benchmark.benchmark('./random/test_data_w2')
+    print(t)
+    # Performance
+    #a,b = benchmark.performance_test()
+    #print(a,b)
 
