@@ -4,7 +4,7 @@ import logging
 import sys
 import threading
 import time
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 
 from biosignals.print_biosignal import PrintBiosignal
 from biosignals.tagger import Tagger
@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.ERROR)
 from yapsy.PluginManager import PluginManager
 
 def make_gui(main_controller, controllers):
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     main_scr = None
     if FeatureFlags.GUI:
         main_scr = GUI(main_controller, controllers)

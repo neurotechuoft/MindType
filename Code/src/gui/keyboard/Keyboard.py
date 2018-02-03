@@ -5,8 +5,8 @@ import math
 import random
 import time
 
-from PyQt4 import QtGui
-from PyQt4.QtCore import QTimer
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import QTimer
 
 
 class Keyboard:
@@ -21,18 +21,18 @@ class Keyboard:
                                  "color: blue; font-size: 65px;}"
 
         # creating a button grid
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
         self.grid.setSpacing(0)
 
         # Top 3 Word Predictions
-        self.predict_grid = QtGui.QGridLayout()
+        self.predict_grid = QtWidgets.QGridLayout()
         self.predict_grid.setSpacing(0)
 
         self.predict_buttons = []
 
         for pred in range(3):
             button_name = "pred" + str(pred)
-            button = QtGui.QPushButton(button_name)
+            button = QtWidgets.QPushButton(button_name)
             button.setStyleSheet(self.PREDICT_STYLESHEET)
 
             self.predict_grid.addWidget(button, 0, pred)
@@ -53,7 +53,7 @@ class Keyboard:
                 else:
                     button_name = str(character_number - 26)
 
-                button = QtGui.QPushButton(button_name)
+                button = QtWidgets.QPushButton(button_name)
                 button.setStyleSheet(self.DEFAULT_STYLESHEET)
 
                 # adding button listener
