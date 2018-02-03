@@ -1,11 +1,11 @@
 import functools
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 
 from controller.MESSAGE import Message
 
 
-class DevTools(QtGui.QDialog):
+class DevTools(QtWidgets.QDialog):
     def __init__(self, main_controller, controllers, parent=None):
         super(DevTools, self).__init__(parent)
 

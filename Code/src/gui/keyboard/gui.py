@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
@@ -7,7 +7,7 @@ from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 
 
-class GUI(QtGui.QDialog):
+class GUI(QtWidgets.QDialog):
     def __init__(self, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
 
@@ -20,19 +20,19 @@ class GUI(QtGui.QDialog):
         self.interval = 100
 
         # Creating main panel which contains everything
-        self.main_panel = QtGui.QVBoxLayout()
+        self.main_panel = QtWidgets.QVBoxLayout()
         self.main_panel.setContentsMargins(0, 0, 0, 0)
 
         # creating header panel which has pause/resume and text display
-        self.header_panel = QtGui.QHBoxLayout()
+        self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
 
         # creating header panel buttons
-        self.character_display_panel = QtGui.QLabel("Enter Text!")
+        self.character_display_panel = QtWidgets.QLabel("Enter Text!")
         self.character_display_panel.setStyleSheet(
             self.CHAR_DISPLAY_PANEL_SHEET)
-        self.end_button = QtGui.QPushButton("Resume")
+        self.end_button = QtWidgets.QPushButton("Resume")
         self.__PAUSED__ = True
 
         # setting button click listeners
@@ -44,7 +44,7 @@ class GUI(QtGui.QDialog):
 
         # adding keyboard gui to main panel
         # creating a button grid
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
         self.grid.setSpacing(0)
         self.keyboard = Keyboard(self.main_panel, self.character_display_panel,
                                  self.interval)
