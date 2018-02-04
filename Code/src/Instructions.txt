@@ -31,7 +31,12 @@ Note: check that you are using Python 3.6.3
 	- yapsy
 	- pyserial
 	- numpy
-6. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
+6. Run 
+    $ sudo -e /etc/udev/rules.d/50-ttyusb.rules 
+and add 
+    KERNEL=="ttyUSB[0-9]*",NAME="tts/USB%n",SYMLINK+="%k",GROUP="uucp",MODE="0666"
+to the file.
+7. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
 
 List of software requirements:
 	- Python 3.6
@@ -46,6 +51,4 @@ Usage:
 -------------------------------------------------------------------------------
 1. cd into MindType/Code/src
 2. Run the following commands to start the application
-	$ xhost +
-
-	$ sudo QT_X11_NO_MITSHM=1 python3 main.py -p /dev/ttyUSB0 --add pub_sub
+	$ python3 main.py -p /dev/ttyUSB0 --add pub_sub
