@@ -31,7 +31,7 @@ import pdb
 import glob
 
 SAMPLE_RATE = 250.0     # Hz
-START_BYTE = 0xA0       # start of data packet
+START_BYTE = b'\xA0'    # start of data packet
 END_BYTE = 0xC0         # end of data packet
 ADS1299_Vref = 4.5      # reference voltage for ADC in ADS1299.  set by its hardware
 ADS1299_gain = 24.0     # assumed gain setting for ADS1299.  set by its Arduino code
@@ -251,8 +251,7 @@ class OpenBCIBoard(object):
             # reads bytes until it finds START_BYTE, warns client if there are bytes before, and starts
             # process at START_BYTE
             if self.read_state == 0:
-                b = read(1)
-                if struct.unpack('B', b)[0] == START_BYTE:
+                if read(1) == START_BYTE:
 
                     # found rep bytes before START_BYTE
                     if rep != 0:
@@ -279,14 +278,12 @@ class OpenBCIBoard(object):
 
                     # 3-byte int in 2's complement
                     if unpacked[0] > 127:
-                        pre_fix = bytes(bytearray.fromhex('FF'))
+                        pre_fix = b'\xff'
                     else:
-                        pre_fix = bytes(bytearray.fromhex('00'))
-
-                    literal_read = pre_fix + literal_read
+                        pre_fix = b'\x00'
 
                     # unpack little endian(>) signed integer(i) (makes unpacking platform independent)
-                    myInt = struct.unpack('>i', literal_read)[0]
+                    myInt = struct.unpack('>i', (pre_fix + literal_read))[0]
 
                     # myInt is data for individual channel -- added to channel_data in channel order
                     if self.scaling_output:
@@ -329,6 +326,15 @@ class OpenBCIBoard(object):
                     self.warn("ID:<%d> <Unexpected END_BYTE found <%s> instead of <%s>" % (packet_id, val, END_BYTE))
                     logging.debug(log_bytes_in)
                     self.packets_dropped = self.packets_dropped + 1
+
+    # temporary -- unneeded if START_BYTE is Byte object
+    def unicode_to_byte(byte_to_convert):
+        """Converts START_BYTE or END_BYTE to Python's Byte object
+
+        :param byte_to_convert:
+        :return: Byte
+        """
+        return struct.pack("B", byte_to_convert)
 
     """
 

@@ -5,8 +5,8 @@ import math
 import random
 import time
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import QTimer
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import QTimer
 
 
 class Keyboard:
@@ -21,11 +21,11 @@ class Keyboard:
                                  "color: blue; font-size: 65px;}"
 
         # creating a button grid
-        self.key_grid = QtGui.QGridLayout()
+        self.key_grid = QtWidgets.QGridLayout()
         self.key_grid.setSpacing(0)
 
         # Top 3 Word Predictions
-        self.predict_grid = QtGui.QGridLayout()
+        self.predict_grid = QtWidgets.QGridLayout()
         self.predict_grid.setSpacing(0)
 
         self.predict_buttons = []
@@ -53,7 +53,7 @@ class Keyboard:
                 elif character_number is 26:
                     button_name = "0"
 
-                    button = QtGui.QPushButton(button_name)
+                    button = QtWidgets.QPushButton(button_name)
                     button.setStyleSheet(self.DEFAULT_STYLESHEET)
                     # adding button listener
                     button.clicked.connect(
@@ -87,7 +87,7 @@ class Keyboard:
     def make_predictions_widget(self):
         for pred in range(3):
             button_name = "pred" + str(pred)
-            button = QtGui.QPushButton(button_name)
+            button = QtWidgets.QPushButton(button_name)
             button.setStyleSheet(self.PREDICT_STYLESHEET)
 
             self.predict_grid.addWidget(button, 0, pred)
@@ -97,7 +97,7 @@ class Keyboard:
                             button_name,
                             character_display_panel,
                             row, col):
-        button = QtGui.QPushButton(button_name)
+        button = QtWidgets.QPushButton(button_name)
         button.setStyleSheet(self.DEFAULT_STYLESHEET)
         # adding button listener
         button.clicked.connect(functools.partial(self.print_char, button_name,
@@ -141,7 +141,7 @@ class Keyboard:
         for button in self.character_buttons:
             button.setStyleSheet(self.DEFAULT_STYLESHEET)
 
-        print self.time_elapsed
+        print(self.time_elapsed)
 
     def resume(self):
         # Resuming

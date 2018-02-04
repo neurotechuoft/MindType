@@ -1,0 +1,5 @@
+numpy==1.14.0
+PyQt5==5.10
+pyserial==3.4
+sip==4.19.7
+Yapsy==1.11.223

@@ -1,7 +1,7 @@
 import functools
 import sys
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 
 from controller import Controller
 from gui.dev_tools import DevTools
