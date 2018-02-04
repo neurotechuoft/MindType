@@ -200,6 +200,10 @@ class Keyboard:
     def change_color(self, row_col, color):
         keyboard_buttons = self.character_buttons
         is_row = False
+
+        vector = self.get_row_and_col(row_col)
+        print(vector)
+
         if row_col > 5:
             row_col = row_col - 6
             is_row = True
@@ -214,7 +218,6 @@ class Keyboard:
                 keyboard_button = keyboard_buttons[btn_id]
                 keyboard_button.setStyleSheet(stylesheet)
 
-        vector = self.get_row_and_col(row_col)
 
     # pause between each character flashing
     def run_again(self):

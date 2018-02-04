@@ -21,6 +21,7 @@ logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
 
+
 def make_gui(main_controller, controllers):
     app = QtWidgets.QApplication(sys.argv)
     main_scr = None
