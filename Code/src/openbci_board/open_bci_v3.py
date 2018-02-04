@@ -30,6 +30,9 @@ import sys
 import pdb
 import glob
 
+# cython (TODO: DOESNT WORK RIGHT NOW)
+import openbci_board.openbci_board.v3functions as cyfunc
+
 SAMPLE_RATE = 250.0     # Hz
 START_BYTE = b'\xA0'    # start of data packet
 END_BYTE = 0xC0         # end of data packet
@@ -222,6 +225,7 @@ class OpenBCIBoard(object):
 
     """
 
+    # cythonfn.pyx
     def _read_serial_binary(self, max_bytes_to_skip=3000):
         """ Main process: unpacks bytes from self.ser and creates OpenBCISample object from unpacked bytes.
         See incoming packet structure above. Warns user if unpacked data is unexpected.
@@ -267,46 +271,18 @@ class OpenBCIBoard(object):
             # ---------Channel Data---------
             # reads from struct and adds channel data to channel in order of channel
             elif self.read_state == 1:
-                channel_data = []
-                for c in range(self.eeg_channels_per_sample):
 
-                    # 3-byte ints
-                    literal_read = read(3)
-
-                    unpacked = struct.unpack('3B', literal_read)
-                    log_bytes_in = log_bytes_in + '|' + str(literal_read)
-
-                    # 3-byte int in 2's complement
-                    if unpacked[0] > 127:
-                        pre_fix = b'\xff'
-                    else:
-                        pre_fix = b'\x00'
-
-                    # unpack little endian(>) signed integer(i) (makes unpacking platform independent)
-                    myInt = struct.unpack('>i', (pre_fix + literal_read))[0]
-
-                    # myInt is data for individual channel -- added to channel_data in channel order
-                    if self.scaling_output:
-                        channel_data.append(myInt * scale_fac_uVolts_per_count)
-                    else:
-                        channel_data.append(myInt)
+		        # get channel data for 8 channels * 3 bytes per channel
+                channel_data = cyfunc.get_channel_data(read(24), self.scaling_output, self.eeg_channels_per_sample, scale_fac_uVolts_per_count)
 
                 self.read_state = 2
 
             # ---------Accelerometer Data---------
             # same process as above but instead adding accelerometer data to aux_data
             elif self.read_state == 2:
-                aux_data = []
-                for a in range(self.aux_channels_per_sample):
-
-                    # short = h
-                    acc = struct.unpack('>h', read(2))[0]
-                    log_bytes_in = log_bytes_in + '|' + str(acc)
-
-                    if self.scaling_output:
-                        aux_data.append(acc * scale_fac_accel_G_per_count)
-                    else:
-                        aux_data.append(acc)
+                
+                # get aux data for 3 aux channels * 2 bytes per channel
+                aux_data = cyfunc.get_aux_data(read(6), self.scaling_output, self.aux_channels_per_sample, scale_fac_accel_G_per_count)
 
                 self.read_state = 3
 
@@ -326,15 +302,6 @@ class OpenBCIBoard(object):
                     self.warn("ID:<%d> <Unexpected END_BYTE found <%s> instead of <%s>" % (packet_id, val, END_BYTE))
                     logging.debug(log_bytes_in)
                     self.packets_dropped = self.packets_dropped + 1
-
-    # temporary -- unneeded if START_BYTE is Byte object
-    def unicode_to_byte(byte_to_convert):
-        """Converts START_BYTE or END_BYTE to Python's Byte object
-
-        :param byte_to_convert:
-        :return: Byte
-        """
-        return struct.pack("B", byte_to_convert)
 
     """
 
