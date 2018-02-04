@@ -115,17 +115,19 @@ class Keyboard:
     def start_number_context(self, character_display_panel):
         num = 0
 
-        for btn in self.character_buttons:
-            btn.deleteLater()
+        self.key_grid.deleteLater()
 
-        self.character_buttons = []
-
-        for i in range(6):
-            for j in range(6):
-                num = i * 6 + j
-                if num < 10:
-                    self.add_key_to_keyboard(str(num), character_display_panel,
-                                             i, j)
+        # for btn in self.character_buttons:
+        #     btn.deleteLater()
+        #
+        # self.character_buttons = []
+        #
+        # for i in range(6):
+        #     for j in range(6):
+        #         num = i * 6 + j
+        #         if num < 10:
+        #             self.add_key_to_keyboard(str(num), character_display_panel,
+        #                                      i, j)
 
 
     def start(self):
