@@ -215,7 +215,6 @@ class Keyboard:
                 keyboard_button.setStyleSheet(stylesheet)
 
         vector = self.get_row_and_col(row_col)
-            
 
     # pause between each character flashing
     def run_again(self):
