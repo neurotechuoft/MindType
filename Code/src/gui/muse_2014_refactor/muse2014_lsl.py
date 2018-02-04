@@ -25,11 +25,12 @@ outlet = StreamOutlet(info, 1, 360)
 def process(data, timestamp, index):
     outlet.push_sample(data, timestamp)
 
+    # test for response
     if index % 220 == 0:
         print('New Second! @', index, timestamp)
 
 
-# connect to the server (move start and top to separate MUSE class later)
+# connect to the server
 try:
     muse_server = PylibloServer(PORT, process)
 except ServerError:
