@@ -3,3 +3,4 @@ PyQt5==5.10
 pyserial==3.4
 sip==4.19.7
 Yapsy==1.11.223
+marisa-trie==0.7.4
