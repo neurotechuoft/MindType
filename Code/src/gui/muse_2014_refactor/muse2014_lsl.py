@@ -1,6 +1,7 @@
 """This script receives raw EEG data from the muse and pushes it to an lsl outlet
 Adapted from:
-
+    muse-lsl: https://github.com/alexandrebarachant/muse-lsl.git
+    beats-muse: https://github.com/Oishe/beats-muse
 """
 from server import *
 import time

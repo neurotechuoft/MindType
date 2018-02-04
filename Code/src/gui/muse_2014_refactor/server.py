@@ -1,6 +1,6 @@
 """Contains server that holds Pyliblo communication"""
 from liblo import *
-import time
+from pylsl import local_clock
 
 
 class PylibloServer(ServerThread):
@@ -10,7 +10,7 @@ class PylibloServer(ServerThread):
         """Initialize"""
         ServerThread.__init__(self, port)
         # connection start time (needed for timestamping)
-        self.start_time = time.time()
+        self.start_time = local_clock()
         # frequency multiplier
         self.freq_mult = 1. / 220
         # running index for timestamp
