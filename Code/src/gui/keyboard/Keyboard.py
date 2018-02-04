@@ -20,6 +20,8 @@ class Keyboard:
         self.DARKEN_STYLESHEET = "QPushButton {background-color: #444444; " \
                                  "color: blue; font-size: 65px;}"
 
+        self.main_panel = main_panel
+
         # creating a button grid
         self.key_grid = QtWidgets.QGridLayout()
         self.key_grid.setSpacing(0)
@@ -32,13 +34,22 @@ class Keyboard:
         self.character_buttons = []
 
         self.make_predictions_widget()
+        self.make_keyboard_widget(character_display_panel)
 
         # variables used for pausing
         self.flashing_interval = interval
 
-        # adding keyboard buttons to the grid)
+        # attaching grid to main panel
+        self.main_panel.addLayout(self.predict_grid)
+        self.main_panel.addLayout(self.key_grid)
 
+        # variables used for flashing
+        self.flash_timer_queue = []
+        self.row_col_flash_order = []
+        self.time_start = 0
+        self.time_elapsed = 0
 
+    def make_keyboard_widget(self, character_display_panel):
         for row in range(6):
             for col in range(6):
                 # button_name = ""
@@ -59,7 +70,7 @@ class Keyboard:
                     button.clicked.connect(
                         functools.partial(self.start_number_context,
                                           character_display_panel))
-                    self.key_grid.addWidget(button, row, col, alignment = QtCore.Qt.AlignTop)
+                    self.key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)
 
                 else:
@@ -71,18 +82,6 @@ class Keyboard:
                 #     self.add_key_to_keyboard(button_name,
                 #                          character_display_panel,
                 #                          row, col)
-
-
-
-        # attaching grid to main panel
-        main_panel.addLayout(self.predict_grid)
-        main_panel.addLayout(self.key_grid)
-
-        # variables used for flashing
-        self.flash_timer_queue = []
-        self.row_col_flash_order = []
-        self.time_start = 0
-        self.time_elapsed = 0
 
     def make_predictions_widget(self):
         for pred in range(3):
@@ -208,3 +207,6 @@ class Keyboard:
     # pause between each character flashing
     def run_again(self):
         QTimer.singleShot(self.flashing_interval * 3, functools.partial(self.start))
+
+    def calc_row_col(self, num, is_row):
+        return num if is_row else 6 + num
