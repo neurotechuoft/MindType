@@ -30,7 +30,7 @@ import sys
 import pdb
 import glob
 
-# cython (TODO: DOESNT WORK RIGHT NOW)
+# cython
 import openbci_board.openbci_board.v3functions as cyfunc
 
 SAMPLE_RATE = 250.0     # Hz
@@ -248,7 +248,6 @@ class OpenBCIBoard(object):
             else:
                 return bb
 
-        # TODO: use more efficient implementation of for loop
         for rep in range(max_bytes_to_skip):
 
             # ---------Start Byte & ID---------
@@ -409,7 +408,7 @@ class OpenBCIBoard(object):
         """ DEBUGGING: Gathers and prints individual incoming packets. Format for gathering into packets
         is similar to _read_serial_binary above. See incoming packet structure above."""
 
-        # TODO: needs fixing (referenced skipped_str before assignment, assumes not daisy)
+        # needs fixing (referenced skipped_str before assignment, assumes not daisy)
         while self.streaming:
             b = struct.unpack('B', self.ser.read())[0]
 
