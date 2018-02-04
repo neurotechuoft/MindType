@@ -9,6 +9,8 @@ import time
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QTimer
 
+from nlp.complete import autocomplete
+
 
 class Keyboard:
     # constructor
@@ -139,15 +141,11 @@ class Keyboard:
         # Punctuation indicates new word
         if char is " ":
             self.current_text = char
-        # else:
-        #     pred_1, pred_2, pred_3 = autocomplete(self.current_text)
+        else:
+            pred_1 = autocomplete(self.current_text)
+            print("Prediction: " + str(pred_1))
 
         character_display_panel.setText(self.current_text)
-
-        # if character_display_panel.text() == "Enter Text!":
-        #     character_display_panel.setText(char)
-        # else:
-        #     character_display_panel.setText(character_display_panel.text() + char)
 
 
     def start_number_context(self, character_display_panel):

@@ -1,7 +1,9 @@
-from complete import autocomplete
 import time
 import codecs
 import pandas as pd
+
+from nlp import complete
+
 
 def benchmark(file: str) -> float:
     """
@@ -24,7 +26,7 @@ def time_wrapper(word: str) -> float:
     :return: time it takes to complete the word
     """
     start = time.time()
-    autocomplete(word)
+    complete.autocomplete(word)
     return (time.time() - start) * 1000.0
 
 def performance_test():
@@ -37,7 +39,7 @@ def performance_test():
     # Intrinstic Test 1: 2nd word prediction based on first word input
     c1 = 0
     for i in range(1, len(testdata)):
-        if autocomplete(testdata["first"][i] + ' ') == testdata["second"][i]:
+        if complete.autocomplete(testdata["first"][i] + ' ') == testdata["second"][i]:
             c1 = c1 + 1
     print('Test1: Prediction accuracy = ', c1 / len(testdata))
 
@@ -53,12 +55,12 @@ def performance_test():
     for i in range(10):
         for j in range(len(testdata["first"][i])):
             n += 1
-            if autocomplete(testdata["first"][i][:j]) == testdata["first"][i]:
+            if complete.autocomplete(testdata["first"][i][:j]) == testdata["first"][i]:
                 c2 = c2 + 1
 
         for k in range(len(testdata["second"][i])):
             n += 1
-            if autocomplete(testdata["second"][i][:k]) == testdata["second"][i]:
+            if complete.autocomplete(testdata["second"][i][:k]) == testdata["second"][i]:
                 c2 = c2 + 1
 
     print('Test2: Prediction accuracy = ', c2 / n)
