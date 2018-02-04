@@ -14,7 +14,7 @@ class Keyboard:
     def __init__(self, main_panel, character_display_panel, interval):
         # Style sheets
         self.DEFAULT_STYLESHEET = "QPushButton {background-color: #444444; " \
-                                     "color: white; font-size: 65px;}"
+                                  "color: white; font-size: 65px;}"
         self.PREDICT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                   "color: white; font-size: 50px;}"
         self.DARKEN_STYLESHEET = "QPushButton {background-color: #444444; " \
@@ -35,9 +35,7 @@ class Keyboard:
         self.predict_grid = QtWidgets.QGridLayout()
         self.predict_grid.setSpacing(0)
 
-
         self.make_predictions_widget()
-
 
         # variables used for pausing
         self.flashing_interval = interval
@@ -118,7 +116,7 @@ class Keyboard:
         # adding button listener
         button.clicked.connect(functools.partial(self.print_char, button_name,
                                                  character_display_panel))
-        key_grid.addWidget(button, row, col, alignment = QtCore.Qt.AlignTop)
+        key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
         self.character_buttons.append(button)
 
     def print_char(self, name, character_display_panel):
@@ -137,7 +135,6 @@ class Keyboard:
 
         self.num_grid = self.make_numbers_widget(character_display_panel)
         self.main_panel.addLayout(self.num_grid)
-
 
     def start(self):
         self.row_col_flash_order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -166,7 +163,6 @@ class Keyboard:
         self.flash_timer_queue = []
         random.shuffle(self.row_col_flash_order)
         self.time_start = time.time()
-
 
         for row_col in self.row_col_flash_order:
             # creating darken row/col instructions for specific row
@@ -217,7 +213,6 @@ class Keyboard:
             if btn_id < len(keyboard_buttons):
                 keyboard_button = keyboard_buttons[btn_id]
                 keyboard_button.setStyleSheet(stylesheet)
-
 
     # pause between each character flashing
     def run_again(self):
