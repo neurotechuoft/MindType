@@ -3,6 +3,7 @@
 import functools
 import math
 import random
+import string
 import time
 
 from PyQt5 import QtGui, QtWidgets, QtCore
@@ -50,6 +51,8 @@ class Keyboard:
         self.time_start = 0
         self.time_elapsed = 0
 
+        self.current_text = ""
+
     def make_keyboard_widget(self, character_display_panel):
         ret_key_grid = QtWidgets.QGridLayout()
         ret_key_grid.setSpacing(0)
@@ -75,6 +78,15 @@ class Keyboard:
                     button.clicked.connect(
                         functools.partial(self.start_number_context,
                                           character_display_panel))
+                    ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
+                    self.character_buttons.append(button)
+
+                elif character_number is 27:
+                    button_name = "space"
+                    button = QtWidgets.QPushButton(button_name)
+                    button.setStyleSheet(self.DEFAULT_STYLESHEET)
+                    button.clicked.connect(functools.partial(self.print_char, " ",
+                                                             character_display_panel))
                     ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)
 
@@ -119,13 +131,24 @@ class Keyboard:
         key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
         self.character_buttons.append(button)
 
-    def print_char(self, name, character_display_panel):
+    def print_char(self, char, character_display_panel):
         # printing characters on same line
-        print(name),
-        if character_display_panel.text() == "Enter Text!":
-            character_display_panel.setText(name)
-        else:
-            character_display_panel.setText(character_display_panel.text() + name)
+        print(char)
+        self.current_text += char
+
+        # Punctuation indicates new word
+        if char is " ":
+            self.current_text = char
+        # else:
+        #     pred_1, pred_2, pred_3 = autocomplete(self.current_text)
+
+        character_display_panel.setText(self.current_text)
+
+        # if character_display_panel.text() == "Enter Text!":
+        #     character_display_panel.setText(char)
+        # else:
+        #     character_display_panel.setText(character_display_panel.text() + char)
+
 
     def start_number_context(self, character_display_panel):
 
