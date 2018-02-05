@@ -25,27 +25,15 @@ Note: check that you are using Python 3.6.3
 
 1. Open up terminal and install git with 'sudo apt install git'
 2. Clone the MindType repository with 'git clone https://github.com/neurotechuoft/MindType'
-3. Install PyQt4 with 'sudo apt-get install python3-qt4'
-4. Install pip3 with 'sudo apt install python3-pip'
-5. Install the following modules with pip3 (with 'pip3 install <module>'):
-	- yapsy
-	- pyserial
-	- numpy
-6. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
-
-List of software requirements:
-	- Python 3.6
-	- PyQt4 for Python 3
-	- yapsy
-	- pyserial
-	- numpy
-
+3. cd into Code/src with
+    $ cd MindType/Code/src
+4. Run setup with:
+    $ ./setup.sh
+5. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
 
 Usage:
 
 -------------------------------------------------------------------------------
 1. cd into MindType/Code/src
 2. Run the following commands to start the application
-	$ xhost +
-
-	$ sudo QT_X11_NO_MITSHM=1 python3 main.py -p /dev/ttyUSB0 --add pub_sub
+	$ ./MindType.sh
