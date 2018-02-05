@@ -38,7 +38,7 @@ class Keyboard:
         self.predict_grid = QtWidgets.QGridLayout()
         self.predict_grid.setSpacing(0)
 
-        self.make_predictions_widget()
+        self.make_predictions_widget(character_display_panel)
 
         # variables used for pausing
         self.flashing_interval = interval
@@ -112,11 +112,14 @@ class Keyboard:
 
         return ret_num_grid
 
-    def make_predictions_widget(self):
+    def make_predictions_widget(self, character_display_panel):
         for pred in range(3):
-            button_name = "pred" + str(pred)
+            button_name = ""
             button = QtWidgets.QPushButton(button_name)
             button.setStyleSheet(self.PREDICT_STYLESHEET)
+
+            button.clicked.connect(functools.partial(self.print_prediction, button,
+                                                     character_display_panel))
 
             self.predict_grid.addWidget(button, 0, pred)
             self.predict_buttons.append(button)
@@ -133,6 +136,19 @@ class Keyboard:
         key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
         self.character_buttons.append(button)
 
+    def print_prediction(self, predict_btn, character_display_panel):
+
+        prediction = predict_btn.text()
+
+        # printing characters on same line
+        print(prediction)
+        display_panel_text = prediction + " "
+
+        character_display_panel.setText(display_panel_text)
+
+        self.reset_predictions()
+        self.current_text = ""
+
     def print_char(self, char, character_display_panel):
         # printing characters on same line
         print(char)
@@ -142,13 +158,25 @@ class Keyboard:
         if char is " ":
             self.current_text = ""
             display_panel_text = " "
+            self.reset_predictions()
         else:
-            pred_1 = autocomplete(self.current_text)
-            print("Prediction: " + str(pred_1))
+            self.update_predictions(self.current_text)
             display_panel_text = self.current_text
 
         character_display_panel.setText(display_panel_text)
 
+    def update_predictions(self, word):
+        pred_0, pred_1, pred_2 = autocomplete(word)
+
+        self.predict_buttons[0].setText(pred_0)
+        self.predict_buttons[1].setText(pred_1)
+        self.predict_buttons[2].setText(pred_2)
+
+        print("Top three: " + str(pred_0) + ", " + str(pred_1) + ", " + str(pred_2))
+
+    def reset_predictions(self):
+        for button in self.predict_buttons:
+            button.setText("")
 
     def start_number_context(self, character_display_panel):
 
