@@ -27,11 +27,9 @@ Note: check that you are using Python 3.6.3
 2. Clone the MindType repository with 'git clone https://github.com/neurotechuoft/MindType'
 3. cd into Code/src with
     $ cd MindType/Code/src
-4. Install the required modules with pip3:
-    $ pip3 install -r requirements.txt
-5. Run setup with:
+4. Run setup with:
     $ ./setup.sh
-6. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
+5. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
 
 Usage:
 
