@@ -1,3 +1,5 @@
+import sys
+
 from nlp import trie_funcs, benchmark
 
 
@@ -11,23 +13,29 @@ def autocomplete(word: str) -> str:
     """
     return trie_funcs.autocomplete(word, "w2_.txt")
 
-# if __name__ == '__main__':
-#
-#     # trie = load_data("/home/igor/nlp/ngrams/w2_.txt")
-#     # one_letter("/home/igor/nlp/ngrams/w2_.txt")
-#     # popular_trie("/home/igor/nlp/ngrams/w2_.txt")
-#     if len(sys.argv) != 2:
-#         print("Usage: python complete.py phrase_to_complete")
-#         #print(len(sys.argv))
-#     #print(autocomplete(sys.argv[1]))
-#
-#     #print(autocomplete('i'))
-#
-#     # Benchmarks
-#     # Time
-#     t = benchmark.benchmark('./random/test_data_w2')
-#     print(t)
-#     # Performance
-#     #a,b = benchmark.performance_test()
-#     #print(a,b)
-#
+
+if __name__ == '__main__':
+
+    # trie = load_data("/home/igor/nlp/ngrams/w2_.txt")
+    # one_letter("/home/igor/nlp/ngrams/w2_.txt")
+    # popular_trie("/home/igor/nlp/ngrams/w2_.txt")
+    if len(sys.argv) != 2:
+        print("Usage: python complete.py phrase_to_complete")
+        #print(len(sys.argv))
+    #print(autocomplete(sys.argv[1]))
+
+    #print(autocomplete('i'))
+
+    # Benchmarks
+    # Time
+    #t = benchmark.benchmark('./random/test_data_w2')
+    #print(t)
+    # Performance
+    #a,b = benchmark.performance_test()
+    #print(a,b)
+
+    # This is the result
+    a1, a2, a3 = autocomplete('al i')
+    #print(a1, a2, a3)
+
+
