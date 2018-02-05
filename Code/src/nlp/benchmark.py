@@ -37,6 +37,8 @@ def performance_test():
     # Intrinstic Test 1: 2nd word prediction based on first word input
     c1 = 0
     for i in range(1, len(testdata)):
+        #a1, a2, a3 = autocomplete(testdata["first"][i] + ' ')
+        #result =
         if autocomplete(testdata["first"][i] + ' ') == testdata["second"][i]:
             c1 = c1 + 1
     print('Test1: Prediction accuracy = ', c1 / len(testdata))

@@ -27,19 +27,57 @@ def autocomplete(start_word, data_path, triee=None):
 
     # Iterate over the trie elements that start with the start_word
     # and store the one with the highest score.
-    for key, val in triee.items(start_word):
+    #for key, val in triee.items(start_word):
         # The values are singular tuples, where val[0] is the actual frequency
-        if val[0] > highest_freq:
-            highest_freq = val[0]
-            complete_word = key
-    if complete_word == '':
-        return "Couldn't find autocomplete for \"{}\"".format(start_word)
+    #    if val[0] > highest_freq:
+    #        highest_freq = val[0]
+    #        complete_word = key
+
+
+    # Iterate over the trie elements that start with the start_word
+    # and store the top 3 most frequent words
+    item = triee.items(start_word)
+
+    complete_word = []
+    complete_freq = []
+    i = 0
+    while len(item) > 0 and i < 3:
+        highest_freq = 0
+        for key, val in item:
+            if val[0] > highest_freq:
+                highest_freq = val[0]
+                complete_word.append(key)
+                complete_freq.append(val)
+        item.remove((complete_word[-1],complete_freq[-1]))
+        i += 1
+
+    #if len(complete_word) == 0:
+    #    return "Couldn't find autocomplete for \"{}\"".format(start_word)
     # For the case where the autocomplete predicts the next word
-    longer = complete_word.split(' ')
-    if len(longer) > 1 and longer[-2] in start_word:
+
+    results = []
+    j = 0
+    while j < len(complete_word) and j < 3:
+        longer = complete_word[j].split(' ')
+        if len(longer) > 1 and longer[-2] in start_word:
+            # Ignore the first word, which was given as an input, return only the next one
+            results.append(longer[-1])
+        else:
+            results.append(longer[0])
+        j += 1
+
+    while len(results) <= 3:
+        results.append(start_word.split(' ')[0])
+    return results[0], results[1], results[2]
+
+    #if complete_word == '':
+    #    return "Couldn't find autocomplete for \"{}\"".format(start_word)
+    # For the case where the autocomplete predicts the next word
+    #longer = complete_word.split(' ')
+    #if len(longer) > 1 and longer[-2] in start_word:
         # Ignore the first word, which was given as an input, return only the next one
-        return longer[-1]
-    return longer[0]
+    #    return longer[-1]
+    #return longer[0]
 
 
 def check_cache(data_path, start_word):
@@ -181,3 +219,4 @@ def popular_trie(data_path):
         pickle.dump(big_ones, output, pickle.HIGHEST_PROTOCOL)
 
     return triee
+

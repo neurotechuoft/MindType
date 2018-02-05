@@ -4,6 +4,9 @@ import codecs
 import pandas as pd
 import random
 import benchmark
+#import spacy
+
+'''TO DO: make use of Spacy to find the root/original form of the word, '''
 
 def autocomplete(word: str) -> str:
     """
@@ -30,9 +33,14 @@ if __name__ == '__main__':
 
     # Benchmarks
     # Time
-    t = benchmark.benchmark('./random/test_data_w2')
-    print(t)
+    #t = benchmark.benchmark('./random/test_data_w2')
+    #print(t)
     # Performance
     #a,b = benchmark.performance_test()
     #print(a,b)
+
+    # This is the result
+    a1, a2, a3 = autocomplete('al i')
+    #print(a1, a2, a3)
+
 
