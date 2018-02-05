@@ -140,12 +140,14 @@ class Keyboard:
 
         # Punctuation indicates new word
         if char is " ":
-            self.current_text = char
+            self.current_text = ""
+            display_panel_text = " "
         else:
             pred_1 = autocomplete(self.current_text)
             print("Prediction: " + str(pred_1))
+            display_panel_text = self.current_text
 
-        character_display_panel.setText(self.current_text)
+        character_display_panel.setText(display_panel_text)
 
 
     def start_number_context(self, character_display_panel):
