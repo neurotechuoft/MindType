@@ -1,12 +1,7 @@
-import trie_funcs
 import sys
-import codecs
-import pandas as pd
-import random
-import benchmark
-#import spacy
 
-'''TO DO: make use of Spacy to find the root/original form of the word, '''
+from nlp import trie_funcs, benchmark
+
 
 def autocomplete(word: str) -> str:
     """

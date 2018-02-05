@@ -89,25 +89,25 @@ def check_cache(data_path, start_word):
     :return: the loaded trie
     """
     try:
-        short = open('short_trie.pkl', 'rb')
+        short = open('./resources/short_trie.pkl', 'rb')
     except IOError:
         one_letter(data_path)
-        short = open('short_trie.pkl', 'rb')
+        short = open('./resources/short_trie.pkl', 'rb')
     try:
-        long = open('trie.pkl', 'rb')
+        long = open('./resources/trie.pkl', 'rb')
     except IOError:
         load_data(data_path)
-        long = open('trie.pkl', 'rb')
+        long = open('./resources/trie.pkl', 'rb')
 
     try:
-        pop_trie = open('popular_trie.pkl', 'rb')
-        pop_dict = open('dict.pkl', 'rb')
+        pop_trie = open('./resources/popular_trie.pkl', 'rb')
+        pop_dict = open('./resources/dict.pkl', 'rb')
         popular_dict = pickle.load(pop_dict)
 
     except IOError:
         popular_trie(data_path)
-        pop_trie = open('popular_trie.pkl', 'rb')
-        pop_dict = open('dict.pkl', 'rb')
+        pop_trie = open('./resources/popular_trie.pkl', 'rb')
+        pop_dict = open('./resources/dict.pkl', 'rb')
         popular_dict = pickle.load(pop_dict)
 
     if len(start_word) == 1:
