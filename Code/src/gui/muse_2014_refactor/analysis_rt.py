@@ -50,6 +50,7 @@ class RTAnalysis(object):
 
         while not self._kill_signal.is_set():
             # count/ or some marker to indicate end of trial
+            # TODO: clear up what the trigger for analysis will be, including sleep time
             trial_end = 1
             # when marker data indicates the end of the trial,
             if trial_end:
@@ -57,9 +58,10 @@ class RTAnalysis(object):
                 trial = eeg_stream.make_epochs(m_stream, data_duration, tmin=0.0, tmax=0.750)
                 # get input to classifier
                 classifier_input = trial.get_data()
+                # TODO: associate markers with classifier input array
                 c = np.array([classifier_input])
-                print('size of classifier-input: {}' .format(c.shape))
-                print(c[0, 0, 1, :])
+                # print('size of classifier-input: {}' .format(c.shape))
+                # print(c[0, 0, 1, :])
             else:
                 print('kill signal')
 
