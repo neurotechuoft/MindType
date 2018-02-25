@@ -185,7 +185,7 @@ class MuseEEGStream(base.BaseStream):
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         return data
 
-    def make_epochs(self, marker_stream, data_duration=None, events=None,
+    def make_epochs(self, marker_stream, end_index, data_duration=None, events=None,
                     event_duration=0, event_id=None, tmin=-0.2,
                     tmax=1.0, baseline=(None, 0), picks=None,
                     preload=False, reject=None, flat=None, proj=True,
@@ -208,7 +208,7 @@ class MuseEEGStream(base.BaseStream):
         -------
         epochs : mne.Epochs
         """
-        raw_data = self.get_data(data_duration=data_duration)
+        raw_data = self.get_data(end_index, data_duration=data_duration)
         if events is None:
             events = make_events(raw_data, marker_stream, event_duration)
         raw_data[-1, :] = 0  # Replace timestamps with zeros.
