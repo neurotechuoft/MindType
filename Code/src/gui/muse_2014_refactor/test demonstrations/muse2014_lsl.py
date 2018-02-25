@@ -4,12 +4,12 @@ Adapted from:
     muse-lsl: https://github.com/alexandrebarachant/muse-lsl.git
     beats-muse: https://github.com/Oishe/beats-muse
 """
-import server
+import Code.src.gui.muse_2014_refactor.server
 import time
 from pylsl import StreamInfo, StreamOutlet
-import stream_rt as st
-import analysis_rt as an
-import markers_test
+import Code.src.gui.muse_2014_refactor.stream_rt as st
+import Code.src.gui.muse_2014_refactor.analysis_rt as an
+import Code.src.gui.muse_2014_refactor.markers_test
 
 
 def main():
@@ -32,14 +32,14 @@ def main():
 
     # connect to the server
     try:
-        muse_server = server.PylibloServer(PORT, server.process, outlet)
-    except server.ServerError:
+        muse_server = Code.src.gui.muse_2014_refactor.server.PylibloServer(PORT, Code.src.gui.muse_2014_refactor.server.process, outlet)
+    except Code.src.gui.muse_2014_refactor.server.ServerError:
         raise ValueError('Cannot create PylibloServer Object')
     if muse_server:
         muse_server.connect()
 
     # establish test marker stream; for test purposes only
-    outlet = markers_test.test_marker_stream()
+    outlet = Code.src.gui.muse_2014_refactor.markers_test.test_marker_stream()
     print('marker stream started')
 
     # connect to inlets
@@ -53,7 +53,7 @@ def main():
     time.sleep(3)
 
     # start marker test trial
-    markers_test.start_marker_stream(outlet)
+    Code.src.gui.muse_2014_refactor.markers_test.start_marker_stream(outlet)
     # time for marker object to collect data
     time.sleep(3.4)
     # (When trial END signal arrives) make an epoch of the last 12 flashes and 1000 ms after
