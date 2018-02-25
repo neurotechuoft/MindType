@@ -128,7 +128,7 @@ class MuseEEGStream(base.BaseStream):
         units = []
         this_child = info.desc().child('channels').child('channel')
         for _ in range(info.channel_count()):
-            units.append(this_child.child_value('unit'))
+            units.append(this_child.child('label').child_value('unit'))
             this_child = this_child.next_sibling('channel')
         if all(units):
             self._eeg_unit = units[0]
@@ -137,7 +137,7 @@ class MuseEEGStream(base.BaseStream):
 
         # Add stimulus channel.
         ch_types = ['eeg' for _ in ch_names] + ['stim']
-        ch_names.append('P300_keyboard')
+        ch_names.append('P300')
         print(ch_names)
 
         # Create mne.Info object.
@@ -154,6 +154,7 @@ class MuseEEGStream(base.BaseStream):
 
         # Begin recording data in a loop
         self._record_data_indefinitely(self._eeg_stream)
+        print('EEG data recording started.')
 
     def get_data(self, data_duration=None, scale=1):
         """Returns most recent EEG data and timestamps of length data_duration.
