@@ -1,5 +1,6 @@
-"""Adapted LSLStream object from Real Time EEG repo found here: https://github.com/kaczmarj/rteeg.
-Contains classes which update their EEG and marker/stimulus data in real time over lsl
+"""Adapted LSLSStream object from Real Time EEG repo found here: https://github.com/kaczmarj/rteeg.
+Forms classes which update their EEG and marker/stimulus data in real time over lsl. Pre-processes data and makes it
+available for analysis.
 """
 import base
 import numpy as np
@@ -40,7 +41,6 @@ def raw_filter(raw, low_f, high_f):
     low_f: lower frequency cutoff
     high_f: upper frequency cutoff
     """
-    # filter the data between 0.5 and 15 Hz
     # bandpass 4th order butterworth filter
     raw.filter(low_f, high_f, method='iir')
 
@@ -128,7 +128,7 @@ class MuseEEGStream(base.BaseStream):
         units = []
         this_child = info.desc().child('channels').child('channel')
         for _ in range(info.channel_count()):
-            units.append(this_child.child_value('unit'))
+            units.append(this_child.child('label').child_value('unit'))
             this_child = this_child.next_sibling('channel')
         if all(units):
             self._eeg_unit = units[0]
@@ -137,7 +137,7 @@ class MuseEEGStream(base.BaseStream):
 
         # Add stimulus channel.
         ch_types = ['eeg' for _ in ch_names] + ['stim']
-        ch_names.append('P300_keyboard')
+        ch_names.append('P300')
         print(ch_names)
 
         # Create mne.Info object.
@@ -154,14 +154,17 @@ class MuseEEGStream(base.BaseStream):
 
         # Begin recording data in a loop
         self._record_data_indefinitely(self._eeg_stream)
+        print('EEG data recording started.')
 
-    def get_data(self, data_duration=None, scale=1):
+    def get_data(self, end_index, data_duration=None, scale=1):
         """Returns most recent EEG data and timestamps of length data_duration.
         Parameters
         ----------
         data_duration : int
             Window of data to output in seconds. If None, will return all of
             the EEG data.
+        end_index : int
+            last index of data to be included in the copy
         scale : int, float
             Value by which to multiply the EEG data. If None, attempts to
             scale values to volts.
@@ -176,13 +179,13 @@ class MuseEEGStream(base.BaseStream):
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         else:
             print('sfreq',self.info['sfreq'])
-            index = int(data_duration * self.info['sfreq'])
-            data = np.array(self.copy_data(index)).T
+            start_index = int(end_index - data_duration * self.info['sfreq'])
+            data = np.array(self.copy_data(start_index, end_index)).T
             # Scale the data but not the timestamps.
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         return data
 
-    def make_epochs(self, marker_stream, data_duration=None, events=None,
+    def make_epochs(self, marker_stream, end_index, data_duration=None, events=None,
                     event_duration=0, event_id=None, tmin=-0.2,
                     tmax=1.0, baseline=(None, 0), picks=None,
                     preload=False, reject=None, flat=None, proj=True,
@@ -205,7 +208,7 @@ class MuseEEGStream(base.BaseStream):
         -------
         epochs : mne.Epochs
         """
-        raw_data = self.get_data(data_duration=data_duration)
+        raw_data = self.get_data(end_index, data_duration=data_duration)
         if events is None:
             events = make_events(raw_data, marker_stream, event_duration)
         raw_data[-1, :] = 0  # Replace timestamps with zeros.

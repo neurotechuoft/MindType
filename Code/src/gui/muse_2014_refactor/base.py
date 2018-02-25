@@ -1,5 +1,5 @@
 """Base class for recording streams of data. Adapted for Neurotech Mindtype"""
-# Author: Jakub Kaczmarzyk <jakubk@mit.edu>
+# Original Author: Jakub Kaczmarzyk <jakubk@mit.edu>
 from __future__ import division, print_function, absolute_import
 import threading
 
@@ -55,22 +55,26 @@ class BaseStream(object):
             self._thread.start()
             self._active = True
 
-    def copy_data(self, index=None):
+    def copy_data(self, start_index=None, end_index=None):
         """Return deep copy `self.data`.
 
         Parameters
         ----------
-        index : int
-            Return last `index` items. By default, returns all items.
+        start_index : int
+        end_index : int
+        Returns
+        ----------
+        array: list, items from start index to end index. By default, returns all items.
         """
-        if index is None:
+        if start_index is None:
             # Make this a numpy array?
             tmp = self.data[:]  # Shallow copy.
             return [row[:] for row in tmp]  # Deep copy.
         else:
             current_max = len(self.data)
-            tmp = self.data[-index:]  # Shallow copy.
-            if index > current_max:
-                print("Last {} samples were requested, but only {} "
-                               "are present.".format(index, current_max))
+            if start_index > current_max:
+                print("Start index {} was requested, but list only goes up to {}.".format(start_index, current_max))
+            if end_index > current_max:
+                print("end index {} was requested, but list only goes up to {}.".format(end_index, current_max))
+            tmp = self.data[start_index:end_index + 1]  # Shallow copy.
             return [row[:] for row in tmp]  # Deep copy.
