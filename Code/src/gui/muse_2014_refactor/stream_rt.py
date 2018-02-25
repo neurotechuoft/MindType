@@ -1,5 +1,6 @@
-"""Adapted LSLStream object from Real Time EEG repo found here: https://github.com/kaczmarj/rteeg.
-Contains classes which update their EEG and marker/stimulus data in real time over lsl
+"""Adapted LSLSStream object from Real Time EEG repo found here: https://github.com/kaczmarj/rteeg.
+Forms classes which update their EEG and marker/stimulus data in real time over lsl. Pre-processes data and makes it
+available for analysis.
 """
 import base
 import numpy as np
@@ -40,7 +41,6 @@ def raw_filter(raw, low_f, high_f):
     low_f: lower frequency cutoff
     high_f: upper frequency cutoff
     """
-    # filter the data between 0.5 and 15 Hz
     # bandpass 4th order butterworth filter
     raw.filter(low_f, high_f, method='iir')
 
