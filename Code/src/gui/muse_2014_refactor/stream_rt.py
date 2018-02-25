@@ -75,20 +75,23 @@ def make_events(data, marker_stream, event_duration=0):
                     if upper_time_limit >= row[-1] >= lower_time_limit])
     # Pre-allocate array for speed.
     events = np.zeros(shape=(tmp.shape[0], 3), dtype='int32')
+    identities = np.zeros(shape=(tmp.shape[0], 1))
+    targets = np.zeros(shape=(tmp.shape[0], 1))
     # If there is at least one marker:
     if tmp.shape[0] > 0:
-        print('markers tmp array', tmp)
-        for event_index, (marker_int, timestamp) in enumerate(tmp):
+        for event_index, (identity, marker_int, timestamp) in enumerate(tmp):
             # Get the index where this marker happened in the EEG data.
             eeg_index = (np.abs(data[-1, :] - timestamp)).argmin()
             # Add a row to the events array.
             events[event_index, :] = eeg_index, event_duration, marker_int
-        print('events array:', events)
-        return events
+            # identity and target arrays
+            identities[event_index] = identity
+            targets[event_index] = marker_int
+        return events, identities, targets
     else:
         # Make empty events array.
         print("Creating empty events array. No events found.")
-        return np.array([[0, 0, 0]])
+        return np.array([[0, 0, 0]]), np.array([[0]])
 
 
 class MuseEEGStream(base.BaseStream):
