@@ -6,6 +6,7 @@ import base
 import numpy as np
 import pylsl
 from mne import create_info, Epochs, io
+import Queue
 
 
 def look_for_eeg_stream():
@@ -75,20 +76,23 @@ def make_events(data, marker_stream, event_duration=0):
                     if upper_time_limit >= row[-1] >= lower_time_limit])
     # Pre-allocate array for speed.
     events = np.zeros(shape=(tmp.shape[0], 3), dtype='int32')
+    identities = np.zeros(shape=(tmp.shape[0], 1))
+    targets = np.zeros(shape=(tmp.shape[0], 1))
     # If there is at least one marker:
     if tmp.shape[0] > 0:
-        print('markers tmp array', tmp)
-        for event_index, (marker_int, timestamp) in enumerate(tmp):
+        for event_index, (identity, marker_int, timestamp) in enumerate(tmp):
             # Get the index where this marker happened in the EEG data.
             eeg_index = (np.abs(data[-1, :] - timestamp)).argmin()
             # Add a row to the events array.
             events[event_index, :] = eeg_index, event_duration, marker_int
-        print('events array:', events)
-        return events
+            # identity and target arrays
+            identities[event_index] = identity
+            targets[event_index] = marker_int
+        return events, identities, targets
     else:
         # Make empty events array.
         print("Creating empty events array. No events found.")
-        return np.array([[0, 0, 0]])
+        return np.array([[0, 0, 0]]), np.array([[0]])
 
 
 class MuseEEGStream(base.BaseStream):
@@ -188,10 +192,10 @@ class MuseEEGStream(base.BaseStream):
     def make_epochs(self, marker_stream, end_index, data_duration=None, events=None,
                     event_duration=0, event_id=None, tmin=-0.2,
                     tmax=1.0, baseline=(None, 0), picks=None,
-                    preload=False, reject=None, flat=None, proj=True,
+                    preload=False, reject=None, flat=None, proj=True, decim=1,
                     reject_tmin=None, reject_tmax=None, detrend=None,
                     on_missing='error',
-                    reject_by_annotation=True, verbose=None):
+                    reject_by_annotation=False, verbose=None):
         """Create instance of mne.Epochs. If events are not supplied, this
         script must be connected to a Markers stream.
         Parameters
@@ -201,37 +205,53 @@ class MuseEEGStream(base.BaseStream):
         data_duration : int, float
             Duration of previous data to use. If data=10, returns instance of
             mne.Epochs of the previous 10 seconds of data.
+        end_index : last index in data that is included
         events : ndarray
             Array of events of the shape (n_events, 3)
         Copy parameters from mne.Epochs
         Returns
         -------
-        epochs : mne.Epochs
+        epochs : mne.Epochs, identities array
         """
+        identities = []
+        targets = []
         raw_data = self.get_data(end_index, data_duration=data_duration)
         if events is None:
-            events = make_events(raw_data, marker_stream, event_duration)
-        raw_data[-1, :] = 0  # Replace timestamps with zeros.
+            events, identities, targets = make_events(raw_data, marker_stream, event_duration)
+
+        # Replace timestamps with zeros.
+        raw_data[-1, :] = 0
+
+        # Create raw array
         raw = io.RawArray(raw_data, self.info)
+
+        # Populate events in event channel
+        raw.add_events(events, 'P300')
+        event_id = {'Non-Target': 0, 'Target': 1}
+
         # filter the data between 0.5 and 15 Hz
         raw_filter(raw, 0.5, 15)
-        # visual confirmation if raw array generated is the right size
-        print('length of array: {}' .format(raw.__len__()))
+
         # plot raw data for visualization/validation
-        raw.plot(events, duration=3.2, n_channels=4, scalings='auto')
+        raw.plot(events, duration=data_duration, n_channels=5, scalings='auto')
 
         return Epochs(raw, events, event_id=event_id, tmin=tmin, tmax=tmax,
                       baseline=baseline, picks=picks,
-                      preload=preload, reject=reject, flat=flat, proj=proj,
+                      preload=preload, reject=reject, flat=flat, proj=proj, decim=decim,
                       reject_tmin=reject_tmin,
                       reject_tmax=reject_tmax, detrend=detrend, on_missing=on_missing,
                       reject_by_annotation=reject_by_annotation,
-                      verbose=verbose)
+                      verbose=verbose), identities, targets
 
 
 class MarkerStream(base.BaseStream):
+    """Class for marker stream object, with same structure as MuseEEGStream. Receives markers over lsl and places them
+    in a queue for analysis based on trial end event.
+    """
     def __init__(self):
         super(MarkerStream, self).__init__()
+        self.analyze = Queue.Queue()
+
         self.connect(self._connect, 'Marker-data')
 
     def _connect(self):
@@ -240,3 +260,29 @@ class MarkerStream(base.BaseStream):
 
         # Begin recording data in a loop
         self._record_data_indefinitely(self._markers_stream)
+
+    def add_analysis(self, item):
+        self.analyze.put(item)
+
+    def remove_analysis(self):
+        item = self.analyze.get()
+        return item
+
+    def _record_data_indefinitely(self, inlet):
+        """Record data to list, and correct for time differences between
+        machines. Updates marker count to trigger analysis.
+
+        Parameters
+        ----------
+        inlet : pylsl.StreamInlet
+            The LabStreamingLayer inlet of data.
+        """
+        while not self._kill_signal.is_set():
+            sample, timestamp = inlet.pull_sample()
+            time_correction = inlet.time_correction()
+            sample.append(timestamp + time_correction)
+            self._update(sample)
+            # if all rows/columns have been run through once
+            if len(self.data) % 12 == 0:
+                self.add_analysis(timestamp)
+                print('queue updated')
