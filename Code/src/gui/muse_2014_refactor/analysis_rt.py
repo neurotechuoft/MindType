@@ -1,5 +1,6 @@
 from stream_rt import *
 import threading
+import time
 
 
 class RTAnalysis(object):
@@ -11,6 +12,8 @@ class RTAnalysis(object):
        The marker stream to which you are connected.
     eeg_stream : MuseEEGStream
        The eeg stream to which you are connected.
+    data_duration : float
+        The length of time that will be used to create all epochs for prediction (i.e. 12 flashes --> 3.4s)
     """
 
     def __init__(self, m_stream, eeg_stream, data_duration):
@@ -44,26 +47,42 @@ class RTAnalysis(object):
         m_stream: MarkerStream
             Stream of EEG data or event markers.
         eeg_stream: MuseEEGStream
+        data_duration : float
+            The length of time that will be used to create all epochs for prediction (i.e. 12 flashes --> 3.4s)
         """
-        print("Analysis started")
-        sleep_time = 60  # Time to sleep between queries.
+        sleep_time = 0.01  # Time to sleep between queries.
+        train = 1
 
         while not self._kill_signal.is_set():
-            # count/ or some marker to indicate end of trial
-            # TODO: clear up what the trigger for analysis will be, including sleep time
-            trial_end = 1
-            # when marker data indicates the end of the trial,
-            if trial_end:
-                # Make an MNE epoch, decim = keep every nth sample
-                trial = eeg_stream.make_epochs(m_stream, data_duration, tmin=0.0, tmax=0.750)
+            # when items exist in the marker analysis queue
+            if not m_stream.analyze.empty():
+                print('Began analyzing data...')
+
+                # get last eeg sample for analysis of the trial (0.02% second tolerance to always capture 1st event)
+                ts = m_stream.remove_analysis()
+                tmp = np.array(eeg_stream.data)
+                end_index = int((np.abs(tmp[:, -1] - ts)).argmin() + 1 / (1 / eeg_stream.info['sfreq']))
+
+                # ensure enough there is enough eeg data before analyzing; wait if there isn't
+                while len(eeg_stream.data) < end_index:
+                    time.sleep(sleep_time)
+
+                # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
+                epochs, identities, targets = eeg_stream.make_epochs(m_stream, end_index, data_duration,
+                                                                     picks=[0, 1, 2, 3], tmin=0.0, tmax=1, decim=3)
+
                 # get input to classifier
-                classifier_input = trial.get_data()
-                # TODO: associate markers with classifier input array
-                c = np.array([classifier_input])
-                # print('size of classifier-input: {}' .format(c.shape))
-                # print(c[0, 0, 1, :])
-            else:
-                print('kill signal')
+                print('Formatting data for classifier...')
+                data = np.array(epochs.get_data())
+                # since the sample frequency is 220 Hz/3 = 73.33 Hz, indexes 8 and 55 is approximately 0.100 - 0.750 s
+                data = data[:, :, 8:56]
+                print('size of classifier-input: {}'.format(data.shape))
+                print('size of identities: {}'.format(identities.shape))
+                print('size of targets: {}'.format(targets.shape))
+
+                # If training classifier, send data to classifier with ground truth targets
+                if train:
+                    train_data = zip(targets, data)
 
             time.sleep(sleep_time)
 
