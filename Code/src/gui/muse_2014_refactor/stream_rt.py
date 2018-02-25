@@ -191,10 +191,10 @@ class MuseEEGStream(base.BaseStream):
     def make_epochs(self, marker_stream, end_index, data_duration=None, events=None,
                     event_duration=0, event_id=None, tmin=-0.2,
                     tmax=1.0, baseline=(None, 0), picks=None,
-                    preload=False, reject=None, flat=None, proj=True,
+                    preload=False, reject=None, flat=None, proj=True, decim=1,
                     reject_tmin=None, reject_tmax=None, detrend=None,
                     on_missing='error',
-                    reject_by_annotation=True, verbose=None):
+                    reject_by_annotation=False, verbose=None):
         """Create instance of mne.Epochs. If events are not supplied, this
         script must be connected to a Markers stream.
         Parameters
@@ -204,32 +204,43 @@ class MuseEEGStream(base.BaseStream):
         data_duration : int, float
             Duration of previous data to use. If data=10, returns instance of
             mne.Epochs of the previous 10 seconds of data.
+        end_index : last index in data that is included
         events : ndarray
             Array of events of the shape (n_events, 3)
         Copy parameters from mne.Epochs
         Returns
         -------
-        epochs : mne.Epochs
+        epochs : mne.Epochs, identities array
         """
+        identities = []
+        targets = []
         raw_data = self.get_data(end_index, data_duration=data_duration)
         if events is None:
-            events = make_events(raw_data, marker_stream, event_duration)
-        raw_data[-1, :] = 0  # Replace timestamps with zeros.
+            events, identities, targets = make_events(raw_data, marker_stream, event_duration)
+
+        # Replace timestamps with zeros.
+        raw_data[-1, :] = 0
+
+        # Create raw array
         raw = io.RawArray(raw_data, self.info)
+
+        # Populate events in event channel
+        raw.add_events(events, 'P300')
+        event_id = {'Non-Target': 0, 'Target': 1}
+
         # filter the data between 0.5 and 15 Hz
         raw_filter(raw, 0.5, 15)
-        # visual confirmation if raw array generated is the right size
-        print('length of array: {}' .format(raw.__len__()))
+
         # plot raw data for visualization/validation
-        raw.plot(events, duration=3.2, n_channels=4, scalings='auto')
+        raw.plot(events, duration=data_duration, n_channels=5, scalings='auto')
 
         return Epochs(raw, events, event_id=event_id, tmin=tmin, tmax=tmax,
                       baseline=baseline, picks=picks,
-                      preload=preload, reject=reject, flat=flat, proj=proj,
+                      preload=preload, reject=reject, flat=flat, proj=proj, decim=decim,
                       reject_tmin=reject_tmin,
                       reject_tmax=reject_tmax, detrend=detrend, on_missing=on_missing,
                       reject_by_annotation=reject_by_annotation,
-                      verbose=verbose)
+                      verbose=verbose), identities, targets
 
 
 class MarkerStream(base.BaseStream):
