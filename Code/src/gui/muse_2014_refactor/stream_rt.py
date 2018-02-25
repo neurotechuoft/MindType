@@ -156,13 +156,15 @@ class MuseEEGStream(base.BaseStream):
         self._record_data_indefinitely(self._eeg_stream)
         print('EEG data recording started.')
 
-    def get_data(self, data_duration=None, scale=1):
+    def get_data(self, end_index, data_duration=None, scale=1):
         """Returns most recent EEG data and timestamps of length data_duration.
         Parameters
         ----------
         data_duration : int
             Window of data to output in seconds. If None, will return all of
             the EEG data.
+        end_index : int
+            last index of data to be included in the copy
         scale : int, float
             Value by which to multiply the EEG data. If None, attempts to
             scale values to volts.
@@ -177,8 +179,8 @@ class MuseEEGStream(base.BaseStream):
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         else:
             print('sfreq',self.info['sfreq'])
-            index = int(data_duration * self.info['sfreq'])
-            data = np.array(self.copy_data(index)).T
+            start_index = int(end_index - data_duration * self.info['sfreq'])
+            data = np.array(self.copy_data(start_index, end_index)).T
             # Scale the data but not the timestamps.
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         return data
