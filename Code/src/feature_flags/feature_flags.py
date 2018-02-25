@@ -8,3 +8,7 @@ class FeatureFlags():
     GUI = True
     COMMAND_LINE = False
     BOARD = False
+    SERVER = True
+    STREAM_RT = True
+    ANALYSIS_RT = False
+    LDA = False
