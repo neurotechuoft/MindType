@@ -6,6 +6,7 @@ import base
 import numpy as np
 import pylsl
 from mne import create_info, Epochs, io
+import Queue
 
 
 def look_for_eeg_stream():
@@ -244,8 +245,13 @@ class MuseEEGStream(base.BaseStream):
 
 
 class MarkerStream(base.BaseStream):
+    """Class for marker stream object, with same structure as MuseEEGStream. Receives markers over lsl and places them
+    in a queue for analysis based on trial end event.
+    """
     def __init__(self):
         super(MarkerStream, self).__init__()
+        self.analyze = Queue.Queue()
+
         self.connect(self._connect, 'Marker-data')
 
     def _connect(self):
@@ -254,3 +260,29 @@ class MarkerStream(base.BaseStream):
 
         # Begin recording data in a loop
         self._record_data_indefinitely(self._markers_stream)
+
+    def add_analysis(self, item):
+        self.analyze.put(item)
+
+    def remove_analysis(self):
+        item = self.analyze.get()
+        return item
+
+    def _record_data_indefinitely(self, inlet):
+        """Record data to list, and correct for time differences between
+        machines. Updates marker count to trigger analysis.
+
+        Parameters
+        ----------
+        inlet : pylsl.StreamInlet
+            The LabStreamingLayer inlet of data.
+        """
+        while not self._kill_signal.is_set():
+            sample, timestamp = inlet.pull_sample()
+            time_correction = inlet.time_correction()
+            sample.append(timestamp + time_correction)
+            self._update(sample)
+            # if all rows/columns have been run through once
+            if len(self.data) % 12 == 0:
+                self.add_analysis(timestamp)
+                print('queue updated')
