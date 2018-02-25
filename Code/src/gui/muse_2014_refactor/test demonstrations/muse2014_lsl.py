@@ -4,12 +4,12 @@ Adapted from:
     muse-lsl: https://github.com/alexandrebarachant/muse-lsl.git
     beats-muse: https://github.com/Oishe/beats-muse
 """
-import Code.src.gui.muse_2014_refactor.server
+import Code.src.gui.muse_2014_refactor.server as server
 import time
 from pylsl import StreamInfo, StreamOutlet
 import Code.src.gui.muse_2014_refactor.stream_rt as st
 import Code.src.gui.muse_2014_refactor.analysis_rt as an
-import Code.src.gui.muse_2014_refactor.markers_test
+import markers_test
 
 
 def main():
@@ -28,19 +28,24 @@ def main():
     # specify info, chunk size (each push yields one chunk), and maximum buffered data
     outlet = StreamOutlet(info, 1, 360)
     if outlet:
-        print('EEG outlet created')
+        print('EEG outlet created.')
 
     # connect to the server
     try:
-        muse_server = Code.src.gui.muse_2014_refactor.server.PylibloServer(PORT, Code.src.gui.muse_2014_refactor.server.process, outlet)
-    except Code.src.gui.muse_2014_refactor.server.ServerError:
-        raise ValueError('Cannot create PylibloServer Object')
+        muse_server = server.PylibloServer(PORT, server.process, outlet)
+    except server.ServerError:
+        raise ValueError('Cannot create PylibloServer Object.')
     if muse_server:
         muse_server.connect()
+    else:
+        print('No muse connection.')
+        return
 
     # establish test marker stream; for test purposes only
-    outlet = Code.src.gui.muse_2014_refactor.markers_test.test_marker_stream()
-    print('marker stream started')
+    outlet = markers_test.test_marker_stream()
+    # 1 - 11 for 12 rows/columns
+    identifiers = range(0, 12, 1)
+    print('Marker outlet created.')
 
     # connect to inlets
     # Create MuseEEGStream object
@@ -49,16 +54,18 @@ def main():
     # Create Marker Stream object
     marker_stream = st.MarkerStream()
 
-    # ensure streams are streaming data before accessing (there should be a better way to do this)
-    time.sleep(3)
+    # data_duration = (flash time + pause time) * number of flashes + P300 detection time (0.75 s)
+    data_duration = 3.4
 
-    # start marker test trial
-    Code.src.gui.muse_2014_refactor.markers_test.start_marker_stream(outlet)
-    # time for marker object to collect data
-    time.sleep(3.4)
-    # (When trial END signal arrives) make an epoch of the last 12 flashes and 1000 ms after
-    rt_filter = an.RTAnalysis(marker_stream, eeg_stream, data_duration=3.6)
-    rt_filter.start()
+    # Create analysis object
+    analysis = an.RTAnalysis(marker_stream, eeg_stream, data_duration=data_duration)
+
+    # ensure eeg stream is receiving data before accessing and starting stimuli
+    while not eeg_stream.data:
+        time.sleep(0.1)
+
+    markers_test.start_marker_stream(outlet, identifiers)
+    analysis.start()
 
     while 1:
         try:
@@ -71,6 +78,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
