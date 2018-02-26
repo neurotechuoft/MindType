@@ -1,5 +1,5 @@
-"""This script receives raw EEG data from the muse and pushes it to an lsl outlet
-Useful as a test script.
+"""This script receives raw EEG data from the muse and pushes it to an lsl outlet. Gets data from
+incoming stimuli events and performs analysis on them.
 Adapted from:
     muse-lsl: https://github.com/alexandrebarachant/muse-lsl.git
     beats-muse: https://github.com/Oishe/beats-muse

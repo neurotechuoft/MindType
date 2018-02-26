@@ -1,4 +1,4 @@
-"""Functions for establishing a test stream that sends out artificial stimulus data"""
+"""Functions for establishing a test stream that sends out cts artificial stimulus data"""
 
 import pylsl
 import time
