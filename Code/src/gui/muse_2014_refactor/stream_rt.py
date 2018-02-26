@@ -34,16 +34,53 @@ def look_for_markers_stream():
         return 0
 
 
-def raw_filter(raw, low_f, high_f):
+def raw_filter(raw, low_f, high_f, picks):
     """Filters data
     Parameters
     ----------
     raw: mne.io.RawArray
     low_f: lower frequency cutoff
     high_f: upper frequency cutoff
+    picks: list, contains channel indexes
     """
     # bandpass 4th order butterworth filter
-    raw.filter(low_f, high_f, method='iir')
+    raw.filter(low_f, high_f, method='iir', picks=picks)
+
+
+def notch_filter(raw, frequencies, picks):
+    """Notch filter
+    Narrow filter that removes specific frequencies
+    Parameters
+    ----------
+    raw: mne.io.RawArray
+    frequencies: array, contains notch frequencies
+    picks: list, contains channel indexes
+    """
+    raw.notch_filter(frequencies, picks=picks, filter_length='auto', phase='zero')
+
+
+def plot_psd(raw, area_mode, picks):
+    """Plot Power Spectral density
+    Parameters
+    ----------
+    raw: mne.io.RawArray
+    area_mode: string, 'std' or 'range'
+    picks: list, contains channel indexes
+    """
+    raw.plot_psd(area_mode=area_mode, picks=picks, average=False)
+
+
+def plot(raw, events, duration, n_channels, scalings):
+    """Plot Power Spectral density
+        Parameters
+        ----------
+        raw: mne.io.RawArray
+        events: from make_events
+        data_duration: float
+        n_channels: int
+        scalings: string, axes scaling
+        """
+    raw.plot(events, duration=duration, n_channels=n_channels, scalings=scalings)
 
 
 def make_events(data, marker_stream, event_duration=0):
@@ -229,11 +266,17 @@ class MuseEEGStream(base.BaseStream):
         raw.add_events(events, 'P300')
         event_id = {'Non-Target': 0, 'Target': 1}
 
+        # Plot power spectral density
+        # plot_psd(raw, 'std', picks=[0, 1, 2, 3])
+
+        # Notch filter
+        # notch_filter(raw, np.arange(50, 101, 50), picks=[0, 1, 2, 3])
+
         # filter the data between 0.5 and 15 Hz
-        raw_filter(raw, 0.5, 15)
+        raw_filter(raw, 0.5, 15, picks=[0, 1, 2, 3])
 
         # plot raw data for visualization/validation
-        raw.plot(events, duration=data_duration, n_channels=5, scalings='auto')
+        plot(raw, events, duration=data_duration, n_channels=5, scalings='auto')
 
         return Epochs(raw, events, event_id=event_id, tmin=tmin, tmax=tmax,
                       baseline=baseline, picks=picks,
