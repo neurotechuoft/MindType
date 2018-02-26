@@ -4,8 +4,10 @@ from pylsl import local_clock
 import threading
 
 
-def process(data, timestamp, outlet):
+def process(data, timestamp, index, outlet):
     outlet.push_sample(data, timestamp)
+
+    # index for testing purposes; check how many samples sent
 
 
 class PylibloServer(ServerThread):
@@ -36,12 +38,11 @@ class PylibloServer(ServerThread):
         if self._active:
             raise RuntimeError("Stream already active.")
         else:
-            # create thread to run pyliblo server on
             self._thread = threading.Thread(target=self.start(), name='Muse-connection')
             self._thread.daemon = True
             self._thread.start()
             self._active = True
-            print('Connected to Muse!')
+            print('Connected to Muse. Streaming data')
         return
 
     @make_method('/muse/eeg', 'ffff')
