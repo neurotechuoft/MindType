@@ -4,7 +4,7 @@ import logging
 import sys
 import threading
 import time
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 from biosignals.print_biosignal import PrintBiosignal
 from biosignals.tagger import Tagger

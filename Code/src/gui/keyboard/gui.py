@@ -27,6 +27,10 @@ class GUI(QtWidgets.QDialog):
         self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
+        self.setAttribute(QtCore.Qt.WA_X11DoNotAcceptFocus)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         # creating header panel buttons
         self.character_display_panel = QtWidgets.QLabel("Enter Text!")
