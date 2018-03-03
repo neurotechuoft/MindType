@@ -6,6 +6,7 @@ import random
 import string
 import time
 
+from pykeyboard import PyKeyboard
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QTimer
 
@@ -55,6 +56,8 @@ class Keyboard:
 
         self.current_text = ""
 
+        self.keyboard_typer = PyKeyboard()
+
     def make_keyboard_widget(self, character_display_panel):
         ret_key_grid = QtWidgets.QGridLayout()
         ret_key_grid.setSpacing(0)
@@ -87,7 +90,7 @@ class Keyboard:
                     button_name = "space"
                     button = QtWidgets.QPushButton(button_name)
                     button.setStyleSheet(self.DEFAULT_STYLESHEET)
-                    button.clicked.connect(functools.partial(self.print_char, " ",
+                    button.clicked.connect(functools.partial(self.press_key, " ",
                                                              character_display_panel))
                     ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)
@@ -131,7 +134,7 @@ class Keyboard:
         button = QtWidgets.QPushButton(button_name)
         button.setStyleSheet(self.DEFAULT_STYLESHEET)
         # adding button listener
-        button.clicked.connect(functools.partial(self.print_char, button_name,
+        button.clicked.connect(functools.partial(self.press_key, button_name,
                                                  character_display_panel))
         key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
         self.character_buttons.append(button)
@@ -149,7 +152,7 @@ class Keyboard:
         self.reset_predictions()
         self.current_text = ""
 
-    def print_char(self, char, character_display_panel):
+    def press_key(self, char, character_display_panel):
         # printing characters on same line
         print(char)
         self.current_text += char
@@ -162,6 +165,8 @@ class Keyboard:
         else:
             self.update_predictions(self.current_text)
             display_panel_text = self.current_text
+
+        self.keyboard_typer.tap_key(char)
 
         character_display_panel.setText(display_panel_text)
 
