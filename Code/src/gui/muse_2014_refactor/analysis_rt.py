@@ -25,7 +25,7 @@ class RTAnalysis(object):
         if not isinstance(m_stream, MarkerStream):
             raise TypeError("Stream must be type `MuseEEGStream`. {} "
                             "was passed.".format(type(m_stream)))
-        print("Analysis object created")
+        print("Analysis object created.")
         self.m_stream = m_stream
         self.eeg_stream = eeg_stream
         # data_duration should be (number of flashes * (duration of each flash + in-between time)) + 1s
@@ -69,8 +69,7 @@ class RTAnalysis(object):
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
                 epochs, identities, targets = self.eeg_stream.make_epochs(self.m_stream, end_index, self.data_duration,
-                                                                     picks=[0, 1, 2, 3], tmin=0.0, tmax=1, decim=3)
-
+                                                                          picks=[0, 1, 2, 3], tmin=0.0, tmax=1, decim=3)
                 # get input to classifier
                 print('Formatting data for classifier...')
                 data = np.array(epochs.get_data())
@@ -82,15 +81,17 @@ class RTAnalysis(object):
 
                 # If training classifier, send data to classifier with ground truth targets
                 if self.train:
+                    self.train_number += data.shape[0]
                     if self.train_number < self.train_epochs:
-                        self.train_number += data.shape[0]
                         self.train_data.extend(data)
                         self.train_targets.extend(targets)
                     else:
                         print('Training LDA classifier with {} epochs' .format(self.train_number))
                         i, t = lda.create_input_target(zip(self.train_targets, self.train_data))
                         classifier = lda.lda_train(i, t)
+                        print("Finished training.")
                         lda.save(self.path, classifier)
+                        self.train_number = 0
                 # else do a prediction
                 else:
                     classifier = lda.load(self.path)
