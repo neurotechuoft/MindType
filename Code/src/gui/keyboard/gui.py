@@ -27,6 +27,8 @@ class GUI(QtWidgets.QDialog):
         self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+        # Ensure keyboard is on top, but not active window
         self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
         self.setAttribute(QtCore.Qt.WA_X11DoNotAcceptFocus)
         self.setFocusPolicy(QtCore.Qt.NoFocus)
