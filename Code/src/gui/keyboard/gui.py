@@ -2,12 +2,12 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
-from .Keyboard import Keyboard
+from .KeyboardOld import KeyboardOld
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 
 
-class GUI(QtWidgets.QDialog):
+class GUI(QtWidgets.QWidget):
     def __init__(self, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
 
@@ -50,8 +50,8 @@ class GUI(QtWidgets.QDialog):
         # creating a button grid
         self.grid = QtWidgets.QGridLayout()
         self.grid.setSpacing(0)
-        self.keyboard = Keyboard(self.main_panel, self.character_display_panel,
-                                 self.interval)
+        self.keyboard = KeyboardOld(self.main_panel, self.character_display_panel,
+                                    self.interval)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)

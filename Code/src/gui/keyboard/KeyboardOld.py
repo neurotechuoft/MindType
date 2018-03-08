@@ -13,7 +13,7 @@ from PyQt5.QtCore import QTimer
 from nlp.complete import autocomplete
 
 
-class Keyboard:
+class KeyboardOld:
     # constructor
     def __init__(self, main_panel, character_display_panel, interval):
         # Style sheets
@@ -31,7 +31,7 @@ class Keyboard:
         self.character_buttons = []
 
         # creating a button grid
-        self.key_grid = self.make_keyboard_widget(character_display_panel)
+        self.key_grid = self.make_letters_widget(character_display_panel)
 
         self.num_grid = None
 
@@ -58,7 +58,7 @@ class Keyboard:
 
         self.keyboard_typer = PyKeyboard()
 
-    def make_keyboard_widget(self, character_display_panel):
+    def make_letters_widget(self, character_display_panel):
         ret_key_grid = QtWidgets.QGridLayout()
         ret_key_grid.setSpacing(0)
 
@@ -74,7 +74,7 @@ class Keyboard:
                                              character_display_panel,
                                              row, col)
 
-                elif character_number is 26:
+                elif character_number == 26:
                     button_name = "0"
 
                     button = QtWidgets.QPushButton(button_name)
@@ -86,7 +86,7 @@ class Keyboard:
                     ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)
 
-                elif character_number is 27:
+                elif character_number == 27:
                     button_name = "space"
                     button = QtWidgets.QPushButton(button_name)
                     button.setStyleSheet(self.DEFAULT_STYLESHEET)
@@ -112,6 +112,17 @@ class Keyboard:
                 if num < 10:
                     self.add_key_to_keyboard(ret_num_grid, str(num), character_display_panel,
                                              i, j)
+                elif num == 11:
+                    button_name = 'a'
+
+                    button = QtWidgets.QPushButton(button_name)
+                    button.setStyleSheet(self.DEFAULT_STYLESHEET)
+                    # adding button listener
+                    button.clicked.connect(
+                        functools.partial(self.start_letters_context,
+                                          character_display_panel))
+                    ret_num_grid.addWidget(button, i, j, alignment=QtCore.Qt.AlignTop)
+                    self.character_buttons.append(button)
 
         return ret_num_grid
 
@@ -191,6 +202,14 @@ class Keyboard:
 
         self.num_grid = self.make_numbers_widget(character_display_panel)
         self.main_panel.addLayout(self.num_grid)
+
+    def start_letters_context(self, character_display_panel):
+        for btn in self.character_buttons:
+            btn.deleteLater()
+        self.num_grid.deleteLater()
+
+        self.key_grid = self.make_letters_widget(character_display_panel)
+        self.main_panel.addLayout(self.key_grid)
 
     def start(self):
         self.row_col_flash_order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
