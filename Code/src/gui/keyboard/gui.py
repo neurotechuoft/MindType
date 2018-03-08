@@ -2,7 +2,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
-from .KeyboardOld import KeyboardOld
+from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 
@@ -14,6 +14,12 @@ class GUI(QtWidgets.QWidget):
         self.CHAR_DISPLAY_PANEL_SHEET = "background-color: rgba(" \
                                              "255,255,255,220)"
 
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
+        self.setAttribute(QtCore.Qt.WA_X11DoNotAcceptFocus)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+
         # variables used for pausing
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
@@ -23,14 +29,10 @@ class GUI(QtWidgets.QWidget):
         self.main_panel = QtWidgets.QVBoxLayout()
         self.main_panel.setContentsMargins(0, 0, 0, 0)
 
+
         # creating header panel which has pause/resume and text display
         self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
-        self.setAttribute(QtCore.Qt.WA_X11DoNotAcceptFocus)
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         # creating header panel buttons
         self.character_display_panel = QtWidgets.QLabel("Enter Text!")
@@ -48,10 +50,9 @@ class GUI(QtWidgets.QWidget):
 
         # adding keyboard gui to main panel
         # creating a button grid
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setSpacing(0)
-        self.keyboard = KeyboardOld(self.main_panel, self.character_display_panel,
-                                    self.interval)
+        self.keyboard = Keyboards(self.character_display_panel,
+                                  self.interval)
+        self.main_panel.addWidget(self.keyboard)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
