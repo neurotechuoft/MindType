@@ -68,37 +68,37 @@ class DevTools(QtWidgets.QDialog):
                 self.grid.addWidget(button, row, col)
                 self.tag_buttons.append(button)
 
-        # PyQtGraph
-        self.pw = pg.PlotWidget(self)
-        self.pw.showGrid(x=True, y=True)
-        self.pw.setDownsampling(mode='peak')
-        self.pw.setClipToView(True)
-        self.pw.setXRange(0, 3.0)
-        # self.pw.setRange(yRange=[200,1400])
-        # Plot details
-        self.colours = [QtGui.QColor(226, 0, 26),  # red
-                        QtGui.QColor(255, 106, 0),  # orange
-                        QtGui.QColor(255, 176, 0),  # yellow
-                        QtGui.QColor(123, 204, 0),  # green
-                        QtGui.QColor(11, 191, 217),  # torquoise
-                        QtGui.QColor(11, 98, 217),  # blue
-                        QtGui.QColor(0, 74, 173),  # navy
-                        QtGui.QColor(106, 11, 228),  # purple
-                        QtGui.QColor(20, 20, 20),  # black
-                        ]
-        self.graphs = []
-        for colour in self.colours:
-            self.graphs.append(self.pw.plot(pen=pg.mkPen(colour)))
-
-        # Timer for updating Graph
-        self.timer = pg.QtCore.QTimer()
-        self.timer.timeout.connect(self.graph_update)
-
-        # creating a graph grid
-        self.graph_layout = QtWidgets.QHBoxLayout()
-
-        self.graph_layout.addWidget(self.pw)
-        self.main_panel.addLayout(self.graph_layout)
+        # # PyQtGraph
+        # self.pw = pg.PlotWidget(self)
+        # self.pw.showGrid(x=True, y=True)
+        # self.pw.setDownsampling(mode='peak')
+        # self.pw.setClipToView(True)
+        # self.pw.setXRange(0, 3.0)
+        # self.pw.setYRange(-1.0, 1.0)
+        # # Plot details
+        # self.colours = [QtGui.QColor(226, 0, 26),  # red
+        #                 QtGui.QColor(255, 106, 0),  # orange
+        #                 QtGui.QColor(255, 176, 0),  # yellow
+        #                 QtGui.QColor(123, 204, 0),  # green
+        #                 QtGui.QColor(11, 191, 217),  # torquoise
+        #                 QtGui.QColor(11, 98, 217),  # blue
+        #                 QtGui.QColor(0, 74, 173),  # navy
+        #                 QtGui.QColor(106, 11, 228),  # purple
+        #                 QtGui.QColor(20, 20, 20),  # black
+        #                 ]
+        # self.graphs = []
+        # for colour in self.colours:
+        #     self.graphs.append(self.pw.plot(pen=pg.mkPen(colour)))
+        #
+        # # Timer for updating Graph
+        # self.timer = pg.QtCore.QTimer()
+        # self.timer.timeout.connect(self.graph_update)
+        #
+        # # creating a graph grid
+        # self.graph_layout = QtWidgets.QHBoxLayout()
+        #
+        # self.graph_layout.addWidget(self.pw)
+        # self.main_panel.addLayout(self.graph_layout)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
@@ -138,14 +138,14 @@ class DevTools(QtWidgets.QDialog):
         for controller in self.controllers:
             controller.send(message)
 
-    def graph_update(self):
-        self.biosignal.process_graph()
-        for i in range(0, len(self.graphs) - 1):
-            self.graphs[i].setData(self.tagger_biosignal.graph_samples[i])
-
-        self.graphs[len(self.graphs) - 1].setData(self.tagger_biosignal.graph_tag)
-
-        time.sleep(1.0 / 20.0)
+    # def graph_update(self):
+    #     self.tagger_biosignal.process_graph(256.0)
+    #     for i in range(0, len(self.graphs) - 1):
+    #         self.graphs[i].setData(self.tagger_biosignal.graph_samples[i])
+    #
+    #     self.graphs[len(self.graphs) - 1].setData(self.tagger_biosignal.graph_tag)
+    #
+    #     time.sleep(1.0 / 20.0)
 
     def closeEvent(self, event):
         safe_exit_confirmed = False
@@ -157,4 +157,5 @@ class DevTools(QtWidgets.QDialog):
                 safe_exit_confirmed = True
 
         self.main_controller.send(Message.GUI_EXIT)
+        pg.exit()
         event.accept()

@@ -9,10 +9,10 @@ class Tagger(BioSignal):
         # SUPERCLASS
         super(Tagger, self).__init__()
         self.samples = []
-        self.graph_samples = []
-        for i in range(0, 8):
-            self.graph_samples.append([])
-        self.graph_tag = []
+        # self.graph_samples = []
+        # for i in range(0, 8):
+        #     self.graph_samples.append([])
+        # self.graph_tag = []
         self.current_tag = 0
         # self.data = [[]]  # Array of 9 arrays, each of which represents a
         # # specific channel, 0 time, 1-8 channels, 9 tag
@@ -40,8 +40,8 @@ class Tagger(BioSignal):
         tagged_sample.append(self.current_tag)
         self.samples.append(tagged_sample)
 
-        for i in range(0, 8):
-            self.graph_samples[i].append(sample[i + 2])
+        # for i in range(0, 8):
+        #     self.graph_samples[i].append(float(sample[i + 2])/1000.0)
 
         print("Number of samples: " + str(len(self.samples)))
 
@@ -56,11 +56,11 @@ class Tagger(BioSignal):
             self.csv_writer.writerow(sample)
             print(sample)
 
-    def process_graph(self, window_len):
-        while len(self.graph_tag) > window_len:
-            for i in range(0, 8):
-                self.graph_samples[i].pop(0)
-                self.graph_tag.pop(0)
+    # def process_graph(self, window_len):
+    #     while len(self.graph_tag) > window_len:
+    #         for i in range(0, 8):
+    #             self.graph_samples[i].pop(0)
+    #             self.graph_tag.pop(0)
 
     def update_tag(self, message):
         try:

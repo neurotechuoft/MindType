@@ -4,7 +4,7 @@ class FeatureFlags():
         still in development. Turn on or off the features you want by setting
         the values to true or false.
     """
-    DEV_TOOLS = False
-    GUI = True
+    DEV_TOOLS = True
+    GUI = False
     COMMAND_LINE = False
-    BOARD = False
+    BOARD = True
