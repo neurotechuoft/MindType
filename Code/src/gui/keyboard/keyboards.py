@@ -31,3 +31,9 @@ class Keyboards(QtWidgets.QWidget):
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.keyboard_views)
+
+    def pause(self):
+        self.keyboard_views.currentWidget().pause()
+
+    def resume(self):
+        self.keyboard_views.currentWidget().resume()

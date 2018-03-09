@@ -72,12 +72,12 @@ class GUI(QtWidgets.QWidget):
                 button_pause_resume.setText("Pause")
                 self.__PAUSED__ = False
                 self.send_msg_to_controllers(Message.START)
-                self.keyboard.resume()
+                self.keyboards.resume()
             else:
                 button_pause_resume.setText("Resume")
                 self.__PAUSED__ = True
                 self.send_msg_to_controllers(Message.PAUSE)
-                self.keyboard.pause()
+                self.keyboards.pause()
 
         return pause_resume_function
 
