@@ -104,6 +104,7 @@ class RTAnalysis(object):
                         if (index + 1) % 4 == 0:
                             result += item/4
                             self.predictions.append(result)
+                            result = 0
                         else:
                             result += item/4
             time.sleep(sleep_time)
