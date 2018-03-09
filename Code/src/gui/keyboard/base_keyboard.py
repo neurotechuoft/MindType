@@ -13,13 +13,13 @@ from PyQt5.QtCore import QTimer
 from nlp.complete import autocomplete
 
 
-class BaseKeyboard(QWidgets.QWidget):
+class BaseKeyboard(QtWidgets.QWidget):
 
-    __VIEW_ORDER__ = 0
+    __VIEW_ORDER__ = -1
 
     # constructor
     def __init__(self, keyboard_views, character_display_panel, interval):
-        super()
+        super().__init__()
 
         # Style sheets
         self.DEFAULT_STYLESHEET = "QPushButton {background-color: #444444; " \

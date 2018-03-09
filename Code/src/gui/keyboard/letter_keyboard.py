@@ -10,12 +10,12 @@ from pykeyboard import PyKeyboard
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QTimer
 
-from gui.keyboard.base_keyboard import BaseKeyboard
-from gui.keyboard.number_keyboard import NumberKeyboard
+import gui.keyboard.base_keyboard
+import gui.keyboard.number_keyboard
 from nlp.complete import autocomplete
 
 
-class LetterKeyboard(BaseKeyboard):
+class LetterKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
 
     __VIEW_ORDER__ = 0
 
@@ -53,7 +53,7 @@ class LetterKeyboard(BaseKeyboard):
                     button.setStyleSheet(self.DEFAULT_STYLESHEET)
                     # adding button listener
                     button.clicked.connect(
-                        functools.partial(NumberKeyboard.start_context,
+                        functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
                                           keyboard_views))
                     ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)

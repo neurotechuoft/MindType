@@ -1,3 +1,5 @@
+import gui.keyboard.letter_keyboard
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
@@ -50,9 +52,11 @@ class GUI(QtWidgets.QWidget):
 
         # adding keyboard gui to main panel
         # creating a button grid
-        self.keyboard = Keyboards(self.character_display_panel,
+        self.keyboards = Keyboards(self.character_display_panel,
                                   self.interval)
-        self.main_panel.addWidget(self.keyboard)
+        self.keyboards.keyboard_views.setCurrentIndex(0)
+
+        self.main_panel.addLayout(self.keyboards.layout)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
