@@ -36,7 +36,7 @@ def marker_publish(signal, outlet, identifiers):
                 print('trial was {} seconds long' .format(end_time - start_time))
         else:
             generator = repopulate_list(identifiers)
-            time.sleep(10)
+            time.sleep(4)
             start_time = pylsl.local_clock()
     print('Markers no longer sending.')
 

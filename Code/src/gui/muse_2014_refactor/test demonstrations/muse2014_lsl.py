@@ -58,7 +58,7 @@ def main():
     data_duration = 3.4
 
     # Create analysis object
-    analysis = an.RTAnalysis(marker_stream, eeg_stream, data_duration=data_duration)
+    analysis = an.RTAnalysis(marker_stream, eeg_stream, data_duration, 'classifier.pkl', train='True', train_epochs=120)
 
     # ensure eeg stream is receiving data before accessing and starting stimuli
     while not eeg_stream.data:
