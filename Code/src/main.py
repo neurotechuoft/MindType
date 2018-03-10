@@ -13,7 +13,7 @@ from controller.controller import Controller
 from controller.processor import Processor
 from feature_flags.feature_flags import FeatureFlags
 from gui.dev_tools import DevTools
-from gui.keyboard.gui import GUI
+from gui.gui import GUI
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
     add_plugin, print_logging_info, print_plugins_found, print_board_setup
 
@@ -27,6 +27,7 @@ def make_gui(main_controller, controllers):
     main_scr = None
     if FeatureFlags.GUI:
         main_scr = GUI(main_controller, controllers)
+        main_scr.views.setCurrentIndex(1)
     if FeatureFlags.DEV_TOOLS:
         main_scr = DevTools(main_controller, controllers)
     if main_scr is not None:

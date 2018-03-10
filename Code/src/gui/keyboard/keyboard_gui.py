@@ -9,9 +9,9 @@ from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 
 
-class GUI(QtWidgets.QWidget):
+class KeyboardGUI(QtWidgets.QWidget):
     def __init__(self, main_controller, controllers, parent=None):
-        super(GUI, self).__init__(parent)
+        super(KeyboardGUI, self).__init__(parent)
 
         self.CHAR_DISPLAY_PANEL_SHEET = "background-color: rgba(" \
                                              "255,255,255,220)"
@@ -25,12 +25,10 @@ class GUI(QtWidgets.QWidget):
         # variables used for pausing
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
-        self.interval = 100
 
         # Creating main panel which contains everything
         self.main_panel = QtWidgets.QVBoxLayout()
         self.main_panel.setContentsMargins(0, 0, 0, 0)
-
 
         # creating header panel which has pause/resume and text display
         self.header_panel = QtWidgets.QHBoxLayout()
@@ -52,8 +50,7 @@ class GUI(QtWidgets.QWidget):
 
         # adding keyboard gui to main panel
         # creating a button grid
-        self.keyboards = Keyboards(self.character_display_panel,
-                                  self.interval)
+        self.keyboards = Keyboards(self.character_display_panel)
         self.keyboards.keyboard_views.setCurrentIndex(0)
 
         self.main_panel.addLayout(self.keyboards.layout)
