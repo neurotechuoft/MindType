@@ -1,5 +1,4 @@
-"""Contains functions for training, loading, and predicting with a LDA classifier.
-"""
+"""Contains functions for training, loading, and predicting with a LDA classifier."""
 import numpy as np
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import pickle

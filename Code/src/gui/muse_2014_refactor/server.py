@@ -5,28 +5,47 @@ import threading
 
 
 def process(data, timestamp, index, outlet):
-    outlet.push_sample(data, timestamp)
+    """Callback function for pushing data to an lsl outlet.
 
-    # index for testing purposes; check how many samples sent
+    Args:
+        data: The data being pushed through the lsl outlet. Must be an array with size specified by the number of
+            channels in pylsl.StreamInfo.
+        timestamp: The time at which the data sample occurred, such as through pylsl.local_clock(), etc.
+        index: For testing purposes; index at which the sample occurred.
+        outlet: pylsl outlet to which data is pushed.
+    """
+    outlet.push_sample(data, timestamp)
 
 
 class PylibloServer(ServerThread):
-    """class for 2014 muse hardware"""
+    """Class for 2014 muse hardware.
+
+    Opens port for communication between muse headset and streaming outlet.
+
+    Attributes:
+        port: Number specifying which port the muse is streaming through.
+        callback: Function used to publish data. Use process() for this purpose.
+        outlet: pylsl outlet to which data is pushed.
+    """
 
     def __init__(self, port=1234, callback=None, outlet=None):
-        """Initialize"""
+        """Initialize."""
         ServerThread.__init__(self, port)
-        # connection start time (needed for timestamping)
+        # connection start time (needed for time-stamping)
         self.start_time = local_clock()
+
         # frequency multiplier
         self.freq_mult = 1. / 220
+
         # running index for timestamp
         self.time_index = 0
+
         # callback function for lsl data push
         self.callback = callback
+
         # lsl outlet to push data to
         self.outlet = outlet
-        # When new values are sent data is updated automatically
+
         self._active = False
         self._kill_signal = threading.Event()
 
@@ -35,6 +54,7 @@ class PylibloServer(ServerThread):
         self._kill_signal.set()
 
     def connect(self):
+        """Start a new thread and connect to """
         if self._active:
             raise RuntimeError("Stream already active.")
         else:
