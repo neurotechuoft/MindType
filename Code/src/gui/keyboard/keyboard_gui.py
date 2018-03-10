@@ -9,9 +9,9 @@ from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 
 
-class GUI(QtWidgets.QWidget):
+class KeyboardGUI(QtWidgets.QWidget):
     def __init__(self, main_controller, controllers, parent=None):
-        super(GUI, self).__init__(parent)
+        super(KeyboardGUI, self).__init__(parent)
 
         self.CHAR_DISPLAY_PANEL_SHEET = "background-color: rgba(" \
                                              "255,255,255,220)"

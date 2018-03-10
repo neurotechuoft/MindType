@@ -11,9 +11,9 @@ import gui.keyboard.number_keyboard
 from nlp.complete import autocomplete
 
 
-class Keyboards(QtWidgets.QWidget):
+class SetupGUI(QtWidgets.QWidget):
 
-    def __init__(self, character_display_panel):
+    def __init__(self):
         super().__init__()
 
         self.interval = 100
