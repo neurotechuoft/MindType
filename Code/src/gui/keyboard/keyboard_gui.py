@@ -1,23 +1,30 @@
+import gui.keyboard.letter_keyboard
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Sayan sucks; don't complain - yours truly Abdel and Scholar
 # ^ Sayan is
-from .Keyboard import Keyboard
+from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
 
 
-class GUI(QtWidgets.QDialog):
+class KeyboardGUI(QtWidgets.QWidget):
     def __init__(self, main_controller, controllers, parent=None):
-        super(GUI, self).__init__(parent)
+        super(KeyboardGUI, self).__init__(parent)
 
         self.CHAR_DISPLAY_PANEL_SHEET = "background-color: rgba(" \
                                              "255,255,255,220)"
 
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
+        self.setAttribute(QtCore.Qt.WA_X11DoNotAcceptFocus)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+
         # variables used for pausing
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
-        self.interval = 100
 
         # Creating main panel which contains everything
         self.main_panel = QtWidgets.QVBoxLayout()
@@ -26,13 +33,6 @@ class GUI(QtWidgets.QDialog):
         # creating header panel which has pause/resume and text display
         self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-
-        # Ensure keyboard is on top, but not active window
-        self.setAttribute(QtCore.Qt.WA_ShowWithoutActivating)
-        self.setAttribute(QtCore.Qt.WA_X11DoNotAcceptFocus)
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
 
         # creating header panel buttons
         self.character_display_panel = QtWidgets.QLabel("Enter Text!")
@@ -50,10 +50,10 @@ class GUI(QtWidgets.QDialog):
 
         # adding keyboard gui to main panel
         # creating a button grid
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setSpacing(0)
-        self.keyboard = Keyboard(self.main_panel, self.character_display_panel,
-                                 self.interval)
+        self.keyboards = Keyboards(self.character_display_panel)
+        self.keyboards.keyboard_views.setCurrentIndex(0)
+
+        self.main_panel.addLayout(self.keyboards.layout)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
@@ -69,12 +69,12 @@ class GUI(QtWidgets.QDialog):
                 button_pause_resume.setText("Pause")
                 self.__PAUSED__ = False
                 self.send_msg_to_controllers(Message.START)
-                self.keyboard.resume()
+                self.keyboards.resume()
             else:
                 button_pause_resume.setText("Resume")
                 self.__PAUSED__ = True
                 self.send_msg_to_controllers(Message.PAUSE)
-                self.keyboard.pause()
+                self.keyboards.pause()
 
         return pause_resume_function
 

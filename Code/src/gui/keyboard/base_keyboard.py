@@ -13,27 +13,36 @@ from PyQt5.QtCore import QTimer
 from nlp.complete import autocomplete
 
 
-class Keyboard:
+class BaseKeyboard(QtWidgets.QWidget):
+
+    __VIEW_ORDER__ = -1
+
     # constructor
-    def __init__(self, main_panel, character_display_panel, interval):
+    def __init__(self, keyboard_views, character_display_panel, interval):
+        super().__init__()
+
         # Style sheets
         self.DEFAULT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                   "color: white; font-size: 65px;}"
+        self.ENTER_STYLESHEET = "QPushButton {background-color: #444444; " \
+                                 "color: white; font-size: 63px;}"
+        self.BKSP_STYLESHEET = "QPushButton {background-color: #444444; " \
+                                "color: white; font-size: 40px;padding: 16px;}"
+        self.SHIFT_STYLESHEET = "QPushButton {background-color: #444444; " \
+                               "color: white; font-size: 57px;}"
         self.PREDICT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                   "color: white; font-size: 50px;}"
         self.DARKEN_STYLESHEET = "QPushButton {background-color: #444444; " \
                                  "color: blue; font-size: 65px;}"
 
-        self.main_panel = main_panel
+        self.keyboard_views = keyboard_views
+
+        self.layout = QtWidgets.QVBoxLayout()
+
         self.character_display_panel = character_display_panel
 
         self.predict_buttons = []
         self.character_buttons = []
-
-        # creating a button grid
-        self.key_grid = self.make_keyboard_widget(character_display_panel)
-
-        self.num_grid = None
 
         # Top 3 Word Predictions
         self.predict_grid = QtWidgets.QGridLayout()
@@ -45,8 +54,7 @@ class Keyboard:
         self.flashing_interval = interval
 
         # attaching grid to main panel
-        self.main_panel.addLayout(self.predict_grid)
-        self.main_panel.addLayout(self.key_grid)
+        self.layout.addLayout(self.predict_grid)
 
         # variables used for flashing
         self.flash_timer_queue = []
@@ -58,62 +66,11 @@ class Keyboard:
 
         self.keyboard_typer = PyKeyboard()
 
-    def make_keyboard_widget(self, character_display_panel):
-        ret_key_grid = QtWidgets.QGridLayout()
-        ret_key_grid.setSpacing(0)
+        self.setLayout(self.layout)
 
-        for row in range(6):
-            for col in range(6):
-                # button_name = ""
-                character_number = (row * 6) + col
-                # a-z buttons
-                if character_number < 26:
-                    button_name = chr(ord('a') + character_number)
-                    self.add_key_to_keyboard(ret_key_grid,
-                                             button_name,
-                                             character_display_panel,
-                                             row, col)
-
-                elif character_number is 26:
-                    button_name = "0"
-
-                    button = QtWidgets.QPushButton(button_name)
-                    button.setStyleSheet(self.DEFAULT_STYLESHEET)
-                    # adding button listener
-                    button.clicked.connect(
-                        functools.partial(self.start_number_context,
-                                          character_display_panel))
-                    ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
-                    self.character_buttons.append(button)
-
-                elif character_number is 27:
-                    button_name = "space"
-                    button = QtWidgets.QPushButton(button_name)
-                    button.setStyleSheet(self.DEFAULT_STYLESHEET)
-                    button.clicked.connect(functools.partial(self.press_key, " ",
-                                                             character_display_panel))
-                    ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
-                    self.character_buttons.append(button)
-
-                else:
-                    pass
-
-        return ret_key_grid
-
-    def make_numbers_widget(self, character_display_panel):
-        ret_num_grid = QtWidgets.QGridLayout()
-        ret_num_grid.setSpacing(0)
-
-        self.character_buttons = []
-
-        for i in range(6):
-            for j in range(6):
-                num = i * 6 + j
-                if num < 10:
-                    self.add_key_to_keyboard(ret_num_grid, str(num), character_display_panel,
-                                             i, j)
-
-        return ret_num_grid
+    @classmethod
+    def start_context(cls, keyboard_views):
+        keyboard_views.setCurrentIndex(cls.__VIEW_ORDER__)
 
     def make_predictions_widget(self, character_display_panel):
         for pred in range(3):
@@ -127,18 +84,6 @@ class Keyboard:
             self.predict_grid.addWidget(button, 0, pred)
             self.predict_buttons.append(button)
 
-    def add_key_to_keyboard(self, key_grid,
-                            button_name,
-                            character_display_panel,
-                            row, col):
-        button = QtWidgets.QPushButton(button_name)
-        button.setStyleSheet(self.DEFAULT_STYLESHEET)
-        # adding button listener
-        button.clicked.connect(functools.partial(self.press_key, button_name,
-                                                 character_display_panel))
-        key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
-        self.character_buttons.append(button)
-
     def print_prediction(self, predict_btn, character_display_panel):
 
         prediction = predict_btn.text()
@@ -151,6 +96,31 @@ class Keyboard:
 
         self.reset_predictions()
         self.current_text = ""
+
+    def update_predictions(self, word):
+        pred_0, pred_1, pred_2 = autocomplete(word)
+
+        self.predict_buttons[0].setText(pred_0)
+        self.predict_buttons[1].setText(pred_1)
+        self.predict_buttons[2].setText(pred_2)
+
+        print("Top three: " + str(pred_0) + ", " + str(pred_1) + ", " + str(pred_2))
+
+    def reset_predictions(self):
+        for button in self.predict_buttons:
+            button.setText("")
+
+    def add_key_to_keyboard(self, key_grid,
+                            button_name,
+                            character_display_panel,
+                            row, col):
+        button = QtWidgets.QPushButton(button_name)
+        button.setStyleSheet(self.DEFAULT_STYLESHEET)
+        # adding button listener
+        button.clicked.connect(functools.partial(self.press_key, button_name,
+                                                 character_display_panel))
+        key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
+        self.character_buttons.append(button)
 
     def press_key(self, char, character_display_panel):
         # printing characters on same line
@@ -169,28 +139,6 @@ class Keyboard:
         self.keyboard_typer.tap_key(char)
 
         character_display_panel.setText(display_panel_text)
-
-    def update_predictions(self, word):
-        pred_0, pred_1, pred_2 = autocomplete(word)
-
-        self.predict_buttons[0].setText(pred_0)
-        self.predict_buttons[1].setText(pred_1)
-        self.predict_buttons[2].setText(pred_2)
-
-        print("Top three: " + str(pred_0) + ", " + str(pred_1) + ", " + str(pred_2))
-
-    def reset_predictions(self):
-        for button in self.predict_buttons:
-            button.setText("")
-
-    def start_number_context(self, character_display_panel):
-
-        for btn in self.character_buttons:
-            btn.deleteLater()
-        self.key_grid.deleteLater()
-
-        self.num_grid = self.make_numbers_widget(character_display_panel)
-        self.main_panel.addLayout(self.num_grid)
 
     def start(self):
         self.row_col_flash_order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
