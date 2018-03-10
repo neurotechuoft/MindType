@@ -15,6 +15,8 @@ import scipy as sc
 
 """Input: EEG pattern
 Output: tuple (P, M) where P is the position of the dipole and M its momentum
+y_star: actual position and direction of each dipole when placed on the head of someone. Thus when we collect data we
+need to record this information, because we need it afterwards to compute the error and do backpropagation
 
 Architecture:
 4 layers:
@@ -61,5 +63,9 @@ z_2 = tf.add(tf.matmul(a_hidden1, w_hidden2), b_hidden2)
 a_hidden2 = tf.sigmoid(z_2)
 z_3 = tf.add(tf.matmul(a_hidden2, w_output), b_output)
 output = tf.sigmoid(z_3)
+
+
+# The error we want to minimise is J = e.T * W.inv * e
+# where e is the error, W is white noise
 
 
