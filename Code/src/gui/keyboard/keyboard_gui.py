@@ -30,7 +30,6 @@ class KeyboardGUI(QtWidgets.QWidget):
         self.main_panel = QtWidgets.QVBoxLayout()
         self.main_panel.setContentsMargins(0, 0, 0, 0)
 
-
         # creating header panel which has pause/resume and text display
         self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)

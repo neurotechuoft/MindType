@@ -1,4 +1,5 @@
-import gui.keyboard.letter_keyboard
+import gui.keyboard.keyboard_gui
+import gui.setup_gui
 import json
 
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -22,16 +23,22 @@ class GUI(QtWidgets.QWidget):
 
         self.views.addWidget(self.setup_gui)
         self.views.addWidget(self.keyboard_gui)
+        self.views.setCurrentIndex(1)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.views)
 
-    def confirm_initial_setup_finished(self):
-        setup = {}
-        
+        self.setLayout(self.layout)
+
+    def load_setup(self):
         with open("./../config.json") as setup_file:
-            setup = json.loads(setup_file)
-            setup["initial_setup"] = True
-        
+            return json.loads(setup_file)
+
+    def save_setup(self, setup):
         with open("./../config.json", "w") as setup_file:
-            json.dumps(setup, setup_file)
+            setup_file.write(json.dumps(setup))
+
+    def confirm_initial_setup_finished(self):
+        setup = self.load_setup()
+        setup["initial_setup"] = True
+        self.save_setup(setup)
