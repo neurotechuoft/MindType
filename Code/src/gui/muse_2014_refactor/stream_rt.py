@@ -1,5 +1,5 @@
 """Adapted LSLSStream object from Real Time EEG repo found here: https://github.com/kaczmarj/rteeg.
-Forms classes which update their EEG and marker/stimulus data in real time over lsl. Pre-processes data and makes it
+Contains classes which update their EEG and marker/stimulus data in real time over lsl. Pre-processes data and makes it
 available for analysis.
 """
 import base
@@ -10,7 +10,7 @@ import Queue
 
 
 def look_for_eeg_stream():
-    """returns an inlet of the first eeg stream outlet found"""
+    """returns an inlet of the first eeg stream outlet found."""
     print("looking for an EEG stream...")
     streams = pylsl.resolve_byprop('type', 'EEG', timeout=2)
     if len(streams) == 0:
@@ -22,7 +22,7 @@ def look_for_eeg_stream():
 
 
 def look_for_markers_stream():
-    """returns an inlet for the first markers stream outlet if found"""
+    """returns an inlet for the first markers stream outlet if found."""
     print("looking for a Markers stream")
     marker_streams = pylsl.resolve_byprop('name', 'Markers', timeout=2)
 
@@ -35,108 +35,112 @@ def look_for_markers_stream():
 
 
 def raw_filter(raw, low_f, high_f, picks):
-    """Filters data
-    Parameters
-    ----------
-    raw: mne.io.RawArray
-    low_f: lower frequency cutoff
-    high_f: upper frequency cutoff
-    picks: list, contains channel indexes
+    """Filters data with a bandpass 4th order butterworth filter.
+
+    Args:
+        raw: mne.io.RawArray.
+        low_f: lower frequency cutoff.
+        high_f: upper frequency cutoff.
+        picks: list; contains channel indexes.
     """
-    # bandpass 4th order butterworth filter
     raw.filter(low_f, high_f, method='iir', picks=picks)
 
 
 def notch_filter(raw, frequencies, picks):
-    """Notch filter
-    Narrow filter that removes specific frequencies
-    Parameters
-    ----------
-    raw: mne.io.RawArray
-    frequencies: array, contains notch frequencies
-    picks: list, contains channel indexes
+    """Notch filter.
+
+    Narrow filter that removes specific frequencies.
+
+    Args:
+        raw: mne.io.RawArray.
+        frequencies: array, contains notch frequencies.
+        picks: list, contains channel indexes.
     """
     raw.notch_filter(frequencies, picks=picks, filter_length='auto', phase='zero')
 
 
 def plot_psd(raw, area_mode, picks):
-    """Plot Power Spectral density
-    Parameters
-    ----------
-    raw: mne.io.RawArray
-    area_mode: string, 'std' or 'range'
-    picks: list, contains channel indexes
+    """Plot Power Spectral density.
+
+    Args:
+        raw: mne.io.RawArray.
+        area_mode: string, 'std' or 'range'.
+        picks: list, contains channel indexes.
     """
     raw.plot_psd(area_mode=area_mode, picks=picks, average=False)
 
 
 def plot(raw, events, duration, n_channels, scalings):
     """Plot Power Spectral density
-        Parameters
-        ----------
-        raw: mne.io.RawArray
-        events: from make_events
-        data_duration: float
-        n_channels: int
-        scalings: string, axes scaling
+
+        Args:
+            raw: mne.io.RawArray.
+            events: from make_events.
+            duration: float.
+            n_channels: int.
+            scalings: string; axes scaling.
         """
     raw.plot(events, duration=duration, n_channels=n_channels, scalings=scalings)
 
 
 def make_events(data, marker_stream, event_duration=0):
     """Create array of events.
-    This function creates an array of events that is compatible with
-    mne.Epochs. If no marker is found, returns ndarray indicating that
-    one event occurred at the same time as the first sample of the EEG data,
-    effectively making an Epochs object out of all of the data (until tmax
-    of mne.Epochs)
-    Parameters
-    ----------
-    data : ndarray
-        EEG data in the shape (n_channels + timestamp, n_samples). Call
-        the method EEGStream._get_raw_eeg_data() to create this array.
-    marker_stream : MarkerStream
-        Stream of marker data.
-    event_duration : int (defaults to 0)
-        Duration of each event marker in seconds. This is not epoch
-        duration.
-    Returns
-    -------
-    events : ndarray
-        Array of events in the shape (n_events, 3).
+
+    This function creates an array of events that is compatible with mne.Epochs. If no marker is found, returns ndarray
+    indicating that one event occurred at the same time as the first sample of the EEG data, effectively making an
+    Epochs object out of all of the data (until tmax of mne.Epochs).
+
+    Args:
+        data: ndarray; EEG data in the shape (n_channels + timestamp, n_samples).
+        marker_stream: MarkerStream; Stream of marker data.
+        event_duration: int (defaults to 0); duration of each event marker in seconds. This is not epoch duration.
+
+    Returns:
+        events: ndarray (n_events x 3); details the occurence index in main data, duration, and target.
+        identities: list containing the row/column that was flashed in order.
+        targets: list containing target values for training; i.e. 0 or 1.
     """
     # Get the markers between two times.
     lower_time_limit = data[-1, 0]
     upper_time_limit = data[-1, -1]
+
     # Copy markers into a Numpy ndarray.
     tmp = np.array([row[:] for row in marker_stream.data
                     if upper_time_limit >= row[-1] >= lower_time_limit])
+
     # Pre-allocate array for speed.
     events = np.zeros(shape=(tmp.shape[0], 3), dtype='int32')
     identities = np.zeros(shape=(tmp.shape[0], 1))
     targets = np.zeros(shape=(tmp.shape[0], 1))
+
     # If there is at least one marker:
     if tmp.shape[0] > 0:
         for event_index, (identity, marker_int, timestamp) in enumerate(tmp):
             # Get the index where this marker happened in the EEG data.
             eeg_index = (np.abs(data[-1, :] - timestamp)).argmin()
+
             # Add a row to the events array.
             events[event_index, :] = eeg_index, event_duration, marker_int
+
             # identity and target arrays
             identities[event_index] = identity
             targets[event_index] = marker_int
         return events, identities, targets
     else:
-        # Make empty events array.
+        # Make empty events, identities, and targets array
         print("Creating empty events array. No events found.")
-        return np.array([[0, 0, 0]]), np.array([[0]])
+        return np.array([[0, 0, 0]]), np.array([[0]]), np.array([[0]])
 
 
 class MuseEEGStream(base.BaseStream):
-    """Connects to eeg and markers streams. Records data and buffers data. Once buffer is full, find stimulus
-    events inside that buffer. If there is an event, filter and process 1000 ms of data after each stimulus (in another
-    thread?)
+    """Connects to eeg and markers streams.
+
+    Also contains method for creating epochs of data to be used for prediction and training.
+
+    Attributes:
+         key: channel positions (https://martinos.org/mne/stable/generated/mne.create_info.html#mne.create_info).
     """
+
     def __init__(self, key='default'):
         super(MuseEEGStream, self).__init__()
         self._eeg_unit = 'unknown'
@@ -147,7 +151,7 @@ class MuseEEGStream(base.BaseStream):
         self.connect(self._connect, 'EEG-data')
 
     def _connect(self):
-        """Connects to EEG outlet and records streaming eeg data"""
+        """Connects to EEG outlet and records streaming eeg data."""
         # Find eeg stream and markers stream
         self._eeg_stream = look_for_eeg_stream()
         self._active = True
@@ -198,21 +202,15 @@ class MuseEEGStream(base.BaseStream):
         print('EEG data recording started.')
 
     def get_data(self, end_index, data_duration=None, scale=1):
-        """Returns most recent EEG data and timestamps of length data_duration.
-        Parameters
-        ----------
-        data_duration : int
-            Window of data to output in seconds. If None, will return all of
-            the EEG data.
-        end_index : int
-            last index of data to be included in the copy
-        scale : int, float
-            Value by which to multiply the EEG data. If None, attempts to
-            scale values to volts.
-        Returns
-        -------
-        data : ndarray
-            Array of EEG data with shape (n_channels + timestamp, n_samples).
+        """Get recent EEG data of specified duration up to the specified ending index.
+
+        Args:
+            data_duration: int; window of data to output in seconds. If None, will return all of the EEG data.
+            end_index: int; last index of data to be included in the copy.
+            scale : int, float; value by which to multiply the EEG data. If None, attempts to scale values to volts.
+
+        Returns:
+            data : ndarray; array of EEG data with shape (n_channels + timestamp, n_samples).
         """
         if data_duration is None:
             data = np.array(self.copy_data()).T
@@ -226,29 +224,24 @@ class MuseEEGStream(base.BaseStream):
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         return data
 
-    def make_epochs(self, marker_stream, end_index, data_duration=None, events=None,
-                    event_duration=0, event_id=None, tmin=-0.2,
-                    tmax=1.0, baseline=(None, 0), picks=None,
-                    preload=False, reject=None, flat=None, proj=True, decim=1,
-                    reject_tmin=None, reject_tmax=None, detrend=None,
-                    on_missing='error',
+    def make_epochs(self, marker_stream, end_index, data_duration=None, events=None, event_duration=0, event_id=None,
+                    tmin=-0.2, tmax=1.0, baseline=(None, 0), picks=None, preload=False, reject=None, flat=None,
+                    proj=True, decim=1, reject_tmin=None, reject_tmax=None, detrend=None, on_missing='error',
                     reject_by_annotation=False, verbose=None):
-        """Create instance of mne.Epochs. If events are not supplied, this
-        script must be connected to a Markers stream.
-        Parameters
-        ----------
-        marker_stream : stream_rt.MarkerStream
-            Stream of marker data.
-        data_duration : int, float
-            Duration of previous data to use. If data=10, returns instance of
-            mne.Epochs of the previous 10 seconds of data.
-        end_index : last index in data that is included
-        events : ndarray
-            Array of events of the shape (n_events, 3)
-        Copy parameters from mne.Epochs
-        Returns
-        -------
-        epochs : mne.Epochs, identities array
+        """Create instance of mne.Epochs. If events are not supplied, this script must be connected to a Markers stream.
+
+        Args:
+            marker_stream: stream_rt.MarkerStream; stream of marker data.
+            data_duration: int, float; duration of previous data to use. If data=10, returns instance of mne.Epochs of the
+                previous 10 seconds of data.
+            end_index: Last index in data that is included.
+            events: ndarray; array of events of the shape (n_events, 3).
+            everything else: Copy parameters from mne.Epochs.
+
+        Returns:
+            epochs: mne.Epochs; contains time segments of data_duration after stimuli for training and prediciton.
+            identities: list containing the row/column that was flashed in order.
+            targets: list containing target values for training; i.e. 0 or 1.
         """
         identities = []
         targets = []
@@ -288,12 +281,19 @@ class MuseEEGStream(base.BaseStream):
 
 
 class MarkerStream(base.BaseStream):
-    """Class for marker stream object, with same structure as MuseEEGStream. Receives markers over lsl and places them
-    in a queue for analysis based on trial end event.
+    """Class for marker stream object, with same structure as MuseEEGStream.
+
+    Receives markers over lsl and places them in a queue for analysis.
+
+    Attributes:
+        trial_num: int; number of stimulus trials (flashes) before the object should queue a trigger (containing an end
+            index) for analysis.
     """
-    def __init__(self):
+
+    def __init__(self, trial_num=12):
         super(MarkerStream, self).__init__()
         self.analyze = Queue.Queue()
+        self.trial_num = trial_num
 
         self.connect(self._connect, 'Marker-data')
 
@@ -312,13 +312,10 @@ class MarkerStream(base.BaseStream):
         return item
 
     def _record_data_indefinitely(self, inlet):
-        """Record data to list, and correct for time differences between
-        machines. Updates marker count to trigger analysis.
+        """Record data to list and correct for time differences. Updates marker count to trigger analysis.
 
-        Parameters
-        ----------
-        inlet : pylsl.StreamInlet
-            The LabStreamingLayer inlet of data.
+        Args:
+            inlet: pylsl.StreamInlet; the LabStreamingLayer inlet of data.
         """
         while not self._kill_signal.is_set():
             sample, timestamp = inlet.pull_sample()
@@ -326,6 +323,6 @@ class MarkerStream(base.BaseStream):
             sample.append(timestamp + time_correction)
             self._update(sample)
             # if all rows/columns have been run through once
-            if len(self.data) % 12 == 0:
+            if len(self.data) % self.trial_num == 0:
                 self.add_analysis(timestamp)
                 print('queue updated')
