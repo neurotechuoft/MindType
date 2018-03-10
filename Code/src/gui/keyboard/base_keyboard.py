@@ -24,6 +24,8 @@ class BaseKeyboard(QtWidgets.QWidget):
         # Style sheets
         self.DEFAULT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                   "color: white; font-size: 65px;}"
+        self.SYMBOL_STYLESHEET = "QPushButton {background-color: #444444; " \
+                                 "color: white; font-size: 63px;}"
         self.PREDICT_STYLESHEET = "QPushButton {background-color: #444444; " \
                                   "color: white; font-size: 50px;}"
         self.DARKEN_STYLESHEET = "QPushButton {background-color: #444444; " \
