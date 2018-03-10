@@ -28,7 +28,11 @@ class LetterKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
         self.key_grid = self.make_letters_widget(self.keyboard_views,
                                                  character_display_panel)
 
+        # Context switching grid
+        self.context_switch_grid = self.make_context_switch_grid(keyboard_views)
+
         self.layout.addLayout(self.key_grid)
+        self.layout.addLayout(self.context_switch_grid)
 
     def make_letters_widget(self, keyboard_views, character_display_panel):
         ret_key_grid = QtWidgets.QGridLayout()
@@ -52,19 +56,33 @@ class LetterKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
                                              button_name,
                                              character_display_panel,
                                              row, col)
-
+                # Enter
                 elif character_number == 28:
                     button_name = u"\u21b5"
 
                     button = QtWidgets.QPushButton(button_name)
-                    button.setStyleSheet(self.SYMBOL_STYLESHEET)
+                    button.setStyleSheet(self.ENTER_STYLESHEET)
                     # adding button listener
                     button.clicked.connect(
                         functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
                                           keyboard_views))
-                    ret_key_grid.addWidget(button, row, col, 1, 2, alignment=QtCore.Qt.AlignTop)
+                    ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
                     self.character_buttons.append(button)
 
+                # Backspace
+                elif character_number == 29:
+                    button_name = u"\u232b"
+
+                    button = QtWidgets.QPushButton(button_name)
+                    button.setStyleSheet(self.BKSP_STYLESHEET)
+                    # adding button listener
+                    button.clicked.connect(
+                        functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
+                                          keyboard_views))
+                    ret_key_grid.addWidget(button, row, col, alignment=QtCore.Qt.AlignTop)
+                    self.character_buttons.append(button)
+
+                # Space
                 elif character_number == 24:
                     button_name = "_____"
                     button = QtWidgets.QPushButton(button_name)
@@ -78,3 +96,53 @@ class LetterKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
                     pass
 
         return ret_key_grid
+
+    def make_context_switch_grid(self, keyboard_views):
+        ret_context_switch_grid = QtWidgets.QGridLayout()
+        ret_context_switch_grid.setSpacing(0)
+
+        # Shift
+        button_name = u"\U0001F839"
+        button = QtWidgets.QPushButton(button_name)
+        button.setStyleSheet(self.SHIFT_STYLESHEET)
+        # adding button listener
+        # button.clicked.connect(
+        #     functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
+        #                       keyboard_views))
+        ret_context_switch_grid.addWidget(button, 0, 0, 1, 2, alignment=QtCore.Qt.AlignTop)
+        self.character_buttons.append(button)
+
+        # Numbers
+        button_name = "0"
+        button = QtWidgets.QPushButton(button_name)
+        button.setStyleSheet(self.DEFAULT_STYLESHEET)
+        # adding button listener
+        button.clicked.connect(
+            functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
+                              keyboard_views))
+        ret_context_switch_grid.addWidget(button, 0, 2, alignment=QtCore.Qt.AlignTop)
+        self.character_buttons.append(button)
+
+        # Punctuation
+        button_name = "."
+        button = QtWidgets.QPushButton(button_name)
+        button.setStyleSheet(self.DEFAULT_STYLESHEET)
+        # adding button listener
+        # button.clicked.connect(
+        #     functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
+        #                       keyboard_views))
+        ret_context_switch_grid.addWidget(button, 0, 3, alignment=QtCore.Qt.AlignTop)
+        self.character_buttons.append(button)
+
+        # Emojis
+        button_name = ":)"
+        button = QtWidgets.QPushButton(button_name)
+        button.setStyleSheet(self.DEFAULT_STYLESHEET)
+        # adding button listener
+        # button.clicked.connect(
+        #     functools.partial(gui.keyboard.number_keyboard.NumberKeyboard.start_context,
+        #                       keyboard_views))
+        ret_context_switch_grid.addWidget(button, 0, 4, alignment=QtCore.Qt.AlignTop)
+        self.character_buttons.append(button)
+
+        return ret_context_switch_grid
