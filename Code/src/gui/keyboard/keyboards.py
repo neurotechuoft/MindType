@@ -16,14 +16,16 @@ class Keyboards(QtWidgets.QWidget):
     def __init__(self, character_display_panel, interval):
         super().__init__()
 
+        self.interval = 100
+
         self.keyboard_views = QtWidgets.QStackedWidget()
 
         self.letter_keyboard = gui.keyboard.letter_keyboard.LetterKeyboard(self.keyboard_views,
                                                               character_display_panel,
-                                                              interval)
+                                                              self.interval)
         self.number_keyboard = gui.keyboard.number_keyboard.NumberKeyboard(self.keyboard_views,
                                                               character_display_panel,
-                                                              interval)
+                                                              self.interval)
         # self.number_keyboard = NumberKeyboard()
 
         self.keyboard_views.addWidget(self.letter_keyboard)

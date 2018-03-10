@@ -25,7 +25,6 @@ class GUI(QtWidgets.QWidget):
         # variables used for pausing
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
-        self.interval = 100
 
         # Creating main panel which contains everything
         self.main_panel = QtWidgets.QVBoxLayout()
@@ -52,8 +51,7 @@ class GUI(QtWidgets.QWidget):
 
         # adding keyboard gui to main panel
         # creating a button grid
-        self.keyboards = Keyboards(self.character_display_panel,
-                                  self.interval)
+        self.keyboards = Keyboards(self.character_display_panel)
         self.keyboards.keyboard_views.setCurrentIndex(0)
 
         self.main_panel.addLayout(self.keyboards.layout)
