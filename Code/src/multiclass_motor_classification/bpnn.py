@@ -39,9 +39,9 @@ eta = .1
 input_EEG = tf.placeholder(tf.float32, None)
 
 # Initialise the weights
-w_hidden1 = tf.truncated_normal(shape=(input_size, hidden_size))
-w_hidden2 = np.random.uniform(size=(hidden_size, hidden_size))
-w_output = np.random.uniform(size=(hidden_size, output_size))
+w_hidden1 = tf.Variable(tf.truncated_normal(shape=[input_size, hidden_size]))
+w_hidden2 = tf.Variable(tf.truncated_normal(shape=[hidden_size, hidden_size]))
+w_output = tf.Variable(tf.truncated_normal(shape=[hidden_size, output_size]))
 
 # Still need to stack the bias
 
