@@ -5,20 +5,19 @@ import time
 
 
 class RTAnalysis(object):
-    """ Adapted from rteeg.rteeg.analysis.Loopanalysis (due to PyQt5 error with Python2.7 in original)
-    Class to loop analysis of EEG data every time the markers stream notifies the end of the trial
-    Parameters
-    ----------
-    m_stream : Marker Stream
-       The marker stream to which you are connected.
-    eeg_stream : MuseEEGStream
-       The eeg stream to which you are connected.
-    data_duration : float
-        The length of time that will be used to create all epochs for prediction (i.e. 12 flashes --> 3.4s)
-    path : string
-        Path for classifier save file
-    train : Boolean
-        If true, will use live data to train. If false (default), will return predictions for stimuli
+    """Class to loop analysis of EEG data every time the markers stream notifies the end of the trial.
+
+    Adapted from rteeg.rteeg.analysis.LoopAnalysis.
+
+    Attributes:
+        m_stream: MarkerStream; the marker stream to which you are connected.
+        eeg_stream: MuseEEGStream; the eeg stream to which you are connected.
+        data_duration: The length of time that will be used to create epochs for prediction (i.e. 12 flashes is 3.4s)
+        path: string; path for classifier save file.
+        train: Boolean; if true, will use live data to train. If false (default), will return predictions for stimuli.
+        train_epochs: number of epochs (time segmeents after events) to collect before beginning training; only
+            applicable when train is 'True'. For this to work well, ensure that this number is a multiple of the
+            number of trials (events) that are being made into epochs and sent for training/prediction.
     """
 
     def __init__(self, m_stream, eeg_stream, data_duration, path, train='False', train_epochs=120):
@@ -47,9 +46,11 @@ class RTAnalysis(object):
         self._loop_worker()
 
     def _loop_worker(self):
-        """Adapted from rteeg.rteeg.analysis._loop_worker
-        The main loop for performing real time analysis. Takes items from an analysis queue sequentially, forms mne
-        epochs, and either uses the data for real time training or to
+        """The main loop for performing real time analysis.
+
+        Takes items from an analysis queue sequentially, forms mne epochs, and either uses the data for real time
+        training or to predict the letter that was mind-typed.
+        Structure is adapted from rteeg.rteeg.analysis._loop_worker.
         """
         sleep_time = 0.01  # Time to sleep between queries.
 
@@ -63,7 +64,7 @@ class RTAnalysis(object):
                 tmp = np.array(self.eeg_stream.data)
                 end_index = int((np.abs(tmp[:, -1] - ts)).argmin() + 1 / (1 / self.eeg_stream.info['sfreq']))
 
-                # ensure enough there is enough eeg data before analyzing; wait if there isn't
+                # ensure there is enough eeg data before analyzing; wait if there isn't
                 while len(self.eeg_stream.data) < end_index:
                     time.sleep(sleep_time)
 
@@ -97,16 +98,17 @@ class RTAnalysis(object):
                     classifier = lda.load(self.path)
                     i, t = lda.create_input_target(zip(targets, data))
                     prediction = lda.predict(i, classifier)
-                    result = 0
+                    intermediate = 0
                     for index, item in enumerate(prediction):
-                        # to account for the fact that every marker is associated with 4 channels, average the output
-                        # of each channel or apply specific weights to each channel (implement in future)
+                        # To account for the fact that every marker is associated with 4 channels, average the output
+                        # of each channel or apply specific weights to each channel (possibly implement in future).
+                        # Predictions for a single event based on 4 channels is appended to a list.
                         if (index + 1) % 4 == 0:
-                            result += item/4
-                            self.predictions.append(result)
-                            result = 0
+                            intermediate += item/4
+                            self.predictions.append(intermediate)
+                            intermediate = 0
                         else:
-                            result += item/4
+                            intermediate += item/4
             time.sleep(sleep_time)
 
     def start(self):
