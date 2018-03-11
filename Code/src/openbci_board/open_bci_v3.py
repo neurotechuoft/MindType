@@ -292,14 +292,14 @@ class OpenBCIBoard(object):
         # 	print("CSV: %f | %d" % (t, sample.id))
         row = ''
         row += str(t)
-        row += self.delim
+        row += ","
 
         row += str(sample.id)
-        row += self.delim
+        row += ","
 
         for i in sample.channel_data:
             row += str(i)
-            row += self.delim
+            row += ","
 
         data = row.split(",")
 
