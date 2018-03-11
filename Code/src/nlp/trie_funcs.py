@@ -62,6 +62,7 @@ def autocomplete(start_word, data_path, triee=None):
         if len(complete_word_dict) > 0:
             pop_word = max(complete_word_dict, key=complete_word_dict.get)
             complete_word_dict.pop(pop_word, None)
+            print(pop_word)
         else:
             pop_word = max(popular_dict, key=popular_dict.get)
             popular_dict.pop(pop_word, None)
@@ -159,6 +160,7 @@ def load_data(path_to_data, branch_limit=10000):
     freqs = grams['freq'].values
     phrases = grams['first'] + " " + grams['second']
     fmt = "@i"
+    phrases = np.unicode(phrases.values)
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
 
     # Store the trie
@@ -183,7 +185,7 @@ def one_letter(data_path):
     store_grams = grams.copy()
 
     short_grams = grams.copy()
-    short_grams['first'] = short_grams['first'].apply(lambda x: x[0].lower())
+    # short_grams['first'] = short_grams[['first']].apply(lambda x: x[0].lower())
     short_grams['indices'] = short_grams.index
 
     res = short_grams.groupby("first").apply(lambda group: group.nlargest(50, columns='freq'))
@@ -194,7 +196,7 @@ def one_letter(data_path):
     freqs = grams['freq'].values
     phrases = grams['first'] + " " + grams['second']
     fmt = "@i"
-
+    phrases = np.unicode(phrases.values)
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
     with open('./resources/short_trie.pkl', 'wb') as output:
         pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
@@ -231,7 +233,7 @@ def popular_trie(data_path):
     freqs = grams['freq'].values
     phrases = grams['first'] + " " + grams['second']
     fmt = "@i"
-
+    phrases = np.unicode(phrases.values)
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
     with open('./resources/popular_trie.pkl', 'wb') as output:
         pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
@@ -240,3 +242,6 @@ def popular_trie(data_path):
 
     return triee
 
+
+if __name__ == "__main__":
+    autocomplete("he", "random/w2_.txt")
