@@ -1,6 +1,7 @@
 import sys
 
 from nlp import trie_funcs, benchmark
+# import trie_funcs
 
 
 def autocomplete(word: str) -> str:
@@ -11,7 +12,7 @@ def autocomplete(word: str) -> str:
     :param word: (part of) a word
     :return: completed string
     """
-    return trie_funcs.autocomplete(word, "w2_.txt")
+    return trie_funcs.autocomplete(word, "random/w2_.txt")
 
 
 if __name__ == '__main__':
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     #print(a,b)
 
     # This is the result
-    a1, a2, a3 = autocomplete('al i')
-    #print(a1, a2, a3)
+    a1, a2, a3 = autocomplete(sys.argv[1])
+    # print(a1, a2, a3)
 
 

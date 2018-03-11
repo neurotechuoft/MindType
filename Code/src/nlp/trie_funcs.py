@@ -23,36 +23,58 @@ def autocomplete(start_word, data_path, triee=None):
 
     # Get an appropriate trie
     if triee is None:
-        triee = check_cache(data_path, start_word)
-
-    # Iterate over the trie elements that start with the start_word
-    # and store the one with the highest score.
-    #for key, val in triee.items(start_word):
-        # The values are singular tuples, where val[0] is the actual frequency
-    #    if val[0] > highest_freq:
-    #        highest_freq = val[0]
-    #        complete_word = key
+        triee, popular_dict = check_cache(data_path, start_word)
 
 
     # Iterate over the trie elements that start with the start_word
     # and store the top 3 most frequent words
     item = triee.items(start_word)
 
-    complete_word = []
-    complete_freq = []
-    i = 0
-    while len(item) > 0 and i < 3:
-        highest_freq = 0
-        for key, val in item:
-            if val[0] > highest_freq:
-                highest_freq = val[0]
-                complete_word.append(key)
-                complete_freq.append(val)
-        item.remove((complete_word[-1],complete_freq[-1]))
-        i += 1
+    # complete_word = []
+    # complete_freq = []
+    # i = 0
 
-    #if len(complete_word) == 0:
-    #    return "Couldn't find autocomplete for \"{}\"".format(start_word)
+    if len(start_word.split(" ")) < 1:
+        next_word = next_word_indicator(item, start_word)
+    else:
+        next_word = False
+        item = list(map(lambda x: (x[0].replace(start_word.split(" ")[0] + " ", ""), x[1]), item))
+    # while len(item) > 0 and i < 3:
+    #     highest_freq = 0
+    #     for key, val in item:
+    #         if val[0] > highest_freq:
+    #             highest_freq = val[0]
+    #             if key not in complete_word:
+    #                 complete_word.append(key)
+    #                 complete_freq.append(val)
+    #     if not next_word:
+    #         item = [(k, v) for k, v in item if complete_word[0].split(" ")[0] not in k]
+    #     if complete_word[-1] in item:
+    #         item.remove((complete_word[-1],complete_freq[-1]))
+    #     i += 1
+
+
+    # complete_freq_vals = list(map(lambda x: x[0], complete_freq))
+    # complete_word_dict = dict(zip(complete_word, complete_freq_vals))
+    complete_word_dict = dict(item)
+    top_three = []
+    while len(top_three) < 3:
+        if len(complete_word_dict) > 0:
+            pop_word = max(complete_word_dict, key=complete_word_dict.get)
+            complete_word_dict.pop(pop_word, None)
+        else:
+            pop_word = max(popular_dict, key=popular_dict.get)
+            popular_dict.pop(pop_word, None)
+
+        if pop_word not in top_three:
+            if not next_word:
+                if pop_word.split(" ")[0] not in top_three:
+                    top_three.append(pop_word.split(" ")[0])
+            else:
+                top_three.append(pop_word)
+
+    complete_word = top_three
+
     # For the case where the autocomplete predicts the next word
 
     results = []
@@ -70,15 +92,12 @@ def autocomplete(start_word, data_path, triee=None):
         results.append(start_word.split(' ')[0])
     return results[0], results[1], results[2]
 
-    #if complete_word == '':
-    #    return "Couldn't find autocomplete for \"{}\"".format(start_word)
-    # For the case where the autocomplete predicts the next word
-    #longer = complete_word.split(' ')
-    #if len(longer) > 1 and longer[-2] in start_word:
-        # Ignore the first word, which was given as an input, return only the next one
-    #    return longer[-1]
-    #return longer[0]
+def next_word_indicator(item, word):
+    for key, value in item:
+        if key.split(" ")[0] == word.strip():
+            return True
 
+    return False
 
 def check_cache(data_path, start_word):
     """
@@ -111,11 +130,11 @@ def check_cache(data_path, start_word):
         popular_dict = pickle.load(pop_dict)
 
     if len(start_word) == 1:
-        return pickle.load(short)
+        return pickle.load(short), popular_dict
     if start_word in popular_dict:
-        return pickle.load(pop_trie)
+        return pickle.load(pop_trie), popular_dict
 
-    return pickle.load(long)
+    return pickle.load(long), popular_dict
 
 
 def load_data(path_to_data, branch_limit=10000):
@@ -128,7 +147,7 @@ def load_data(path_to_data, branch_limit=10000):
 
     with codecs.open(path_to_data, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
-
+    # grams = pd.read_pickle('./resources/data.pkl')
     grams = grams.sort_values(by='freq', ascending=False)
 
     # Limit the number of children for each node
@@ -143,7 +162,7 @@ def load_data(path_to_data, branch_limit=10000):
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
 
     # Store the trie
-    with open('trie.pkl', 'wb') as output:
+    with open('./resources/trie.pkl', 'wb') as output:
         pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
     return triee
 
@@ -158,6 +177,7 @@ def one_letter(data_path):
     """
     with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
+    # grams = pd.read_pickle('./resources/data.pkl')
 
     global store_grams
     store_grams = grams.copy()
@@ -168,7 +188,6 @@ def one_letter(data_path):
 
     res = short_grams.groupby("first").apply(lambda group: group.nlargest(50, columns='freq'))
     indices = res['indices'].values
-
     grams = grams.iloc[indices, :]
     grams['freq'] = grams['freq'].apply(lambda x: (x,))
 
@@ -177,7 +196,7 @@ def one_letter(data_path):
     fmt = "@i"
 
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
-    with open('short_trie.pkl', 'wb') as output:
+    with open('./resources/short_trie.pkl', 'wb') as output:
         pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
     return triee
 
@@ -191,19 +210,20 @@ def popular_trie(data_path):
     """
     with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
+    # grams = pd.read_pickle('./resources/data.pkl')
 
     try:
-        long = open('trie.pkl', 'rb')
+        long = open('./resources/trie.pkl', 'rb')
     except IOError:
         one_letter(data_path)
-        long = open('trie.pkl', 'rb')
+        long = open('./resources/trie.pkl', 'rb')
 
     triee = pickle.load(long)
-    big_ones = set()
-    for elem in set(grams['first'].values):
-        if len(triee.items(elem)) > 7000:
-            big_ones.add(elem)
-
+    big_ones = dict()
+    for elem in (grams.groupby(['first']).sum()).iterrows():
+        count = elem[1]['freq']
+        if count > 7000:
+            big_ones[elem[1].name] = count
     grams = grams.loc[grams['first'].isin(big_ones)]
 
     grams['freq'] = grams['freq'].apply(lambda x: (x,))
@@ -213,9 +233,9 @@ def popular_trie(data_path):
     fmt = "@i"
 
     triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
-    with open('popular_trie.pkl', 'wb') as output:
+    with open('./resources/popular_trie.pkl', 'wb') as output:
         pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
-    with open('dict.pkl', 'wb') as output:
+    with open('./resources/dict.pkl', 'wb') as output:
         pickle.dump(big_ones, output, pickle.HIGHEST_PROTOCOL)
 
     return triee
