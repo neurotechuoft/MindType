@@ -217,7 +217,7 @@ class OpenBCIBoard(object):
             if self.log:
                 self.log_packet_count = self.log_packet_count + 1
 
-    def stream(self, start_time, biosignals=None,lapse=-1):
+    def stream(self, start_time, biosignals, lapse=-1):
         """ Start handling streaming data from the board. Call a provided callback
         for every single sample that is processed (every two samples with daisy module).
 
@@ -233,8 +233,11 @@ class OpenBCIBoard(object):
         start_time = timeit.default_timer()
 
         # Enclose callback funtion in a list if it comes alone
-        if not isinstance(biosignals, list):
-            biosignals = [biosignals]
+        # if not isinstance(biosignals, list):
+        #     biosignals = [biosignals]
+        
+        print(type(biosignals))
+        print(type(biosignals[0]))
 
         # Initialize check connection
         self.check_connection()

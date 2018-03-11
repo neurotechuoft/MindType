@@ -165,7 +165,7 @@ $$$ signals end of message")
             return
 
         if controller.peek() is not None:
-            board_action(board, controller, fun, biosignal, start_time)
+            board_action(board, controller, fun, start_time, biosignal)
             if FeatureFlags.COMMAND_LINE:
                 user_control([controller,
                               biosignal.controller,
