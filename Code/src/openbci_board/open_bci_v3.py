@@ -263,7 +263,7 @@ class OpenBCIBoard(object):
                     if biosignals is not None:
                         for biosignal in biosignals:
                             if isinstance(biosignal, BioSignal):
-                                biosignal.update(self.parse_sample(sample))
+                                biosignal.update(self.parse_sample(sample, start_time))
                             else:
                                 print("Object isn't a biosignal!")
             else:
