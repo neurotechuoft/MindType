@@ -83,7 +83,7 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
             #     target=board.start_streaming, args=(pub_sub_fct, lapse,
             #                                         [biosignal,]))
             boardThread = threading.Thread(
-                target=board.start_streaming, args=([biosignal, ], lapse))
+                target=board.stream, args=([biosignal, ], lapse))
             boardThread.daemon = True  # will stop on exit
             try:
                 boardThread.start()
