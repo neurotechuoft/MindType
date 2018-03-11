@@ -7,15 +7,16 @@ import pandas as pd
 import time
 
 
-def load_words(check_grammar = False):
-	with codecs.open("random/w2_.txt", "r", encoding='utf-8', errors='ignore') as fdata:
+# words_dictionary from https://github.com/dwyl/english-words, using Unlisence
+def load_words(check_grammar = True):
+	with codecs.open("./resources/w2_.txt", "r", encoding='utf-8', errors='ignore') as fdata:
 		grams = pd.read_table(fdata, names=["freq", "first", "second"])
 	if check_grammar:
-		filename = "words_dictionary.json"
-		with open(filename, "r") as english_dictionary:
+		with open("./resources/words_dictionary.json", "r") as english_dictionary:
 			valid_words = json.load(english_dictionary)
 		grams = grams[grams.apply(lambda x: valid_words.get(x['first'], 0) == 1
 										and valid_words.get(x['second'], 0) == 1, axis=1)]
+		grams = grams.loc[grams['second'] != "n't"]
 
 	grams = grams.reset_index(drop=True)
 	grams.to_pickle("./resources/words.pkl")
@@ -42,6 +43,7 @@ def check_cache(start_word):
 
 	if len(start_word) == 1 or start_word in popular_dict:
 		triee = pickle.load(pop_trie)
+		print(triee)
 		return triee, popular_dict
 
 	try:
@@ -60,7 +62,7 @@ def load_data(branch_limit=10000):
 	:return: the trie, which also gets stored on the drive
 	"""
 	try:
-		grams = pd.read_pickle('./resources/data.pkl')
+		grams = pd.read_pickle('./resources/words.pkl')
 	except IOError:
 		grams = load_words()
 
@@ -92,7 +94,7 @@ def one_letter():
 	:return: a one-letter trie, which also gets stored on the drive
 	"""
 	try:
-		grams = pd.read_pickle('./resources/data.pkl')
+		grams = pd.read_pickle('./resources/words.pkl')
 	except IOError:
 		grams = load_words()
 
@@ -122,7 +124,7 @@ def popular_trie():
 	:return: a popular trie, which also gets stored on the drive
 	"""
 	try:
-		grams = pd.read_pickle('./resources/data.pkl')
+		grams = pd.read_pickle('./resources/words.pkl')
 	except IOError:
 		grams = load_words()
 
@@ -151,7 +153,7 @@ def popular_trie():
 
 if __name__ == "__main__":
 	start = time.time()
-	load_words()
+	load_words(check_grammar=True)
 	load_data()
 	popular_trie()
 
