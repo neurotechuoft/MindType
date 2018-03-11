@@ -71,7 +71,6 @@ def autocomplete(start_word, data_path, triee=None):
                 if pop_word.split(" ")[0] not in top_three:
                     top_three.append(pop_word.split(" ")[0])
             else:
-                print(pop_word)
                 top_three.append(pop_word)
 
     complete_word = top_three
