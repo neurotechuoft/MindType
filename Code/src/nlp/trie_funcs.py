@@ -7,7 +7,8 @@ import sys
 
 import time
 
-import nlp_setup
+from nlp import nlp_setup
+
 
 def autocomplete(start_word, triee=None):
     """
@@ -22,7 +23,8 @@ def autocomplete(start_word, triee=None):
     # Get an appropriate trie
     if triee is None:
         triee, popular_dict = nlp_setup.check_cache(start_word)
-
+    print("---------")
+    print(triee)
     # Iterate over the trie elements that start with the start_word
     # and store the top 3 most frequent words
     item = triee.items(start_word)
