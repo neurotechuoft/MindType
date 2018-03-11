@@ -5,8 +5,6 @@ import codecs
 import pickle
 import sys
 
-# TODO: Need to rewrite the file read. Right now it assumes that only one text file is used.
-# The easiest way is to probably change load_data to combine 2 and 3-grams(and maybe more)
 
 def autocomplete(start_word, data_path, triee=None):
     """
@@ -18,51 +16,26 @@ def autocomplete(start_word, data_path, triee=None):
     :return: a string with the autocompleted word
     """
 
-    highest_freq = 0
-    complete_word = ''
-
     # Get an appropriate trie
     if triee is None:
         triee, popular_dict = check_cache(data_path, start_word)
 
-
     # Iterate over the trie elements that start with the start_word
     # and store the top 3 most frequent words
     item = triee.items(start_word)
-
-    # complete_word = []
-    # complete_freq = []
-    # i = 0
 
     if len(start_word.split(" ")) < 1:
         next_word = next_word_indicator(item, start_word)
     else:
         next_word = False
         item = list(map(lambda x: (x[0].replace(start_word.split(" ")[0] + " ", ""), x[1]), item))
-    # while len(item) > 0 and i < 3:
-    #     highest_freq = 0
-    #     for key, val in item:
-    #         if val[0] > highest_freq:
-    #             highest_freq = val[0]
-    #             if key not in complete_word:
-    #                 complete_word.append(key)
-    #                 complete_freq.append(val)
-    #     if not next_word:
-    #         item = [(k, v) for k, v in item if complete_word[0].split(" ")[0] not in k]
-    #     if complete_word[-1] in item:
-    #         item.remove((complete_word[-1],complete_freq[-1]))
-    #     i += 1
 
-
-    # complete_freq_vals = list(map(lambda x: x[0], complete_freq))
-    # complete_word_dict = dict(zip(complete_word, complete_freq_vals))
     complete_word_dict = dict(item)
     top_three = []
     while len(top_three) < 3:
         if len(complete_word_dict) > 0:
             pop_word = max(complete_word_dict, key=complete_word_dict.get)
             complete_word_dict.pop(pop_word, None)
-            # print(pop_word)
         else:
             pop_word = max(popular_dict, key=popular_dict.get)
             popular_dict.pop(pop_word, None)
@@ -77,7 +50,6 @@ def autocomplete(start_word, data_path, triee=None):
     complete_word = top_three
 
     # For the case where the autocomplete predicts the next word
-
     results = []
     j = 0
     while j < len(complete_word) and j < 3:
@@ -93,12 +65,14 @@ def autocomplete(start_word, data_path, triee=None):
         results.append(start_word.split(' ')[0])
     return results[0], results[1], results[2]
 
+
 def next_word_indicator(item, word):
     for key, value in item:
         if key.split(" ")[0] == word.strip():
             return True
 
     return False
+
 
 def check_cache(data_path, start_word):
     """
@@ -181,8 +155,8 @@ def one_letter(data_path):
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
     # grams = pd.read_pickle('./resources/data.pkl')
 
-    global store_grams
-    store_grams = grams.copy()
+    # global store_grams
+    # store_grams = grams.copy()
 
     short_grams = grams.copy()
     # short_grams['first'] = short_grams[['first']].apply(lambda x: x[0].lower())
@@ -214,13 +188,6 @@ def popular_trie(data_path):
         grams = pd.read_table(fdata, names=["freq", "first", "second"])
     # grams = pd.read_pickle('./resources/data.pkl')
 
-    try:
-        long = open('./resources/trie.pkl', 'rb')
-    except IOError:
-        one_letter(data_path)
-        long = open('./resources/trie.pkl', 'rb')
-
-    triee = pickle.load(long)
     big_ones = dict()
     for elem in (grams.groupby(['first']).sum()).iterrows():
         count = elem[1]['freq']
