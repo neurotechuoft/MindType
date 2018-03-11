@@ -62,7 +62,7 @@ def autocomplete(start_word, data_path, triee=None):
         if len(complete_word_dict) > 0:
             pop_word = max(complete_word_dict, key=complete_word_dict.get)
             complete_word_dict.pop(pop_word, None)
-            print(pop_word)
+            # print(pop_word)
         else:
             pop_word = max(popular_dict, key=popular_dict.get)
             popular_dict.pop(pop_word, None)
