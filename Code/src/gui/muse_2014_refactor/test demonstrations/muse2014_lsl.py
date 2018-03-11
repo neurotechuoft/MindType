@@ -43,7 +43,7 @@ def main():
 
     # establish test marker stream; for test purposes only
     outlet = markers_test.test_marker_stream()
-    # 1 - 11 for 12 rows/columns
+    # 0 - 11 for 12 rows/columns
     identifiers = range(0, 12, 1)
     print('Marker outlet created.')
 
