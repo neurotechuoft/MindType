@@ -5,8 +5,12 @@ import codecs
 import pickle
 import sys
 
+import time
 
-def autocomplete(start_word, data_path, triee=None):
+from nlp import nlp_setup
+
+
+def autocomplete(start_word, triee=None):
     """
     Autocomplete a word by finding the most widely used n-gram starting with it.
     :param start_word: a word to autocomplete
@@ -18,12 +22,12 @@ def autocomplete(start_word, data_path, triee=None):
 
     # Get an appropriate trie
     if triee is None:
-        triee, popular_dict = check_cache(data_path, start_word)
-
+        triee, popular_dict = nlp_setup.check_cache(start_word)
+    print("---------")
+    print(triee)
     # Iterate over the trie elements that start with the start_word
     # and store the top 3 most frequent words
     item = triee.items(start_word)
-
     if len(start_word.split(" ")) < 1:
         next_word = next_word_indicator(item, start_word)
     else:
@@ -74,141 +78,7 @@ def next_word_indicator(item, word):
     return False
 
 
-def check_cache(data_path, start_word):
-    """
-    Analyze the word and the cached tries. Choose the appropriate category for the word
-    and create(and store)/load associated trie.
-    :param data_path: path to the n-gram corpus
-    :param start_word: word to complete
-    :return: the loaded trie
-    """
-    try:
-        short = open('./resources/short_trie.pkl', 'rb')
-    except IOError:
-        one_letter(data_path)
-        short = open('./resources/short_trie.pkl', 'rb')
-    try:
-        long = open('./resources/trie.pkl', 'rb')
-    except IOError:
-        load_data(data_path)
-        long = open('./resources/trie.pkl', 'rb')
-
-    try:
-        pop_trie = open('./resources/popular_trie.pkl', 'rb')
-        pop_dict = open('./resources/dict.pkl', 'rb')
-        popular_dict = pickle.load(pop_dict)
-
-    except IOError:
-        popular_trie(data_path)
-        pop_trie = open('./resources/popular_trie.pkl', 'rb')
-        pop_dict = open('./resources/dict.pkl', 'rb')
-        popular_dict = pickle.load(pop_dict)
-
-    if len(start_word) == 1:
-        return pickle.load(short), popular_dict
-    if start_word in popular_dict:
-        return pickle.load(pop_trie), popular_dict
-
-    return pickle.load(long), popular_dict
-
-
-def load_data(path_to_data, branch_limit=10000):
-    """
-    Load the longest version of the trie, containing most n-grams(limited by the branch_limit)
-    :param path_to_data: path to the n-gram corpus
-    :param branch_limit: the limit of children for each node of the trie. Default 10000
-    :return: the trie, which also gets stored on the drive
-    """
-
-    with codecs.open(path_to_data, "r", encoding='utf-8', errors='ignore') as fdata:
-        grams = pd.read_table(fdata, names=["freq", "first", "second"])
-    # grams = pd.read_pickle('./resources/data.pkl')
-    grams = grams.sort_values(by='freq', ascending=False)
-
-    # Limit the number of children for each node
-    grams = grams.groupby("first").head(branch_limit)
-
-    # The transformation from int to a singular tuple is required by the trie API
-    grams['freq'] = grams['freq'].apply(lambda x: (x,))
-
-    freqs = grams['freq'].values
-    phrases = grams['first'] + " " + grams['second']
-    fmt = "@i"
-    phrases = np.unicode(phrases.values)
-    triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
-
-    # Store the trie
-    with open('./resources/trie.pkl', 'wb') as output:
-        pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
-    return triee
-
-
-def one_letter(data_path):
-    """
-    Generate a trie that is used for a special case where only one letter is given
-    to the autocomplete function. Since it's very expensive to go over all combinations
-    each time, this function does it once and stores the result.
-    :param data_path: path to the n-gram corpus
-    :return: a one-letter trie, which also gets stored on the drive
-    """
-    with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
-        grams = pd.read_table(fdata, names=["freq", "first", "second"])
-    # grams = pd.read_pickle('./resources/data.pkl')
-
-    # global store_grams
-    # store_grams = grams.copy()
-
-    short_grams = grams.copy()
-    # short_grams['first'] = short_grams[['first']].apply(lambda x: x[0].lower())
-    short_grams['indices'] = short_grams.index
-
-    res = short_grams.groupby("first").apply(lambda group: group.nlargest(50, columns='freq'))
-    indices = res['indices'].values
-    grams = grams.iloc[indices, :]
-    grams['freq'] = grams['freq'].apply(lambda x: (x,))
-
-    freqs = grams['freq'].values
-    phrases = grams['first'] + " " + grams['second']
-    fmt = "@i"
-    phrases = np.unicode(phrases.values)
-    triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
-    with open('./resources/short_trie.pkl', 'wb') as output:
-        pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
-    return triee
-
-
-def popular_trie(data_path):
-    """
-    Generate a trie for the most popular words, like "to", "the", etc.
-    Popular trie should be used if the branching factor for the long trie is large (>1000)
-    :param data_path: path to the n-gram corpus
-    :return: a popular trie, which also gets stored on the drive
-    """
-    with codecs.open(data_path, "r", encoding='utf-8', errors='ignore') as fdata:
-        grams = pd.read_table(fdata, names=["freq", "first", "second"])
-    # grams = pd.read_pickle('./resources/data.pkl')
-
-    big_ones = dict()
-    for elem in (grams.groupby(['first']).sum()).iterrows():
-        count = elem[1]['freq']
-        if count > 7000:
-            big_ones[elem[1].name] = count
-    grams = grams.loc[grams['first'].isin(big_ones)]
-
-    grams['freq'] = grams['freq'].apply(lambda x: (x,))
-
-    freqs = grams['freq'].values
-    phrases = grams['first'] + " " + grams['second']
-    fmt = "@i"
-    phrases = np.unicode(phrases.values)
-    triee = marisa.RecordTrie(fmt, zip(phrases, freqs))
-    with open('./resources/popular_trie.pkl', 'wb') as output:
-        pickle.dump(triee, output, pickle.HIGHEST_PROTOCOL)
-    with open('./resources/dict.pkl', 'wb') as output:
-        pickle.dump(big_ones, output, pickle.HIGHEST_PROTOCOL)
-
-    return triee
-
-
 if __name__ == "__main__":
-    autocomplete("he", "random/w2_.txt")
+    start = time.time()
+    print(autocomplete("a"))
+    print((time.time() - start) * 1000)

@@ -14,7 +14,7 @@ def autocomplete(word: str) -> str:
     :param word: (part of) a word
     :return: completed string
     """
-    return trie_funcs.autocomplete(word, "./nlp/random/w2_.txt")
+    return trie_funcs.autocomplete(word)
 
 
 if __name__ == '__main__':
