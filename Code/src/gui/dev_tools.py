@@ -1,32 +1,37 @@
 import functools
+import pyqtgraph as pg
+import time
 
 from PyQt5 import QtGui, QtWidgets
-
 from controller.MESSAGE import Message
 
 
 class DevTools(QtWidgets.QDialog):
-    def __init__(self, main_controller, controllers, parent=None):
+    def __init__(self, main_controller, controllers, tagger_biosignal, parent=None):
         super(DevTools, self).__init__(parent)
 
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
 
+        self.WINDOW_LEN = 3 * 256
+
+        self.tagger_biosignal = tagger_biosignal
+
         self.pause_state = True
 
         # Creating main panel which contains everything
-        self.main_panel = QtGui.QVBoxLayout()
+        self.main_panel = QtWidgets.QVBoxLayout()
         self.main_panel.setContentsMargins(0, 0, 0, 0)
 
         # creating header panel which has start, pause/resume and text display
-        self.header_panel = QtGui.QHBoxLayout()
+        self.header_panel = QtWidgets.QHBoxLayout()
         self.main_panel.addLayout(self.header_panel)
 
         # creating header panel buttons
-        self.play_pause_button = QtGui.QPushButton("Play/Pause")
-        self.stop_button = QtGui.QPushButton("Stop")
-        self.load_button = QtGui.QPushButton("Load")
-        self.save_button = QtGui.QPushButton("Save")
+        self.play_pause_button = QtWidgets.QPushButton("Play/Pause")
+        self.stop_button = QtWidgets.QPushButton("Stop")
+        self.load_button = QtWidgets.QPushButton("Load")
+        self.save_button = QtWidgets.QPushButton("Save")
 
         # setting button click listeners
         self.play_pause_button.clicked.connect(functools.partial(self.play_pause))
@@ -41,7 +46,7 @@ class DevTools(QtWidgets.QDialog):
         self.header_panel.addWidget(self.save_button)
 
         # creating a button grid
-        self.grid = QtGui.QGridLayout()
+        self.grid = QtWidgets.QGridLayout()
         self.grid.setSpacing(0)
 
         # attaching grid to main panel
@@ -51,17 +56,49 @@ class DevTools(QtWidgets.QDialog):
 
         self.curr_tag = 0
 
-        # adding keyboard buttons to the grid)
+        # adding tag buttons to the grid)
         for row in range(2):
             for col in range(5):
                 character_number = (row * 6) + col
-                button = QtGui.QPushButton(str(character_number))
+                button = QtWidgets.QPushButton(str(character_number))
                 # button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
 
                 # adding button listener
                 button.clicked.connect(functools.partial(self.tag, character_number))
                 self.grid.addWidget(button, row, col)
                 self.tag_buttons.append(button)
+
+        # # PyQtGraph
+        # self.pw = pg.PlotWidget(self)
+        # self.pw.showGrid(x=True, y=True)
+        # self.pw.setDownsampling(mode='peak')
+        # self.pw.setClipToView(True)
+        # self.pw.setXRange(0, 3.0)
+        # self.pw.setYRange(-1.0, 1.0)
+        # # Plot details
+        # self.colours = [QtGui.QColor(226, 0, 26),  # red
+        #                 QtGui.QColor(255, 106, 0),  # orange
+        #                 QtGui.QColor(255, 176, 0),  # yellow
+        #                 QtGui.QColor(123, 204, 0),  # green
+        #                 QtGui.QColor(11, 191, 217),  # torquoise
+        #                 QtGui.QColor(11, 98, 217),  # blue
+        #                 QtGui.QColor(0, 74, 173),  # navy
+        #                 QtGui.QColor(106, 11, 228),  # purple
+        #                 QtGui.QColor(20, 20, 20),  # black
+        #                 ]
+        # self.graphs = []
+        # for colour in self.colours:
+        #     self.graphs.append(self.pw.plot(pen=pg.mkPen(colour)))
+        #
+        # # Timer for updating Graph
+        # self.timer = pg.QtCore.QTimer()
+        # self.timer.timeout.connect(self.graph_update)
+        #
+        # # creating a graph grid
+        # self.graph_layout = QtWidgets.QHBoxLayout()
+        #
+        # self.graph_layout.addWidget(self.pw)
+        # self.main_panel.addLayout(self.graph_layout)
 
         # setting layout to main_panel
         self.setLayout(self.main_panel)
@@ -92,7 +129,7 @@ class DevTools(QtWidgets.QDialog):
 
     def tag(self, tag_number):
         self.curr_tag = tag_number
-        self.controller.set_tag(tag_number)
+        self.send_msg_to_controllers(tag_number)
 
     def get_current_tag(self):
         return self.curr_tag
@@ -100,6 +137,15 @@ class DevTools(QtWidgets.QDialog):
     def send_msg_to_controllers(self, message):
         for controller in self.controllers:
             controller.send(message)
+
+    # def graph_update(self):
+    #     self.tagger_biosignal.process_graph(256.0)
+    #     for i in range(0, len(self.graphs) - 1):
+    #         self.graphs[i].setData(self.tagger_biosignal.graph_samples[i])
+    #
+    #     self.graphs[len(self.graphs) - 1].setData(self.tagger_biosignal.graph_tag)
+    #
+    #     time.sleep(1.0 / 20.0)
 
     def closeEvent(self, event):
         safe_exit_confirmed = False
@@ -111,4 +157,5 @@ class DevTools(QtWidgets.QDialog):
                 safe_exit_confirmed = True
 
         self.main_controller.send(Message.GUI_EXIT)
+        pg.exit()
         event.accept()

@@ -23,14 +23,14 @@ logging.basicConfig(level=logging.ERROR)
 from yapsy.PluginManager import PluginManager
 
 
-def make_gui(main_controller, controllers):
+def make_gui(main_controller, controllers, biosignal):
     app = QtWidgets.QApplication(sys.argv)
     main_scr = None
     if FeatureFlags.GUI:
         main_scr = GUI(main_controller, controllers)
         main_scr.views.setCurrentIndex(1)
     if FeatureFlags.DEV_TOOLS:
-        main_scr = DevTools(main_controller, controllers)
+        main_scr = DevTools(main_controller, controllers, biosignal)
     if main_scr is not None:
         main_scr.resize(500, 100)
         main_scr.show()
@@ -231,12 +231,13 @@ if __name__ == '__main__':
         gui_thread = threading.Thread(target=make_gui,
                                       args=[main_controller,
                                             [biosignal.controller,
-                                             processor.controller]])
+                                             processor.controller],
+                                            biosignal])
         gui_thread.daemon = True
         gui_thread.start()
 
     if not FeatureFlags.BOARD:
-        make_gui(main_controller, [biosignal.controller, processor.controller])
+        make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
 
     # SET UP BOARD--------------------------------------------------------------
     if FeatureFlags.BOARD:
