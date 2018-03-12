@@ -217,7 +217,7 @@ class OpenBCIBoard(object):
             if self.log:
                 self.log_packet_count = self.log_packet_count + 1
 
-    def stream(self, start_time, biosignals, lapse=-1):
+    def start_board(self, start_time, biosignals, lapse=-1):
         """ Start handling streaming data from the board. Call a provided callback
         for every single sample that is processed (every two samples with daisy module).
 
@@ -257,8 +257,7 @@ class OpenBCIBoard(object):
                 # even sample: concatenate and send if last sample was the fist part, otherwise drop the packet
                 elif sample.id - 1 == self.last_odd_sample.id:
                     # aux data is average between the two samples, as the channel samples are averaged by the board
-                    avg_aux_data = list((np.array(sample.aux_data) + np.array(
-                        self.last_odd_sample.aux_data)) / 2)
+                    avg_aux_data = list((np.array(sample.aux_data) + np.array(self.last_odd_sample.aux_data)) / 2)
                     whole_sample = OpenBCISample(sample.id,
                                                  sample.channel_data + self.last_odd_sample.channel_data,
                                                  avg_aux_data)
