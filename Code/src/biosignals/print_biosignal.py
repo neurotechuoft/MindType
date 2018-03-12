@@ -16,6 +16,7 @@ class PrintBiosignal(BioSignal):
     # METHODS-------------------------------------------------------------------
     def update(self, sample):
         BioSignal.update(self, sample)
+        print("PrintBiosignal received " + str(sample))
         if not self.__paused__:
             self.data.append(sample)
 

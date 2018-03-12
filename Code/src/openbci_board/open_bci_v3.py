@@ -241,11 +241,14 @@ class OpenBCIBoard(object):
 
         # Initialize check connection
         self.check_connection()
+        
+        print("Starting to stream")
 
         while self.streaming:
 
             # read current sample
             sample = self._read_serial_binary()
+            print("Finished reading sample")
             # if a daisy module is attached, wait to concatenate two samples (main board + daisy)
             if self.daisy:
                 # odd sample: daisy sample, save for later
@@ -263,20 +266,25 @@ class OpenBCIBoard(object):
                     if biosignals is not None:
                         for biosignal in biosignals:
                             if isinstance(biosignal, BioSignal):
-                                biosignal.update(self.parse_sample(sample, start_time))
+                                print("OpenBCI updating biosignal with" + str(whole_sample))
+                                biosignal.update(self.parse_sample(whole_sample, start_time))
                             else:
                                 print("Object isn't a biosignal!")
+                    else:
+                        print("There are no biosignals!")
             else:
                 # UPDATE OBJECTS
                 if biosignals is not None:
                     for biosignal in biosignals:
                         if isinstance(biosignal, BioSignal):
-                            biosignal.update(self.parse_sample(sample,
-                                                               start_time))
+                            print("OpenBCI updating biosignal with" + str(sample))
+                            biosignal.update(self.parse_sample(sample, start_time))
                         else:
                             print("Object isn't a biosignal!")
                 else:
-                    print("No objects found")
+                    print("There are no biosignals!")
+            
+            print("Streamed biosignal")
 
             # stop streaming after lapse amount of time
             if timeit.default_timer() - start_time > lapse > 0:

@@ -80,11 +80,11 @@ def board_action(board, controller, pub_sub_fct, start_time, biosignal=None):
         # TODO: should we also add 'and not  baord.streaming'
         if pub_sub_fct is not None:
             # start streaming in a separate thread so we could always send commands in here
-            # boardThread = threading.Thread(
-            #     target=board.start_streaming, args=(pub_sub_fct, lapse,
-            #                                         [biosignal,]))
             boardThread = threading.Thread(
-                target=board.stream, args=(start_time, [biosignal, ], lapse))
+                target=board.start_streaming, args=(pub_sub_fct, lapse,
+                                                    [biosignal,]))
+            # boardThread = threading.Thread(
+            #     target=board.stream, args=(start_time, [biosignal, ], lapse))
             boardThread.daemon = True  # will stop on exit
             try:
                 boardThread.start()
