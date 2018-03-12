@@ -16,11 +16,11 @@ class GUI(QtWidgets.QWidget):
         super(GUI, self).__init__(parent)
 
         self.main_controller = main_controller
-        self.controllers = controllers
+        self.controllers = [main_controller] + controllers
 
         self.views = QtWidgets.QStackedWidget()
 
-        self.keyboard_gui = gui.keyboard.keyboard_gui.KeyboardGUI(main_controller, controllers)
+        self.keyboard_gui = gui.keyboard.keyboard_gui.KeyboardGUI(self.main_controller, self.controllers)
 
         self.setup_gui = gui.setup_gui.SetupGUI()
 
