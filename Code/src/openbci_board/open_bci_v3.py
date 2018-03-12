@@ -247,8 +247,9 @@ class OpenBCIBoard(object):
         while self.streaming:
 
             # read current sample
+            print("OpenBCI reading sample...")
             sample = self._read_serial_binary()
-            print("Finished reading sample")
+            print("OpenBCI finished reading sample")
             # if a daisy module is attached, wait to concatenate two samples (main board + daisy)
             if self.daisy:
                 # odd sample: daisy sample, save for later
@@ -345,6 +346,8 @@ class OpenBCIBoard(object):
             else:
                 return bb
 
+        log_bytes_in = ""
+        
         for rep in range(max_bytes_to_skip):
 
             # ---------Start Byte & ID---------
