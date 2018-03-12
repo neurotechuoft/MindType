@@ -33,6 +33,8 @@ import glob
 # cython
 import openbci_board.openbci_board.v3functions as cyfunc
 
+from biosignals.biosignal import BioSignal
+
 SAMPLE_RATE = 250.0     # Hz
 START_BYTE = b'\xA0'    # start of data packet
 END_BYTE = 0xC0         # end of data packet
@@ -215,6 +217,102 @@ class OpenBCIBoard(object):
             if self.log:
                 self.log_packet_count = self.log_packet_count + 1
 
+    def start_board(self, start_time, biosignals, lapse=-1):
+        """ Start handling streaming data from the board. Call a provided callback
+        for every single sample that is processed (every two samples with daisy module).
+
+        :param callback: A callback function -- or a list of functions -- that will receive a single
+        argument of the OpenBCISample object captured.
+        :param lapse: optional cap on streaming time
+        :param biosignals: biosignal object
+        """
+        if not self.streaming:
+            self.ser.write(b'b')
+            self.streaming = True
+
+        start_time = timeit.default_timer()
+
+        # Enclose callback funtion in a list if it comes alone
+        # if not isinstance(biosignals, list):
+        #     biosignals = [biosignals]
+        
+        print(type(biosignals))
+        print(type(biosignals[0]))
+
+        # Initialize check connection
+        self.check_connection()
+        
+        print("Starting to stream")
+
+        while self.streaming:
+
+            # read current sample
+            print("OpenBCI reading sample...")
+            sample = self._read_serial_binary()
+            print("OpenBCI finished reading sample")
+            # if a daisy module is attached, wait to concatenate two samples (main board + daisy)
+            if self.daisy:
+                # odd sample: daisy sample, save for later
+                if ~sample.id % 2:
+                    self.last_odd_sample = sample
+                # even sample: concatenate and send if last sample was the fist part, otherwise drop the packet
+                elif sample.id - 1 == self.last_odd_sample.id:
+                    # aux data is average between the two samples, as the channel samples are averaged by the board
+                    avg_aux_data = list((np.array(sample.aux_data) + np.array(self.last_odd_sample.aux_data)) / 2)
+                    whole_sample = OpenBCISample(sample.id,
+                                                 sample.channel_data + self.last_odd_sample.channel_data,
+                                                 avg_aux_data)
+                    # UPDATE OBJECTS
+                    if biosignals is not None:
+                        for biosignal in biosignals:
+                            if isinstance(biosignal, BioSignal):
+                                print("OpenBCI updating biosignal with" + str(whole_sample))
+                                biosignal.update(self.parse_sample(whole_sample, start_time))
+                            else:
+                                print("Object isn't a biosignal!")
+                    else:
+                        print("There are no biosignals!")
+            else:
+                # UPDATE OBJECTS
+                if biosignals is not None:
+                    for biosignal in biosignals:
+                        if isinstance(biosignal, BioSignal):
+                            print("OpenBCI updating biosignal with" + str(sample))
+                            biosignal.update(self.parse_sample(sample, start_time))
+                        else:
+                            print("Object isn't a biosignal!")
+                else:
+                    print("There are no biosignals!")
+            
+            print("Streamed biosignal")
+
+            # stop streaming after lapse amount of time
+            if timeit.default_timer() - start_time > lapse > 0:
+                self.stop()
+            if self.log:
+                self.log_packet_count = self.log_packet_count + 1
+
+    def parse_sample(self, sample, start_time):
+        t = timeit.default_timer() - start_time
+
+        # print timeSinceStart|Sample Id
+        # if self.verbose:
+        # 	print("CSV: %f | %d" % (t, sample.id))
+        row = ''
+        row += str(t)
+        row += ","
+
+        row += str(sample.id)
+        row += ","
+
+        for i in sample.channel_data:
+            row += str(i)
+            row += ","
+
+        data = row.split(",")
+
+        return data
+
     """
 
         PARSER:
@@ -248,6 +346,8 @@ class OpenBCIBoard(object):
             else:
                 return bb
 
+        log_bytes_in = ""
+        
         for rep in range(max_bytes_to_skip):
 
             # ---------Start Byte & ID---------

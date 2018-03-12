@@ -15,9 +15,12 @@ class GUI(QtWidgets.QWidget):
     def __init__(self, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
 
+        self.main_controller = main_controller
+        self.controllers = [main_controller] + controllers
+
         self.views = QtWidgets.QStackedWidget()
 
-        self.keyboard_gui = gui.keyboard.keyboard_gui.KeyboardGUI(main_controller, controllers)
+        self.keyboard_gui = gui.keyboard.keyboard_gui.KeyboardGUI(self.main_controller, self.controllers)
 
         self.setup_gui = gui.setup_gui.SetupGUI()
 
@@ -42,3 +45,22 @@ class GUI(QtWidgets.QWidget):
         setup = self.load_setup()
         setup["initial_setup"] = True
         self.save_setup(setup)
+
+
+    def closeEvent(self, event):
+        if FeatureFlags.BOARD:
+            safe_exit_confirmed = False
+
+            self.send_msg_to_controllers(Message.EXIT)
+
+            while not safe_exit_confirmed:
+                if self.main_controller.search(Message.SAFE_TO_EXIT):
+                    safe_exit_confirmed = True
+
+            self.main_controller.send(Message.GUI_EXIT)
+
+        event.accept()
+
+    def send_msg_to_controllers(self, message):
+        for controller in self.controllers:
+            controller.send(message)

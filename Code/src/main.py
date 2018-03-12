@@ -4,6 +4,7 @@ import logging
 import sys
 import threading
 import time
+import timeit
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 from biosignals.print_biosignal import PrintBiosignal
@@ -52,7 +53,7 @@ def safe_exit(board, main_controller, biosignals=None):
     main_controller.send(Message.SAFE_TO_EXIT)
 
 
-def board_action(board, controller, pub_sub_fct, biosignal=None):
+def board_action(board, controller, pub_sub_fct, start_time, biosignal=None):
     """
     Reads message from controller, and executes required action on the board.
         Examples include starting, pausing, and exiting the board.
@@ -79,9 +80,10 @@ def board_action(board, controller, pub_sub_fct, biosignal=None):
         # TODO: should we also add 'and not  baord.streaming'
         if pub_sub_fct is not None:
             # start streaming in a separate thread so we could always send commands in here
-            boardThread = threading.Thread(
-                target=board.start_streaming, args=(pub_sub_fct, lapse,
-                                                    [biosignal,]))
+            # boardThread = threading.Thread(
+            #     target=board.start_streaming, args=(pub_sub_fct, lapse,
+            #                                         [biosignal,]))
+            boardThread = threading.Thread(target=board.start_board, args=(start_time, [biosignal, ], lapse))
             boardThread.daemon = True  # will stop on exit
             try:
                 boardThread.start()
@@ -153,6 +155,8 @@ $$$ signals end of message")
     # # d: Channels settings back to default
     # s = s + 'd'
 
+    start_time = timeit.default_timer()
+
     while True:
         if controller.peek() is Message.EXIT:
             safe_exit(board, controller, [biosignal, ])
@@ -160,7 +164,7 @@ $$$ signals end of message")
             return
 
         if controller.peek() is not None:
-            board_action(board, controller, fun, biosignal)
+            board_action(board, controller, fun, start_time, biosignal)
             if FeatureFlags.COMMAND_LINE:
                 user_control([controller,
                               biosignal.controller,
