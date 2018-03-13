@@ -16,32 +16,49 @@ def repopulate_list(template_list):
 
 def marker_publish(signal, outlet, identifiers):
     """Sends randomly generated markers (row/column number) through the lsl stream outlet."""
-    count = 0
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+    trial_num = len(identifiers)
     generator = repopulate_list(identifiers)
+    count = 0
     start_time = pylsl.local_clock()
     print('Markers sending ...')
     while not signal.is_set():
         if generator:
             # generate random marker data
-            status = random.randint(0, 1)
+            # status = random.randint(0, 1)
             t = pylsl.local_clock()
-            data = [generator.pop(), status]
+            tmp = generator.pop()
+            # chooses the target in the identifiers list
+            if tmp == 3:
+                status = 1
+            else:
+                status = 0
 
-            # data pushed in form [identity, target, timestamp]
+            # increment marker count
+            count = count + 1
+
+            # send trial with the FIRST trial of every set of trials, else send a zero
+            if count == 1:
+                data = [tmp, status, trial_num]
+            else:
+                data = [tmp, status, 0]
+
+            # data pushed in form [[identity, target, trial_num], timestamp]
             outlet.push_sample(data, t)
-            print(' {}' .format(data))
+            # print(' {}' .format(data))
+            print('\n{}\n'.format(letters[tmp])) # print for command line training
 
             # down time in between sending markers
-            time.sleep(0.2)
+            time.sleep(0.4)
 
-            count = count + 1
             if count % 12 == 0:
-                # after 12 flashes, 1 trial complete
+                # after 12 flashes, 1 set of trials complete
                 end_time = pylsl.local_clock()
-                print('trial was {} seconds long' .format(end_time - start_time))
+                #print('trial was {} seconds long'.format(end_time - start_time))
         else:
             generator = repopulate_list(identifiers)
-            time.sleep(4)
+            count = 0
+            #time.sleep(4)
             start_time = pylsl.local_clock()
     print('Markers no longer sending.')
 
@@ -49,7 +66,7 @@ def marker_publish(signal, outlet, identifiers):
 def test_marker_stream():
     """Create and return marker lsl outlet."""
     # create
-    info = pylsl.StreamInfo('Markers', 'Markers', 2, 0, 'int32', 'mywid32')
+    info = pylsl.StreamInfo('Markers', 'Markers', 3, 0, 'int32', 'mywid32')
     # next make an outlet
     outlet = pylsl.StreamOutlet(info)
     return outlet
@@ -62,3 +79,16 @@ def start_marker_stream(outlet, identifiers):
                                                                                            identifiers))
     marker_thread.daemon = True
     marker_thread.start()
+
+
+def main():
+    outlet = test_marker_stream()
+    identifiers = range(0, 12, 1)
+    start_marker_stream(outlet, identifiers)
+    while 1:
+        time.sleep(1)
+
+
+if __name__ == '__main__':
+    main()
+
