@@ -232,9 +232,9 @@ class MuseEEGStream(base.BaseStream):
 
         Args:
             marker_stream: stream_rt.MarkerStream; stream of marker data.
-            data_duration: int, float; duration of previous data to use. If data=10, returns instance of mne.Epochs of the
-                previous 10 seconds of data.
             end_index: Last index in data that is included.
+            data_duration: int, float; duration of previous data to use. If data=10, returns instance of mne.Epochs of
+                the previous 10 seconds of data.
             events: ndarray; array of events of the shape (n_events, 3).
             everything else: Copy parameters from mne.Epochs.
 
@@ -321,8 +321,9 @@ class MarkerStream(base.BaseStream):
             sample, timestamp = inlet.pull_sample()
             time_correction = inlet.time_correction()
             sample.append(timestamp + time_correction)
+            # TODO: update self.trial_num, either through a sample identifier, or externally update self.trial_num
             self._update(sample)
             # if all rows/columns have been run through once
             if len(self.data) % self.trial_num == 0:
-                self.add_analysis(timestamp)
+                self.add_analysis([self.trial_num, timestamp])
                 print('queue updated')

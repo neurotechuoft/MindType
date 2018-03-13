@@ -12,25 +12,26 @@ class RTAnalysis(object):
     Attributes:
         m_stream: MarkerStream; the marker stream to which you are connected.
         eeg_stream: MuseEEGStream; the eeg stream to which you are connected.
-        data_duration: The length of time that will be used to create epochs for prediction (i.e. 12 flashes is 3.4s)
         path: string; path for classifier save file.
+        analysis_time: time to analyze after an event in seconds
+        event_time: event duration + in between event time in seconds
         train: Boolean; if true, will use live data to train. If false (default), will return predictions for stimuli.
         train_epochs: number of epochs (time segmeents after events) to collect before beginning training; only
             applicable when train is 'True'. For this to work well, ensure that this number is a multiple of the
             number of trials (events) that are being made into epochs and sent for training/prediction.
     """
 
-    def __init__(self, m_stream, eeg_stream, data_duration, path, train='False', train_epochs=120):
+    def __init__(self, m_stream, eeg_stream, path, analysis_time='1.0', event_time=0.2, train='False',
+                 train_epochs=120):
         if not isinstance(m_stream, MarkerStream):
             raise TypeError("Stream must be type `MuseEEGStream`. {} "
                             "was passed.".format(type(m_stream)))
         print("Analysis object created.")
         self.m_stream = m_stream
         self.eeg_stream = eeg_stream
-        # data_duration should be (number of flashes * (duration of each flash + in-between time)) + 1s
-        self.data_duration = data_duration
         self.path = path
-
+        self.analysis_time = analysis_time
+        self.event_time = event_time
         self.running = False
         self._kill_signal = threading.Event()
         self.classifier_input = None
@@ -40,6 +41,7 @@ class RTAnalysis(object):
         self.train_data = []
         self.train_targets = []
         self.predictions = []
+        self.data_duration = None
 
     def _loop_analysis(self):
         """Call a function every time the marker stream gives the signal"""
@@ -59,10 +61,12 @@ class RTAnalysis(object):
             if not self.m_stream.analyze.empty():
                 print('Began analyzing data...')
 
-                # get last eeg sample for analysis of the trial (0.02% second tolerance to always capture 1st event)
-                ts = self.m_stream.remove_analysis()
+                trial_num, ts = self.m_stream.remove_analysis()
+                self.data_duration = trial_num*self.event_time + self.analysis_time
                 tmp = np.array(self.eeg_stream.data)
-                end_index = int((np.abs(tmp[:, -1] - ts)).argmin() + 1 / (1 / self.eeg_stream.info['sfreq']))
+                # get analysis_time seconds of data (in terms of the end_index) after the event
+                end_index = int((np.abs(tmp[:, -1] - ts)).argmin()
+                                + self.analysis_time / (1 / self.eeg_stream.info['sfreq']))
 
                 # ensure there is enough eeg data before analyzing; wait if there isn't
                 while len(self.eeg_stream.data) < end_index:
@@ -101,7 +105,7 @@ class RTAnalysis(object):
                     intermediate = 0
                     for index, item in enumerate(prediction):
                         # To account for the fact that every marker is associated with 4 channels, average the output
-                        # of each channel or apply specific weights to each channel (possibly implement in future).
+                        # of each channel (or apply specific weights to each channel, to possibly implement in future).
                         # Predictions for a single event based on 4 channels is appended to a list.
                         if (index + 1) % 4 == 0:
                             intermediate += item/4
