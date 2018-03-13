@@ -250,18 +250,18 @@ if __name__ == '__main__':
         biosignal = PrintBiosignal()
     processor = Processor([biosignal])
 
-    # SET UP GUI----------------------------------------------------------------
-    if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
-        gui_thread = threading.Thread(target=make_gui,
-                                      args=[main_controller,
-                                            [biosignal.controller,
-                                             processor.controller],
-                                            biosignal])
-        gui_thread.daemon = True
-        gui_thread.start()
+    # # SET UP GUI----------------------------------------------------------------
+    # if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
+    #     gui_thread = threading.Thread(target=make_gui,
+    #                                   args=[main_controller,
+    #                                         [biosignal.controller,
+    #                                          processor.controller],
+    #                                         biosignal])
+    #     gui_thread.daemon = True
+    #     gui_thread.start()
 
-    if not FeatureFlags.BOARD:
-        make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
+    # if not FeatureFlags.BOARD:
+    #     make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
 
     # SET UP BOARD--------------------------------------------------------------
     if FeatureFlags.BOARD:
@@ -333,6 +333,20 @@ if __name__ == '__main__':
 
         atexit.register(cleanUp)
 
+    # SET UP GUI----------------------------------------------------------------
+    if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
+        gui_thread = threading.Thread(target=make_gui,
+                                    args=[main_controller,
+                                            [biosignal.controller,
+                                            processor.controller],
+                                            biosignal])
+        gui_thread.daemon = True
+        gui_thread.start()
+
+    if not FeatureFlags.BOARD:
+        make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
+
+    if FeatureFlags.BOARD:
         # EXECUTE APPLICATION-------------------------------------------------------
         process_thread = threading.Thread(target=run_processor, args=(processor,))
         process_thread.start()
