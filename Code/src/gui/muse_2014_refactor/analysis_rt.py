@@ -61,7 +61,7 @@ class RTAnalysis(object):
             if not self.m_stream.analyze.empty():
                 print('Began analyzing data...')
 
-                trial_num, ts = self.m_stream.remove_analysis()
+                trial_num, ts, marker_end = self.m_stream.remove_analysis()
                 self.data_duration = trial_num*self.event_time + self.analysis_time
                 tmp = np.array(self.eeg_stream.data)
                 # get analysis_time seconds of data (in terms of the end_index) after the event
@@ -73,7 +73,8 @@ class RTAnalysis(object):
                     time.sleep(sleep_time)
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
-                epochs, identities, targets = self.eeg_stream.make_epochs(self.m_stream, end_index, self.data_duration,
+                epochs, identities, targets = self.eeg_stream.make_epochs(self.m_stream, end_index, marker_end,
+                                                                          trial_num, self.data_duration,
                                                                           picks=[0, 1, 2, 3], tmin=0.0, tmax=1, decim=3)
                 # get input to classifier
                 print('Formatting data for classifier...')

@@ -83,7 +83,7 @@ def plot(raw, events, duration, n_channels, scalings):
     raw.plot(events, duration=duration, n_channels=n_channels, scalings=scalings)
 
 
-def make_events(data, marker_stream, event_duration=0):
+def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
     """Create array of events.
 
     This function creates an array of events that is compatible with mne.Epochs. If no marker is found, returns ndarray
@@ -93,6 +93,8 @@ def make_events(data, marker_stream, event_duration=0):
     Args:
         data: ndarray; EEG data in the shape (n_channels + timestamp, n_samples).
         marker_stream: MarkerStream; Stream of marker data.
+        marker_end: index of the laster marker in a set of trials
+        trial_num: number of trials in a set
         event_duration: int (defaults to 0); duration of each event marker in seconds. This is not epoch duration.
 
     Returns:
@@ -105,7 +107,7 @@ def make_events(data, marker_stream, event_duration=0):
     upper_time_limit = data[-1, -1]
 
     # Copy markers into a Numpy ndarray.
-    tmp = np.array([row[:] for row in marker_stream.data
+    tmp = np.array([row[:] for row in marker_stream.data[(marker_end - trial_num):marker_end]
                     if upper_time_limit >= row[-1] >= lower_time_limit])
 
     # Pre-allocate array for speed.
@@ -224,15 +226,17 @@ class MuseEEGStream(base.BaseStream):
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         return data
 
-    def make_epochs(self, marker_stream, end_index, data_duration=None, events=None, event_duration=0, event_id=None,
-                    tmin=-0.2, tmax=1.0, baseline=(None, 0), picks=None, preload=False, reject=None, flat=None,
-                    proj=True, decim=1, reject_tmin=None, reject_tmax=None, detrend=None, on_missing='error',
-                    reject_by_annotation=False, verbose=None):
+    def make_epochs(self, marker_stream, end_index, marker_end, trial_num, data_duration=None, events=None,
+                    event_duration=0, event_id=None, tmin=-0.2, tmax=1.0, baseline=(None, 0), picks=None, preload=False,
+                    reject=None, flat=None, proj=True, decim=1, reject_tmin=None, reject_tmax=None, detrend=None,
+                    on_missing='error', reject_by_annotation=False, verbose=None):
         """Create instance of mne.Epochs. If events are not supplied, this script must be connected to a Markers stream.
 
         Args:
             marker_stream: stream_rt.MarkerStream; stream of marker data.
             end_index: Last index in data that is included.
+            marker_end: index of the last marker in a set of trials
+            trial_num: number of trials in a set
             data_duration: int, float; duration of previous data to use. If data=10, returns instance of mne.Epochs of
                 the previous 10 seconds of data.
             events: ndarray; array of events of the shape (n_events, 3).
@@ -247,7 +251,7 @@ class MuseEEGStream(base.BaseStream):
         targets = []
         raw_data = self.get_data(end_index, data_duration=data_duration)
         if events is None:
-            events, identities, targets = make_events(raw_data, marker_stream, event_duration)
+            events, identities, targets = make_events(raw_data, marker_stream, marker_end, trial_num, event_duration)
 
         # Replace timestamps with zeros.
         raw_data[-1, :] = 0
