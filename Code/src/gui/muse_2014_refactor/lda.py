@@ -27,17 +27,19 @@ def create_input_target(data):
     return inputs, targets
 
 
-def lda_train(inputs, targets):
+def lda_train(inputs, targets, classifier=None):
     """Uses sklearn to fit a model given inputs and targets
 
     Args:
         inputs: list containing (N trials * M channels) data segments of length(number of features).
         targets: list containing (N trials * M channels) of marker data (0 or 1).
+        classifier: pre-trained lda classifier; if None train from scratch
 
     Returns:
         classifier: LDA classifier object
     """
-    classifier = LinearDiscriminantAnalysis(solver='svd')
+    if not classifier:
+        classifier = LinearDiscriminantAnalysis(solver='svd')
     classifier.fit(inputs, targets)
     return classifier
 
