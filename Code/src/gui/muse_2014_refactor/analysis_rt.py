@@ -21,15 +21,16 @@ class RTAnalysis(object):
             number of trials (events) that are being made into epochs and sent for training/prediction.
     """
 
-    def __init__(self, m_stream, eeg_stream, path, analysis_time=1.0, event_time=0.2, train='False',
-                 train_epochs=120):
+    def __init__(self, m_stream, eeg_stream, classifier_path, test_path, analysis_time=1.0, event_time=0.2, train=False,
+                 train_epochs=120, get_test=False):
         if not isinstance(m_stream, MarkerStream):
             raise TypeError("Stream must be type `MuseEEGStream`. {} "
                             "was passed.".format(type(m_stream)))
         print("Analysis object created.")
         self.m_stream = m_stream
         self.eeg_stream = eeg_stream
-        self.path = path
+        self.classifier_path = classifier_path
+        self.test_path = test_path
         self.analysis_time = analysis_time
         self.event_time = event_time
         self.running = False
@@ -37,11 +38,18 @@ class RTAnalysis(object):
         self.classifier_input = None
         self.train = train
         self.train_epochs = train_epochs
+        self.get_test = get_test
+
         self.train_number = 0
         self.train_data = []
         self.train_targets = []
         self.predictions = []
         self.data_duration = None
+
+        # Load test data
+        if not get_test:
+            self.test_set = lda.load_test_data(self.test_path)
+            self.inputs_test, self.targets_test = lda.create_input_target(self.test_set)
 
     def _loop_analysis(self):
         """Call a function every time the marker stream gives the signal"""
@@ -93,14 +101,24 @@ class RTAnalysis(object):
                         self.train_targets.extend(targets)
                     else:
                         print('Training LDA classifier with {} epochs' .format(self.train_number))
-                        i, t = lda.create_input_target(zip(self.train_targets, self.train_data))
-                        classifier = lda.lda_train(i, t)
-                        print("Finished training.")
-                        lda.save(self.path, classifier)
-                        self.train_number = 0
+                        package = zip(self.train_targets, self.train_data)
+                        if self.get_test:
+                            lda.save_test_data(self.test_path, package)
+                            print("test set created!")
+                            self._kill_signal.set()
+                        else:
+                            i, t = lda.create_input_target(package)
+                            classifier = lda.lda_train(i, t)
+                            print("Finished training.")
+                            lda.save(self.classifier_path, classifier)
+                            self.train_number = 0
+
+                            # Get accuracy of classifier based on test set
+                            score = classifier.score(self.inputs_test, self.targets_test)
+                            print('Test Set Accuracy: {}%' .format(score*100))
                 # else do a prediction
                 else:
-                    classifier = lda.load(self.path)
+                    classifier = lda.load(self.classifier_path)
                     i, t = lda.create_input_target(zip(targets, data))
                     prediction = lda.predict(i, classifier)
                     intermediate = 0

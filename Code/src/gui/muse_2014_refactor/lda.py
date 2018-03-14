@@ -54,7 +54,8 @@ def predict(inputs, classifier):
     Returns:
         classifier.predict([inputs]): vector of length (N trials * M channels) containing event predictions.
     """
-    return classifier.predict([inputs])
+    predictions = classifier.predict([inputs])
+    return predictions
 
 
 def save(filepath, classifier):
@@ -68,3 +69,14 @@ def load(filepath):
     with open(filepath, 'rb') as f:
         classifier = pickle.load(f)
         return classifier
+
+
+def save_test_data(filepath, package):
+    with open(filepath, 'wb') as f:
+        pickle.dump(package, f)
+
+
+def load_test_data(filepath):
+    with open(filepath, 'rb') as f:
+        package = pickle.load(f)
+        return package
