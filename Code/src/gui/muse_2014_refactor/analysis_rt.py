@@ -21,7 +21,7 @@ class RTAnalysis(object):
             number of trials (events) that are being made into epochs and sent for training/prediction.
     """
 
-    def __init__(self, m_stream, eeg_stream, path, analysis_time='1.0', event_time=0.2, train='False',
+    def __init__(self, m_stream, eeg_stream, path, analysis_time=1.0, event_time=0.2, train='False',
                  train_epochs=120):
         if not isinstance(m_stream, MarkerStream):
             raise TypeError("Stream must be type `MuseEEGStream`. {} "

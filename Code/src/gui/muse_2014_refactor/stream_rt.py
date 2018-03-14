@@ -117,7 +117,7 @@ def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
 
     # If there is at least one marker:
     if tmp.shape[0] > 0:
-        for event_index, (identity, marker_int, timestamp) in enumerate(tmp):
+        for event_index, (identity, marker_int, _, timestamp) in enumerate(tmp):
             # Get the index where this marker happened in the EEG data.
             eeg_index = (np.abs(data[-1, :] - timestamp)).argmin()
 

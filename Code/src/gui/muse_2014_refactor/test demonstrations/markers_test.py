@@ -26,7 +26,6 @@ def marker_publish(signal, outlet, identifiers):
         if generator:
             # generate random marker data
             # status = random.randint(0, 1)
-            t = pylsl.local_clock()
             tmp = generator.pop()
             # chooses the target in the identifiers list
             if tmp == 3:
@@ -44,9 +43,10 @@ def marker_publish(signal, outlet, identifiers):
                 data = [tmp, status, 0]
 
             # data pushed in form [[identity, target, trial_num], timestamp]
+            t = pylsl.local_clock()
             outlet.push_sample(data, t)
             # print(' {}' .format(data))
-            print('\n{}\n'.format(letters[tmp])) # print for command line training
+            # print('\n{}\n'.format(letters[tmp])) # print for command line training
 
             # down time in between sending markers
             time.sleep(0.4)
