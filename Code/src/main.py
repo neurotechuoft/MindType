@@ -23,11 +23,11 @@ logging.basicConfig(level=logging.ERROR)
 from yapsy.PluginManager import PluginManager
 
 
-def make_gui(main_controller, controllers, biosignal):
+def make_gui(board, main_controller, controllers, biosignal):
     app = QtWidgets.QApplication(sys.argv)
     main_scr = None
     if FeatureFlags.GUI:
-        main_scr = GUI(main_controller, controllers)
+        main_scr = GUI(board, biosignal, main_controller, controllers)
         main_scr.views.setCurrentIndex(1)
     if FeatureFlags.DEV_TOOLS:
         main_scr = DevTools(main_controller, controllers, biosignal)
@@ -333,25 +333,27 @@ if __name__ == '__main__':
 
         atexit.register(cleanUp)
 
-    # SET UP GUI----------------------------------------------------------------
-    if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
-        gui_thread = threading.Thread(target=make_gui,
-                                    args=[main_controller,
-                                            [biosignal.controller,
-                                            processor.controller],
-                                            biosignal])
-        gui_thread.daemon = True
-        gui_thread.start()
 
-    if not FeatureFlags.BOARD:
-        make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
+    if not FeatureFlags.BOARD and not FeatureFlags.COMMAND_LINE:
+        make_gui(None, main_controller, [biosignal.controller, processor.controller], biosignal)
 
     if FeatureFlags.BOARD:
+        # SET UP GUI----------------------------------------------------------------
+        if not FeatureFlags.COMMAND_LINE:
+            gui_thread = threading.Thread(target=make_gui,
+                                        args=[board,
+                                                main_controller,
+                                                [biosignal.controller,
+                                                processor.controller],
+                                                biosignal])
+            gui_thread.daemon = True
+            gui_thread.start()
+        
         # EXECUTE APPLICATION-------------------------------------------------------
         process_thread = threading.Thread(target=run_processor, args=(processor,))
         process_thread.start()
 
-        execute_board(board, main_controller, fun, biosignal, processor)
+        # execute_board(board, main_controller, fun, biosignal, processor)
 
         # FINISH EXIT PROCESS
         ready_for_exit = False
