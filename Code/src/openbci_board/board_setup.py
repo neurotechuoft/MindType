@@ -113,3 +113,42 @@ def print_board_setup(board):
         print (
         board.getNbEEGChannels(), "EEG channels and", board.getNbAUXChannels(),
         "AUX channels at", board.getSampleRate(), "Hz.")
+
+def board_start(board, start_time, biosignal):
+    lapse = -1
+    board.setImpedance(False)
+
+    boardThread = threading.Thread(target=board.start_board, args=(start_time, [biosignal, ], lapse))
+    boardThread.daemon = True  # will stop on exit
+    try:
+        boardThread.start()
+        print("Starting stream...")
+    except:
+        raise
+
+
+def board_pause(board):
+    board.stop()
+    flush = True
+
+    # We shouldn't be waiting to get messages every single time a message
+    #  is sent to controller, because messages can be sent while the board is
+    #  still running.
+    # TODO: Move this block of code under Message.PAUSE
+    poll_board_for_messages(board, flush)
+
+
+def safe_exit(board, main_controller, biosignals=None):
+    print("Attempting to safe-exit")
+    if board.streaming:
+        board.stop()
+
+    print("Board stopped")
+
+    for biosignal in biosignals:
+        biosignal.exit()
+    print("Biosignals exited")
+
+    cleanUp()
+
+    main_controller.send(Message.SAFE_TO_EXIT)

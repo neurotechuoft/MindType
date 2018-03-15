@@ -16,7 +16,8 @@ from feature_flags.feature_flags import FeatureFlags
 from gui.dev_tools import DevTools
 from gui.gui import GUI
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
-    add_plugin, print_logging_info, print_plugins_found, print_board_setup
+    add_plugin, print_logging_info, print_plugins_found, print_board_setup, \
+    safe_exit
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -35,46 +36,6 @@ def make_gui(board, main_controller, controllers, biosignal):
         main_scr.resize(500, 100)
         main_scr.show()
     sys.exit(app.exec_())
-
-
-def safe_exit(board, main_controller, biosignals=None):
-    print("Attempting to safe-exit")
-    if board.streaming:
-        board.stop()
-
-    print("Board stopped")
-
-    for biosignal in biosignals:
-        biosignal.exit()
-    print("Biosignals exited")
-
-    cleanUp()
-
-    main_controller.send(Message.SAFE_TO_EXIT)
-
-
-def board_start(board, start_time, biosignal):
-    lapse = -1
-    board.setImpedance(False)
-
-    boardThread = threading.Thread(target=board.start_board, args=(start_time, [biosignal, ], lapse))
-    boardThread.daemon = True  # will stop on exit
-    try:
-        boardThread.start()
-        print("Starting stream...")
-    except:
-        raise
-
-
-def board_pause(board):
-    board.stop()
-    flush = True
-
-    # We shouldn't be waiting to get messages every single time a message
-    #  is sent to controller, because messages can be sent while the board is
-    #  still running.
-    # TODO: Move this block of code under Message.PAUSE
-    poll_board_for_messages(board, flush)
 
 
 def board_action(board, controller, pub_sub_fct, start_time, biosignal=None):

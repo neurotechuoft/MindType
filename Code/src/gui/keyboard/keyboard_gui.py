@@ -1,6 +1,5 @@
 import gui.keyboard.letter_keyboard
 import timeit
-import main
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
@@ -9,6 +8,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
+from openbci_board.board_setup import board_pause, board_start
 
 
 class KeyboardGUI(QtWidgets.QWidget):
