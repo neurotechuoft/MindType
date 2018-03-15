@@ -64,7 +64,7 @@ class GUI(QtWidgets.QWidget):
             #     if self.main_controller.search(Message.SAFE_TO_EXIT):
             #         safe_exit_confirmed = True
 
-            main.safe_exit(self.board, self.main_controller, self.biosignal)
+            safe_exit(self.board, self.main_controller, self.biosignal)
 
             self.main_controller.send(Message.GUI_EXIT)
 
