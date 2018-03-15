@@ -175,3 +175,4 @@ def poll_board_for_messages(board, flush):
             board.waitForNotifications(0.001)
     if not flush:
         print(line)
+    print("--Polling board for message: COMPLETE")

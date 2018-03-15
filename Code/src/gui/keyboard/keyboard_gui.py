@@ -28,7 +28,8 @@ class KeyboardGUI(QtWidgets.QWidget):
 
         # variables used for pausing
         self.main_controller = main_controller
-        self.controllers = [main_controller] + controllers
+        # self.controllers = [main_controller] + controllers
+        self.controllers = controllers
 
         self.board = board
         self.biosignal = biosignal
