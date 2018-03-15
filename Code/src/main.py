@@ -17,7 +17,7 @@ from gui.dev_tools import DevTools
 from gui.gui import GUI
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
     add_plugin, print_logging_info, print_plugins_found, print_board_setup, \
-    safe_exit
+    safe_exit, poll_board_for_messages
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -95,26 +95,6 @@ def board_action(board, controller, pub_sub_fct, start_time, biosignal=None):
 
     if recognized == False:
         print("Command not recognized...")
-
-
-def poll_board_for_messages(board, flush):
-    line = ''
-    time.sleep(0.1)  # Wait to see if the board has anything to report
-    # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
-    if board.getBoardType() == "cyton":
-        while board.ser_inWaiting():
-            c = board.ser_read().decode('utf-8',
-                                        errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
-            line += c
-            time.sleep(0.001)
-            if (c == '\n') and not flush:
-                print('%\t' + line[:-1])
-                line = ''
-    elif board.getBoardType() == "ganglion":
-        while board.ser_inWaiting():
-            board.waitForNotifications(0.001)
-    if not flush:
-        print(line)
 
 
 def execute_board(board, controller, fun, biosignal, processor):
