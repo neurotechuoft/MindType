@@ -9,7 +9,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
-from main import safe_exit
+import main
 
 
 class GUI(QtWidgets.QWidget):
@@ -64,7 +64,7 @@ class GUI(QtWidgets.QWidget):
             #     if self.main_controller.search(Message.SAFE_TO_EXIT):
             #         safe_exit_confirmed = True
 
-            safe_exit(self.board, self.main_controller, self.biosignal)
+            main.safe_exit(self.board, self.main_controller, self.biosignal)
 
             self.main_controller.send(Message.GUI_EXIT)
 
