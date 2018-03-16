@@ -1,6 +1,7 @@
 import functools
 import pyqtgraph as pg
 import time
+import timeit
 
 from PyQt5 import QtGui, QtWidgets
 from gui.keyboard.keyboards import Keyboards
