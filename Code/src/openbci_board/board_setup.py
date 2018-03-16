@@ -159,14 +159,14 @@ def safe_exit(board, main_controller, biosignals=None):
 
 def poll_board_for_messages(board, flush):
     line = ''
-    time.sleep(0.01)  # Wait to see if the board has anything to report
+    # time.sleep(0.01)  # Wait to see if the board has anything to report
     # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
     if board.getBoardType() == "cyton":
         while board.ser_inWaiting():
             c = board.ser_read().decode('utf-8',
                                         errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
             line += c
-            time.sleep(0.001)
+            # time.sleep(0.001)
             if (c == '\n') and not flush:
                 print('%\t' + line[:-1])
                 line = ''
