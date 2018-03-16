@@ -169,7 +169,7 @@ class DevTools(QtWidgets.QDialog):
         if FeatureFlags.BOARD:
             self.send_msg_to_controllers(Message.EXIT)
 
-            safe_exit(self.board, self.main_controller, [self.biosignal,])
+            safe_exit(self.board, self.main_controller, [self.tagger_biosignal,])
 
             self.main_controller.send(Message.GUI_EXIT)
 
