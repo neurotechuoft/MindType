@@ -31,7 +31,7 @@ def make_gui(board, main_controller, controllers, biosignal):
         main_scr = GUI(board, biosignal, main_controller, controllers)
         main_scr.views.setCurrentIndex(1)
     if FeatureFlags.DEV_TOOLS:
-        main_scr = DevTools(main_controller, controllers, biosignal)
+        main_scr = DevTools(board, biosignal, main_controller, controllers)
     if main_scr is not None:
         main_scr.resize(500, 100)
         main_scr.show()

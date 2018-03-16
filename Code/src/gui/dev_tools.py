@@ -3,15 +3,20 @@ import pyqtgraph as pg
 import time
 
 from PyQt5 import QtGui, QtWidgets
+from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
+from feature_flags.feature_flags import FeatureFlags
+from openbci_board.board_setup import board_pause, board_start, safe_exit
 
 
 class DevTools(QtWidgets.QDialog):
-    def __init__(self, main_controller, controllers, tagger_biosignal, parent=None):
+    def __init__(self, board, tagger_biosignal, main_controller, controllers, parent=None):
         super(DevTools, self).__init__(parent)
 
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
+
+        self.board = board
 
         self.WINDOW_LEN = 3 * 256
 
@@ -107,8 +112,10 @@ class DevTools(QtWidgets.QDialog):
         print("play-pause")
         if self.pause_state:
             self.send_msg_to_controllers(Message.START)
+            board_start(self.board, self.start_time, self.biosignal)
         else:
             self.send_msg_to_controllers(Message.PAUSE)
+            board_pause(self.board)
 
         self.pause_state = not self.pause_state
         # if self.controller.peek() is Message.PAUSE:
@@ -148,14 +155,21 @@ class DevTools(QtWidgets.QDialog):
     #     time.sleep(1.0 / 20.0)
 
     def closeEvent(self, event):
-        safe_exit_confirmed = False
+        # safe_exit_confirmed = False
 
-        self.send_msg_to_controllers(Message.EXIT)
+        # self.send_msg_to_controllers(Message.EXIT)
 
-        while not safe_exit_confirmed:
-            if self.main_controller.search(Message.SAFE_TO_EXIT):
-                safe_exit_confirmed = True
+        # while not safe_exit_confirmed:
+        #     if self.main_controller.search(Message.SAFE_TO_EXIT):
+        #         safe_exit_confirmed = True
 
-        self.main_controller.send(Message.GUI_EXIT)
+        # self.main_controller.send(Message.GUI_EXIT)
+        if FeatureFlags.BOARD:
+            self.send_msg_to_controllers(Message.EXIT)
+
+            safe_exit(self.board, self.main_controller, [self.biosignal,])
+
+            self.main_controller.send(Message.GUI_EXIT)
+
         pg.exit()
         event.accept()

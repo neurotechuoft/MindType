@@ -166,7 +166,7 @@ def poll_board_for_messages(board, flush):
             c = board.ser_read().decode('utf-8',
                                         errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
             line += c
-            # time.sleep(0.001)
+            time.sleep(0.001)
             if (c == '\n') and not flush:
                 print('%\t' + line[:-1])
                 line = ''
