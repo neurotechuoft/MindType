@@ -13,6 +13,7 @@ class DevTools(QtWidgets.QDialog):
     def __init__(self, board, tagger_biosignal, main_controller, controllers, parent=None):
         super(DevTools, self).__init__(parent)
 
+        self.start_time = timeit.default_timer()
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
 
