@@ -114,7 +114,7 @@ class DevTools(QtWidgets.QDialog):
         print("play-pause")
         if self.pause_state:
             self.send_msg_to_controllers(Message.START)
-            board_start(self.board, self.start_time, self.biosignal)
+            board_start(self.board, self.start_time, self.tagger_biosignal)
         else:
             self.send_msg_to_controllers(Message.PAUSE)
             board_pause(self.board)
