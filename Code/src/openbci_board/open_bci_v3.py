@@ -231,10 +231,6 @@ class OpenBCIBoard(object):
             self.streaming = True
 
         start_time = timeit.default_timer()
-
-        # Enclose callback funtion in a list if it comes alone
-        # if not isinstance(biosignals, list):
-        #     biosignals = [biosignals]
         
         print(type(biosignals))
         print(type(biosignals[0]))
@@ -266,7 +262,7 @@ class OpenBCIBoard(object):
                     if biosignals is not None:
                         for biosignal in biosignals:
                             if isinstance(biosignal, BioSignal):
-                                print("OpenBCI updating biosignal with" + str(whole_sample))
+                                # print("OpenBCI updating biosignal with" + str(whole_sample))
                                 biosignal.update(self.parse_sample(whole_sample, start_time))
                             else:
                                 print("Object isn't a biosignal!")
@@ -277,14 +273,14 @@ class OpenBCIBoard(object):
                 if biosignals is not None:
                     for biosignal in biosignals:
                         if isinstance(biosignal, BioSignal):
-                            print("OpenBCI updating biosignal with" + str(sample))
+                            # print("OpenBCI updating biosignal with" + str(sample))
                             biosignal.update(self.parse_sample(sample, start_time))
                         else:
                             print("Object isn't a biosignal!")
                 else:
                     print("There are no biosignals!")
             
-            print("Streamed biosignal")
+            # print("Streamed biosignal")
 
             # stop streaming after lapse amount of time
             if timeit.default_timer() - start_time > lapse > 0:
