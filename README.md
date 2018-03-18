@@ -11,25 +11,18 @@ MindType seeks to improve the bit rate of mind-controlled keyboards. It also use
 
 
 ## Setup
-**deprecated :'(**
-1. Install Miniconda
-2. Create a Conda environment
-3. Install scipy, numpy using conda Install
-4. Install everything else using pip
+1. Clone the project
+2. Go into './Code/src'
+3. Run setup.sh
+
 
 ## Usage:
-To use multithreaded framework:
+To use MindType:
 ```
-    sudo python main.py -p /dev/ttyUSB0 --add pub_sub
-```
-
-To use multithreaded framework, tag data, and save to CSV (temporary solution):
-```
-    sudo python main.py -p /dev/ttyUSB0 --add pub_sub csv_collect
+    ./MindType.sh
 ```
 
-## Plan
-![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan")
+To toggle different features, you can change the feature flags in "./Code/src/feature_flags.py"
 
 ## Research Papers
 ### Phase 1 (P300)
@@ -68,3 +61,7 @@ isn't fully ready, use feature toggling to turn it off
 (*feature_flags/feature_flags.py*)
 4. Your code will go through a review. Once it passes, merge the pull reqest!
 5. Repeat :D
+
+
+## Plan
+![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan")
