@@ -1,4 +1,7 @@
 import argparse
+import threading
+import time
+from controller.MESSAGE import Message
 
 """
     Helper functions to initialize board.
@@ -113,3 +116,63 @@ def print_board_setup(board):
         print (
         board.getNbEEGChannels(), "EEG channels and", board.getNbAUXChannels(),
         "AUX channels at", board.getSampleRate(), "Hz.")
+
+def board_start(board, start_time, biosignal):
+    lapse = -1
+    board.setImpedance(False)
+
+    boardThread = threading.Thread(target=board.start_board, args=(start_time, [biosignal, ], lapse))
+    boardThread.daemon = True  # will stop on exit
+    try:
+        boardThread.start()
+        print("Starting stream...")
+    except:
+        raise
+
+
+def board_pause(board):
+    board.stop()
+    flush = True
+
+    # We shouldn't be waiting to get messages every single time a message
+    #  is sent to controller, because messages can be sent while the board is
+    #  still running.
+    # TODO: Move this block of code under Message.PAUSE
+    poll_board_for_messages(board, flush)
+
+
+def safe_exit(board, main_controller, biosignals=None):
+    print("Attempting to safe-exit")
+    if board.streaming:
+        board.stop()
+
+    print("Board stopped")
+
+    for biosignal in biosignals:
+        biosignal.exit()
+    print("Biosignals exited")
+
+    # cleanUp()
+    board.disconnect()
+
+    main_controller.send(Message.SAFE_TO_EXIT)
+
+def poll_board_for_messages(board, flush):
+    line = ''
+    # time.sleep(0.01)  # Wait to see if the board has anything to report
+    # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
+    if board.getBoardType() == "cyton":
+        while board.ser_inWaiting():
+            c = board.ser_read().decode('utf-8',
+                                        errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
+            line += c
+            # time.sleep(0.001)
+            if (c == '\n') and not flush:
+                print('%\t' + line[:-1])
+                line = ''
+    elif board.getBoardType() == "ganglion":
+        while board.ser_inWaiting():
+            board.waitForNotifications(0.001)
+    if not flush:
+        print(line)
+    print("--Polling board for message: COMPLETE")

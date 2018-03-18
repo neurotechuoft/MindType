@@ -1,4 +1,5 @@
 import gui.keyboard.letter_keyboard
+import timeit
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
@@ -7,11 +8,14 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
+from openbci_board.board_setup import board_pause, board_start
 
 
 class KeyboardGUI(QtWidgets.QWidget):
-    def __init__(self, main_controller, controllers, parent=None):
+    def __init__(self, board, biosignal, main_controller, controllers, parent=None):
         super(KeyboardGUI, self).__init__(parent)
+
+        self.start_time = timeit.default_timer()
 
         self.CHAR_DISPLAY_PANEL_SHEET = "background-color: rgba(" \
                                              "255,255,255,220)"
@@ -24,7 +28,11 @@ class KeyboardGUI(QtWidgets.QWidget):
 
         # variables used for pausing
         self.main_controller = main_controller
-        self.controllers = [main_controller] + controllers
+        # self.controllers = [main_controller] + controllers
+        self.controllers = controllers
+
+        self.board = board
+        self.biosignal = biosignal
 
         # Creating main panel which contains everything
         self.main_panel = QtWidgets.QVBoxLayout()
@@ -69,11 +77,13 @@ class KeyboardGUI(QtWidgets.QWidget):
                 button_pause_resume.setText("Pause")
                 self.__PAUSED__ = False
                 self.send_msg_to_controllers(Message.START)
+                board_start(self.board, self.start_time, self.biosignal)
                 self.keyboards.resume()
             else:
                 button_pause_resume.setText("Resume")
                 self.__PAUSED__ = True
                 self.send_msg_to_controllers(Message.PAUSE)
+                board_pause(self.board)
                 self.keyboards.pause()
 
         return pause_resume_function

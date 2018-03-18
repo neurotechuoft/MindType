@@ -9,18 +9,25 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from gui.keyboard.keyboards import Keyboards
 from controller.MESSAGE import Message
 from feature_flags.feature_flags import FeatureFlags
+from openbci_board.board_setup import safe_exit
 
 
 class GUI(QtWidgets.QWidget):
-    def __init__(self, main_controller, controllers, parent=None):
+    def __init__(self, board, biosignal, main_controller, controllers, parent=None):
         super(GUI, self).__init__(parent)
 
         self.main_controller = main_controller
         self.controllers = [main_controller] + controllers
 
+        self.board = board
+        self.biosignal = biosignal
+
         self.views = QtWidgets.QStackedWidget()
 
-        self.keyboard_gui = gui.keyboard.keyboard_gui.KeyboardGUI(self.main_controller, self.controllers)
+        self.keyboard_gui = gui.keyboard.keyboard_gui.KeyboardGUI(self.board,
+                                                                    self.biosignal,
+                                                                    self.main_controller,
+                                                                    self.controllers)
 
         self.setup_gui = gui.setup_gui.SetupGUI()
 
@@ -53,9 +60,11 @@ class GUI(QtWidgets.QWidget):
 
             self.send_msg_to_controllers(Message.EXIT)
 
-            while not safe_exit_confirmed:
-                if self.main_controller.search(Message.SAFE_TO_EXIT):
-                    safe_exit_confirmed = True
+            # while not safe_exit_confirmed:
+            #     if self.main_controller.search(Message.SAFE_TO_EXIT):
+            #         safe_exit_confirmed = True
+
+            safe_exit(self.board, self.main_controller, [self.biosignal,])
 
             self.main_controller.send(Message.GUI_EXIT)
 

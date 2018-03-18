@@ -16,41 +16,26 @@ from feature_flags.feature_flags import FeatureFlags
 from gui.dev_tools import DevTools
 from gui.gui import GUI
 from openbci_board.board_setup import setup_parser, check_auto_port_selection, \
-    add_plugin, print_logging_info, print_plugins_found, print_board_setup
+    add_plugin, print_logging_info, print_plugins_found, print_board_setup, \
+    safe_exit, poll_board_for_messages
 
 logging.basicConfig(level=logging.ERROR)
 
 from yapsy.PluginManager import PluginManager
 
 
-def make_gui(main_controller, controllers, biosignal):
+def make_gui(board, main_controller, controllers, biosignal):
     app = QtWidgets.QApplication(sys.argv)
     main_scr = None
     if FeatureFlags.GUI:
-        main_scr = GUI(main_controller, controllers)
+        main_scr = GUI(board, biosignal, main_controller, controllers)
         main_scr.views.setCurrentIndex(1)
     if FeatureFlags.DEV_TOOLS:
-        main_scr = DevTools(main_controller, controllers, biosignal)
+        main_scr = DevTools(board, biosignal, main_controller, controllers)
     if main_scr is not None:
         main_scr.resize(500, 100)
         main_scr.show()
     sys.exit(app.exec_())
-
-
-def safe_exit(board, main_controller, biosignals=None):
-    print("Attempting to safe-exit")
-    if board.streaming:
-        board.stop()
-
-    print("Board stopped")
-
-    for biosignal in biosignals:
-        biosignal.exit()
-    print("Biosignals exited")
-
-    cleanUp()
-
-    main_controller.send(Message.SAFE_TO_EXIT)
 
 
 def board_action(board, controller, pub_sub_fct, start_time, biosignal=None):
@@ -110,26 +95,6 @@ def board_action(board, controller, pub_sub_fct, start_time, biosignal=None):
 
     if recognized == False:
         print("Command not recognized...")
-
-
-def poll_board_for_messages(board, flush):
-    line = ''
-    time.sleep(0.1)  # Wait to see if the board has anything to report
-    # The Cyton nicely return incoming packets -- here supposedly messages -- whereas the Ganglion prints incoming ASCII message by itself
-    if board.getBoardType() == "cyton":
-        while board.ser_inWaiting():
-            c = board.ser_read().decode('utf-8',
-                                        errors='replace')  # we're supposed to get UTF8 text, but the board might behave otherwise
-            line += c
-            time.sleep(0.001)
-            if (c == '\n') and not flush:
-                print('%\t' + line[:-1])
-                line = ''
-    elif board.getBoardType() == "ganglion":
-        while board.ser_inWaiting():
-            board.waitForNotifications(0.001)
-    if not flush:
-        print(line)
 
 
 def execute_board(board, controller, fun, biosignal, processor):
@@ -226,18 +191,18 @@ if __name__ == '__main__':
         biosignal = PrintBiosignal()
     processor = Processor([biosignal])
 
-    # SET UP GUI----------------------------------------------------------------
-    if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
-        gui_thread = threading.Thread(target=make_gui,
-                                      args=[main_controller,
-                                            [biosignal.controller,
-                                             processor.controller],
-                                            biosignal])
-        gui_thread.daemon = True
-        gui_thread.start()
+    # # SET UP GUI----------------------------------------------------------------
+    # if not FeatureFlags.COMMAND_LINE and FeatureFlags.BOARD:
+    #     gui_thread = threading.Thread(target=make_gui,
+    #                                   args=[main_controller,
+    #                                         [biosignal.controller,
+    #                                          processor.controller],
+    #                                         biosignal])
+    #     gui_thread.daemon = True
+    #     gui_thread.start()
 
-    if not FeatureFlags.BOARD:
-        make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
+    # if not FeatureFlags.BOARD:
+    #     make_gui(main_controller, [biosignal.controller, processor.controller], biosignal)
 
     # SET UP BOARD--------------------------------------------------------------
     if FeatureFlags.BOARD:
@@ -309,11 +274,27 @@ if __name__ == '__main__':
 
         atexit.register(cleanUp)
 
+
+    if not FeatureFlags.BOARD and not FeatureFlags.COMMAND_LINE:
+        make_gui(None, main_controller, [biosignal.controller, processor.controller], biosignal)
+
+    if FeatureFlags.BOARD:
+        # SET UP GUI----------------------------------------------------------------
+        if not FeatureFlags.COMMAND_LINE:
+            gui_thread = threading.Thread(target=make_gui,
+                                        args=[board,
+                                                main_controller,
+                                                [biosignal.controller,
+                                                processor.controller],
+                                                biosignal])
+            gui_thread.daemon = True
+            gui_thread.start()
+        
         # EXECUTE APPLICATION-------------------------------------------------------
         process_thread = threading.Thread(target=run_processor, args=(processor,))
         process_thread.start()
 
-        execute_board(board, main_controller, fun, biosignal, processor)
+        # execute_board(board, main_controller, fun, biosignal, processor)
 
         # FINISH EXIT PROCESS
         ready_for_exit = False
