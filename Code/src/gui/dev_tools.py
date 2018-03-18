@@ -66,7 +66,7 @@ class DevTools(QtWidgets.QDialog):
         # adding tag buttons to the grid)
         for row in range(2):
             for col in range(5):
-                character_number = (row * 6) + col
+                character_number = (row * 5) + col
                 button = QtWidgets.QPushButton(str(character_number))
                 # button.setStyleSheet("QPushButton {background-color: black; color: white; font-size: 65px;}")
 
