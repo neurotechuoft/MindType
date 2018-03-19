@@ -10,8 +10,11 @@ MindType seeks to improve the bit rate of mind-controlled keyboards. It also use
 [2] https://www.ncbi.nlm.nih.gov/pubmed/12853169
 
 
+#### Development status: Work In Progress
+
+
 ## Hardware necessary:
-OpenBCI Cyton. (The board works with Muse as well, but you would need to use P300 instead of motor imagery)
+OpenBCI Cyton. (The keyboard works with Muse as well, but you would need to use P300 instead of motor imagery)
 
 
 ## Setup
