@@ -61,7 +61,7 @@ We tried to use linear discriminant analysis (LDA) and quadratic discriminant an
 ### Phase 3: Multiclass motor classification
 We used a deep convolutional neural network to classify 9 different hand movements (extension, flexion, suprination, pronation, V sign, Y sign with pinkie and thumb, fist-close, fist-open, and pinch). EEG data was collected using an in-house headset from 8 channels (F3, Fz, F4, C3, C1, Cz, C2, C4) at a sampling frequency of 256Hz using the OpenBCI without electrode amplifiers. [3] showed the first four movements being distinguished through EEG, and [4] showed the last 5 movements being distinguished through EEG. Our neural network architecture was inspired by the deep CNN shown in [5]. We collected 60 4-second samples of data for each gesture (see [6] for more details).
 
-In the future, we plan to obtain data using the OpenBCI WiFi Shield to incraase our temporal resolution to 1000Hz. In addition, we plan on using 3D convolutions (time, spatial-x, spatial-y). This will allow convolutions to be done over spatial-x and spatial-y, which may allow the CNN to understand the propogation of electric field through space for better source localization.
+In the future, we plan to obtain data using the OpenBCI WiFi Shield to increase our temporal resolution to 1000Hz. In addition, we plan on using 3D convolutions (time, spatial-x, spatial-y). This will allow convolutions to be done over spatial-x and spatial-y, which may allow the CNN to understand the propogation of electric field through space for better source localization.
 
 - http://ieeexplore.ieee.org/document/6943840/?reload=true
     - [3]: **"Discriminating hand gesture motor imagery tasks using cortical current density estimation"**
