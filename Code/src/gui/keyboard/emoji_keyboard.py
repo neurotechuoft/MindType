@@ -15,7 +15,7 @@ import gui.keyboard.letter_keyboard
 from nlp.complete import autocomplete
 
 
-class NumberKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
+class EmojiKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
 
     __VIEW_ORDER__ = 1
 
@@ -25,7 +25,7 @@ class NumberKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
         super().__init__(keyboard_views, character_display_panel, interval)
 
         self.NUMBER_STYLESHEET = "QPushButton {background-color: #444444; " \
-                                  "color: white; font-size: 100px;}"
+                                  "color: white; font-size: 70px;}"
 
         # creating a button grid
         self.key_grid = self.make_numbers_widget(self.keyboard_views,

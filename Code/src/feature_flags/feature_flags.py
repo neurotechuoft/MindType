@@ -7,7 +7,7 @@ class FeatureFlags():
     DEV_TOOLS = False
     GUI = True
     COMMAND_LINE = False
-    BOARD = True
+    BOARD = False
     SERVER = True
     STREAM_RT = True
     ANALYSIS_RT = False
