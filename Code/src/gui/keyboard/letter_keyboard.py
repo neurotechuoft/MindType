@@ -48,6 +48,7 @@ class LetterKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
                     self.add_key_to_keyboard(ret_key_grid,
                                              button_name,
                                              character_display_panel,
+                                             self.DEFAULT_STYLESHEET,
                                              row, col)
                 # y, z
                 elif character_number == 26 or character_number == 27:
@@ -55,6 +56,7 @@ class LetterKeyboard(gui.keyboard.base_keyboard.BaseKeyboard):
                     self.add_key_to_keyboard(ret_key_grid,
                                              button_name,
                                              character_display_panel,
+                                             self.DEFAULT_STYLESHEET,
                                              row, col)
                 # Shift
                 elif character_number == 28:

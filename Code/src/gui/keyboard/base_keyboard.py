@@ -113,9 +113,10 @@ class BaseKeyboard(QtWidgets.QWidget):
     def add_key_to_keyboard(self, key_grid,
                             button_name,
                             character_display_panel,
+                            stylesheet,
                             row, col):
         button = QtWidgets.QPushButton(button_name)
-        button.setStyleSheet(self.DEFAULT_STYLESHEET)
+        button.setStyleSheet(stylesheet)
         # adding button listener
         button.clicked.connect(functools.partial(self.press_key, button_name,
                                                  character_display_panel))
