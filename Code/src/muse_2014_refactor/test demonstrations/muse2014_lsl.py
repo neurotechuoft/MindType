@@ -1,14 +1,14 @@
 """This script receives raw EEG data from the muse and pushes it to an lsl outlet. Gets data from
-incoming stimuli events and performs analysis on them.
+incoming stimuli events and performs analysis on them. It demonstrates a demo for collecting 300 data.
 Adapted from:
     muse-lsl: https://github.com/alexandrebarachant/muse-lsl.git
     beats-muse: https://github.com/Oishe/beats-muse
 """
-import Code.src.gui.muse_2014_refactor.server as server
+import Code.src.muse_2014_refactor.server as server
 import time
 from pylsl import StreamInfo, StreamOutlet
-import Code.src.gui.muse_2014_refactor.stream_rt as st
-import Code.src.gui.muse_2014_refactor.analysis_rt as an
+import Code.src.muse_2014_refactor.stream_rt as st
+import Code.src.muse_2014_refactor.analysis_rt as an
 import markers_test
 
 
@@ -57,7 +57,7 @@ def main():
     # data_duration = (flash time + pause time) * number of flashes + P300 detection time (0.75 s)
     data_duration = 3.4
 
-    # Create analysis object
+    # Create analysis object; this example trains a new classifier on the incoming data
     analysis = an.RTAnalysis(marker_stream, eeg_stream, data_duration, 'classifier.pkl', train='True', train_epochs=120)
 
     # ensure eeg stream is receiving data before accessing and starting stimuli
