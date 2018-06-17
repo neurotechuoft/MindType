@@ -18,9 +18,14 @@ class RTAnalysis(object):
         train_epochs: number of epochs (time segmeents after events) to collect before beginning training; only
             applicable when train is 'True'. For this to work well, ensure that this number is a multiple of the
             number of trials (events) that are being made into epochs and sent for training/prediction.
+        epoch_start_time: start time after each marker to record a single epoch
+        epoch_end_time: end time after each marker to record a single epoch
+        window_start_index: data index from which to start analysis, where each index represents 1/220 seconds
+        window_end_index: data index from which to end analysis
+        decim: granularity of data, ie. an int that specifies to keep nth sample
     """
 
-    def __init__(self, m_stream, eeg_stream, data_duration, path, train='False', train_epochs=120):
+    def __init__(self, m_stream, eeg_stream, data_duration, path, train='False', train_epochs=120, epoch_start_time=0.0, epoch_end_time=1, window_start_index=8, window_end_index=56, decim=3):
         if not isinstance(m_stream, MarkerStream):
             raise TypeError("Stream must be type `MuseEEGStream`. {} "
                             "was passed.".format(type(m_stream)))
@@ -40,6 +45,12 @@ class RTAnalysis(object):
         self.train_data = []
         self.train_targets = []
         self.predictions = []
+
+        self.epoch_start_time = epoch_start_time
+        self.epoch_end_time = epoch_end_time
+        self.window_start_index = window_start_index
+        self.window_end_index = window_end_index
+        self.decim = decim
 
     def _loop_analysis(self):
         """Call a function every time the marker stream gives the signal"""
@@ -70,12 +81,16 @@ class RTAnalysis(object):
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
                 epochs, identities, targets = self.eeg_stream.make_epochs(self.m_stream, end_index, self.data_duration,
-                                                                          picks=[0, 1, 2, 3], tmin=0.0, tmax=1, decim=3)
+                                                                          picks=[0, 1, 2, 3],
+                                                                          tmin=self.epoch_start_time,
+                                                                          tmax=self.epoch_end_time,
+                                                                          decim=self.decim
+                                                                          )
                 # get input to classifier
                 print('Formatting data for classifier...')
                 data = np.array(epochs.get_data())
-                # since the sample frequency is 220 Hz/3 = 73.33 Hz, indexes 8 and 55 is approximately 0.100 - 0.750 s
-                data = data[:, :, 8:56]
+                # since the sample frequency is 220 Hz/3 = 73.33 Hz, default indexes 8 and 55 is approximately 0.100 - 0.750 s
+                data = data[:, :, self.window_start_index:self.window_end_index]
                 print('size of classifier-input: {}'.format(data.shape))
                 print('size of identities: {}'.format(identities.shape))
                 print('size of targets: {}'.format(targets.shape))
