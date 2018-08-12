@@ -1,9 +1,0 @@
-
-[Core]
-Name = print
-Module = print
-
-[Documentation]
-Author = Various
-Version = 0.1
-Description = Print board values on stdout
