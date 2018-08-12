@@ -98,6 +98,9 @@ ENV/
 # mkdocs documentation
 /site
 
+# Mac icon files
+.DS_Store
+
 # mypy
 .mypy_cache/
 
