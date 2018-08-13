@@ -1,0 +1,39 @@
+Instructions for setup
+===============================================================================
+
+
+
+System Installation
+-------------------------------------------------------------------------------
+1. Install Oracle VM VirtualBox with default settings
+
+2. Create a new virtual machine on VirtualBox with:
+
+    - OS Linux Ubuntu x64
+
+    - 6GB RAM
+    - create a virtual hard disk with 32GB VDMK memory
+
+3. Download Ubuntu 17.10 from https://www.ubuntu.com/desktop/1710
+4. On startup, select the ubuntu .iso system downloaded
+5. Install Ubuntu with default settings
+
+
+Software and Module Installation
+-------------------------------------------------------------------------------
+Note: check that you are using Python 3.6.3
+
+1. Open up terminal and install git with 'sudo apt install git'
+2. Clone the MindType repository with 'git clone https://github.com/neurotechuoft/MindType'
+3. cd into Code/src with
+    $ cd MindType/Code/src
+4. Run setup with:
+    $ ./setup.sh
+5. Plug in OpenBCI USB and switch the OpenBCI chip to the BLE option. On the virtual machine, go to Devices > USB and enable the OpenBCI USB.
+
+Usage:
+
+-------------------------------------------------------------------------------
+1. cd into MindType/Code/src
+2. Run the following commands to start the application
+	$ ./MindType.sh
