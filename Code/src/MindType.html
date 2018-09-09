@@ -1,0 +1,358 @@
+<html>
+  <head>
+    <title>MindType</title>
+    <meta charset='utf-8'>
+    <!--<link rel="stylesheet" href="style.css">-->
+    <style>
+
+    #root{
+      height: 100vh;
+      width: 100vw;
+    }
+
+      .suggestion{
+        width: 33vw;
+        height: 12.5vh;
+        background-color: darkgray;
+        color: white;
+        font-size: 20px;
+      }
+
+      .suggestions{
+        margin-top: 1vh;
+      }
+
+      .resume {
+        width: 49vw;
+        margin-left: 2vw;
+        height: 5vh;
+      }
+
+      .display {
+        width: 49vw;
+        height: 5vh;
+      }
+
+      .entry{
+        width: 16.6vw;
+        height: 12.5vh;
+        background-color: darkgray;
+        color: white;
+        font-size: 20px;
+      }
+
+      .entry-extra-wide{
+        width: 33.3vw;
+        height: 12.5vh;
+        background-color: darkgray;
+        color: white;
+        font-size: 20px;
+      }
+
+      .entry-wide{
+        width: 20vw;
+        height: 12.5vh;
+        background-color: darkgray;
+        color:white;
+        font-size:20px;
+      }
+
+      .userInput, .options{
+        margin-top: 1vh;
+      }
+
+      .option{
+        width: 20vw;
+        height: 12.5vh;
+        background-color: darkgray;
+        color: white;
+        font-size: 20px;
+      }
+
+
+    </style>
+    <script src="https://unpkg.com/react@15/dist/react.min.js"> </script><script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
+    </script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+      <div id="root"></div>
+      <script type="text/babel">
+
+      var statement = prompt('What would you like to type?');
+      var displayText = '';
+
+      class App extends React.Component {
+
+        //var simulation = confirm('Would you like to start the simulation?')
+        //var type = prompt('What would you like to type?');
+
+        constructor(props) {
+        super(props);
+        this.state = {display: 'letters', type:statement, displayText: displayText};
+        this.handleNumClick = this.handleNumClick.bind(this);
+        this.handleEmojiClick = this.handleEmojiClick.bind(this);
+        this.handleLetterClick = this.handleLetterClick.bind(this);
+        }
+
+        handleNumClick() {
+          this.setState({display: 'numbers'});
+        }
+
+        handleEmojiClick(){
+          this.setState({display: 'emojis'})
+        }
+
+        handleLetterClick(){
+          this.setState({display: 'letters'});
+        }
+
+
+/*
+get phrase from user
+pass phrase into app component
+for loop the phrase (function)
+	pass the letter to letter function
+	generate random rows and columns and highlight them
+	check if letter in each row / column
+	store in row selected and colulmn selected variables
+	return letter to parent, put it on screen
+*/
+
+        render() {
+          let element;
+          let button2;
+          let button3;
+          if (this.state.display === 'letters'){
+            element = <Letters />;
+            button2 = <button onClick={this.handleNumClick} className="option">0</button>
+            button3 = <button onClick={this.handleEmojiClick} className="option">:)</button>
+          } else if (this.state.display === 'numbers'){
+            element = <Numbers />;
+            button2 = <button onClick={this.handleLetterClick} className="option">abc</button>
+            button3 = <button onClick={this.handleEmojiClick} className="option">:)</button>
+          } else {
+            element = <Emojis />;
+            button2 = <button onClick={this.handleNumClick} className="option">0</button>
+            button3 = <button onClick={this.handleLetterClick} className="option">abc</button>
+          }
+
+
+             return (
+               <div>
+                 <input type="text" className="display" value={this.state.displayText}></input>
+                 <button className="resume">Resume</button>
+                 <div className="suggestions">
+                    <button className="suggestion">To</button>
+                    <button className="suggestion">That</button>
+                    <button className="suggestion">The</button>
+                 </div>
+                 {element}
+                 <div className="options">
+                    <button className="option">.</button>
+                    {button2}
+                    {button3}
+                    <button className="option">&crarr;</button>
+                    <button className="option">&#8678;</button>
+                 </div>
+               </div>
+            )
+        }
+    }
+
+    class Letters extends React.Component {
+
+      constructor(props){
+        super(props);
+        this.state = {type: statement};
+      }
+
+
+      render(){
+        return (
+          <div className="userInput">
+             <button className="entry row1 col1">a</button>
+             <button className="entry row1 col2">b</button>
+             <button className="entry row1 col3">c</button>
+             <button className="entry row1 col4">d</button>
+             <button className="entry row1 col5">e</button>
+             <button className="entry row1 col6">f</button>
+             <br />
+             <button className="entry row2 col1">g</button>
+             <button className="entry row2 col2">h</button>
+             <button className="entry row2 col3">i</button>
+             <button className="entry row2 col4">j</button>
+             <button className="entry row2 col5">k</button>
+             <button className="entry row2 col6">l</button>
+             <br />
+             <button className="entry row3 col1">m</button>
+             <button className="entry row3 col2">n</button>
+             <button className="entry row3 col3">o</button>
+             <button className="entry row3 col4">p</button>
+             <button className="entry row3 col5">q</button>
+             <button className="entry row3 col6">r</button>
+             <br />
+             <button className="entry row4 col1">s</button>
+             <button className="entry row4 col2">t</button>
+             <button className="entry row4 col3">u</button>
+             <button className="entry row4 col4">v</button>
+             <button className="entry row4 col5">w</button>
+             <button className="entry row4 col6">x</button>
+             <br />
+             <button className="entry-extra-wide row5 col1">____</button>
+             <button className="entry row5 col3">y</button>
+             <button className="entry row5 col4">z</button>
+             <button className="entry-extra-wide row5 col5">&uarr;</button>
+
+          </div>
+        )
+      }
+
+    }
+
+    class Numbers extends React.Component {
+      render(){
+        return (
+          <div className="userInput">
+             <button className="entry-wide">0</button>
+             <button className="entry-wide">1</button>
+             <button className="entry-wide">2</button>
+             <button className="entry-wide">3</button>
+             <button className="entry-wide">4</button>
+             <br />
+             <button className="entry-wide">5</button>
+             <button className="entry-wide">6</button>
+             <button className="entry-wide">7</button>
+             <button className="entry-wide">8</button>
+             <button className="entry-wide">9</button>
+
+          </div>
+        )
+      }
+    }
+
+    // create Emoiji component
+    // https://coolsymbol.com/emojis/emoji-for-copy-and-paste.html
+
+    class Emojis extends React.Component {
+      render(){
+        return (
+          <div className="userInput">
+             <button className="entry">😄</button>
+             <button className="entry">😌</button>
+             <button className="entry">😀</button>
+             <button className="entry">😍</button>
+             <button className="entry">😎</button>
+             <button className="entry">😡</button>
+             <br />
+             <button className="entry">😅</button>
+             <button className="entry">😴</button>
+             <button className="entry">🙄</button>
+             <button className="entry">😲</button>
+             <button className="entry">😋</button>
+             <button className="entry">😭</button>
+             <br />
+             <button className="entry">😈</button>
+             <button className="entry">😇</button>
+             <button className="entry">🤑</button>
+             <button className="entry">🤵</button>
+             <button className="entry">👰</button>
+             <button className="entry">🤳</button>
+             <br />
+             <button className="entry">🙈</button>
+             <button className="entry">🙉</button>
+             <button className="entry">🙊</button>
+             <button className="entry">🎅</button>
+             <button className="entry">❤️️</button>
+             <button className="entry">💔</button>
+
+
+          </div>
+        )
+      }
+    }
+
+
+
+
+
+
+
+
+      ReactDOM.render(<App />, document.getElementById('root'));
+
+      var row1 = document.getElementsByClassName('row1');
+      var row2 = document.getElementsByClassName('row2');
+      var row3 = document.getElementsByClassName('row3');
+      var row4 = document.getElementsByClassName('row4');
+      var row5 = document.getElementsByClassName('row5');
+      var rows = [row1, row2, row3, row4, row5];
+
+      var col1 = document.getElementsByClassName('col1');
+      var col2 = document.getElementsByClassName('col2');
+      var col3 = document.getElementsByClassName('col3');
+      var col4 = document.getElementsByClassName('co14');
+      var col5 = document.getElementsByClassName('col5');
+      var col6 = document.getElementsByClassName('col6');
+      var cols = [col1, col2, col3, col4, col5, col6];
+
+      var iteration = 0;
+      var rowFound = false;
+      var colFound = false;
+
+      var prev = rows[0];
+
+      var interval = setInterval(writePhrase, 500);
+      function writePhrase(){
+        if (iteration == statement.length){
+          clearInterval(interval);
+        } else {
+          for (var j = 0; j < prev.length; j++){
+            prev[j].style.backgroundColor = 'darkgray';
+          }
+
+          var rc = Math.floor((Math.random() * 2) + 1);
+          if (rc == 1){
+            var row = rows[Math.floor((Math.random() * 5))];
+            prev = row;
+            for (var j = 0; j < row.length; j++){
+              row[j].style.backgroundColor = 'yellow';
+              if (row[j].innerHTML == statement[iteration]){
+                rowFound = true;
+              }
+              if (statement[iteration] == ' ' && row == row5){
+                rowFound = true;
+              }
+            }
+          } else {
+            var col = cols[Math.floor((Math.random() * 6))];
+            prev = col;
+            for (var j = 0; j < col.length; j++){
+              col[j].style.backgroundColor = 'yellow';
+              if (col[j].innerHTML == statement[iteration]){
+                colFound = true;
+              }
+              if (statement[iteration] == ' ' && col == col1){
+                colFound = true;
+              }
+            }
+          }
+
+          if (rowFound == true && colFound == true){
+            rowFound = false;
+            colFound = false;
+            displayText += statement[iteration];
+            document.getElementsByClassName('display')[0].value = displayText;
+            iteration++;
+          }
+        }
+
+
+
+
+      
+      }
+
+      </script>
+  </body>
+</html>
