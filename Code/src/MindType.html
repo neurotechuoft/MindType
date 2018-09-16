@@ -1,21 +1,31 @@
 <html>
-  <head>
-    <title>MindType</title>
-    <meta charset='utf-8'>
-    <!--<link rel="stylesheet" href="style.css">-->
-    <style>
+
+<head>
+  <title>MindType</title>
+  <meta charset='utf-8'>
+  <!--<link rel="stylesheet" href="style.css">-->
+  <style>
+
+    body {
+      overflow:hidden;
+    }
 
     #root{
       height: 100vh;
-      width: 100vw;
+      width: 99vw;
     }
 
       .suggestion{
         width: 33vw;
         height: 12.5vh;
-        background-color: darkgray;
+        background-color: #3da8c4;
         color: white;
-        font-size: 20px;
+        font-size: 2.5vmin;
+        /* font-weight: bold; */
+        font-family: Tahoma, Arial, Helvetica, sans-serif;
+        border-width: 2px 2px 2px 0px;
+        border-style: solid;
+        border-color: white;
       }
 
       .suggestions{
@@ -23,38 +33,50 @@
       }
 
       .resume {
-        width: 49vw;
+        width: 48vw;
         margin-left: 2vw;
         height: 5vh;
       }
 
       .display {
-        width: 49vw;
+        width: 48vw;
         height: 5vh;
       }
 
       .entry{
-        width: 16.6vw;
+        width: 16.5vw;
         height: 12.5vh;
-        background-color: darkgray;
+        background-color: #3da8c4;
         color: white;
-        font-size: 20px;
+        font-size: 4vmin;
+        /* font-weight: bold; */
+        font-family: Tahoma, Arial, Helvetica, sans-serif;
+        /* border: 2px solid white; */
+        border: none;
       }
 
       .entry-extra-wide{
-        width: 33.3vw;
+        width: 33vw;
         height: 12.5vh;
-        background-color: darkgray;
+        background-color: #3da8c4;
         color: white;
-        font-size: 20px;
+        font-size: 4vmin;
+        /* font-weight: bold; */
+        font-family: Tahoma, Arial, Helvetica, sans-serif;
+        /* border: 2px solid white; */
+        border: none;
       }
 
       .entry-wide{
-        width: 20vw;
+        width: 19.8vw;
         height: 12.5vh;
-        background-color: darkgray;
+        background-color: #3da8c4;
         color:white;
-        font-size:20px;
+        font-size: 4vmin;
+        /* font-weight: bold; */
+        font-family: Tahoma, Arial, Helvetica, sans-serif;
+        /* border: 2px solid white; */
+        border: none;
       }
 
       .userInput, .options{
@@ -62,24 +84,30 @@
       }
 
       .option{
-        width: 20vw;
+        width: 19.8vw;
         height: 12.5vh;
-        background-color: darkgray;
+        background-color: #3da8c4;
         color: white;
-        font-size: 20px;
+        font-size: 4vmin;
+        /* font-weight: bold; */
+        font-family: Tahoma, Arial, Helvetica, sans-serif;
+        /* border: 2px solid white; */
+        border: none;
       }
 
 
     </style>
-    <script src="https://unpkg.com/react@15/dist/react.min.js"> </script><script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
-    </script>
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-  </head>
-  <body>
-      <div id="root"></div>
-      <script type="text/babel">
+  <script src="https://unpkg.com/react@15/dist/react.min.js"> </script>
+  <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
+  </script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
 
-      var statement = prompt('What would you like to type?');
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+
+    var statement = prompt('What would you like to type?');
       var displayText = '';
 
       class App extends React.Component {
@@ -302,13 +330,14 @@ for loop the phrase (function)
 
       var prev = rows[0];
 
-      var interval = setInterval(writePhrase, 500);
+      var interval = setInterval(writePhrase, 200);
       function writePhrase(){
         if (iteration == statement.length){
           clearInterval(interval);
         } else {
           for (var j = 0; j < prev.length; j++){
-            prev[j].style.backgroundColor = 'darkgray';
+            prev[j].style.backgroundColor = '#3da8c4';
+            prev[j].style.color = 'white';
           }
 
           var rc = Math.floor((Math.random() * 2) + 1);
@@ -316,7 +345,8 @@ for loop the phrase (function)
             var row = rows[Math.floor((Math.random() * 5))];
             prev = row;
             for (var j = 0; j < row.length; j++){
-              row[j].style.backgroundColor = 'yellow';
+              row[j].style.backgroundColor = 'white';
+              row[j].style.color = '#3da8c4';
               if (row[j].innerHTML == statement[iteration]){
                 rowFound = true;
               }
@@ -328,7 +358,8 @@ for loop the phrase (function)
             var col = cols[Math.floor((Math.random() * 6))];
             prev = col;
             for (var j = 0; j < col.length; j++){
-              col[j].style.backgroundColor = 'yellow';
+              col[j].style.backgroundColor = 'white';
+              col[j].style.color = '#3da8c4';
               if (col[j].innerHTML == statement[iteration]){
                 colFound = true;
               }
@@ -346,13 +377,9 @@ for loop the phrase (function)
             iteration++;
           }
         }
-
-
-
-
-      
       }
 
       </script>
-  </body>
+</body>
+
 </html>
