@@ -1,6 +1,7 @@
 import sys
 
-from nlp import trie_funcs, benchmark
+import trie_funcs
+
 
 # Use this import for testing
 # import trie_funcs
@@ -21,12 +22,13 @@ if __name__ == '__main__':
 
     if len(sys.argv) != 2:
         print("Usage: python complete.py phrase_to_complete")
+        exit(1)
 
 
     # Benchmarks
     # Time
-    #t = benchmark.benchmark('./random/test_data_w2')
-    #print(t)
+    # t = benchmark.benchmark('./random/test_data_w2')
+    # print(t)
     # Performance
     #a,b = benchmark.performance_test()
     #print(a,b)

@@ -1,13 +1,5 @@
-import marisa_trie as marisa
-import pandas as pd
-import numpy as np
-import codecs
-import pickle
-import sys
-
 import time
-
-from nlp import nlp_setup
+import nlp_setup
 
 
 def autocomplete(start_word, triee=None):

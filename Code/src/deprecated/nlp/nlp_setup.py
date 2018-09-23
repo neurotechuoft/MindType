@@ -6,13 +6,15 @@ import marisa_trie as marisa
 import pandas as pd
 import time
 
+resources_path = "./resources/"
 
 # words_dictionary from https://github.com/dwyl/english-words, using Unlisence
 def load_words(check_grammar = True):
-	with codecs.open("./resources/w2_.txt", "r", encoding='utf-8', errors='ignore') as fdata:
+	with codecs.open("./resources/w2.txt", "r", encoding='utf-8', errors='ignore') as fdata:
 		grams = pd.read_table(fdata, names=["freq", "first", "second"])
 	if check_grammar:
-		with open("./resources/words_dictionary.json", "r") as english_dictionary:
+		word_dict_path = resources_path + "words_dictionary.json"
+		with open(word_dict_path, "r") as english_dictionary:
 			valid_words = json.load(english_dictionary)
 		grams = grams[grams.apply(lambda x: valid_words.get(x['first'], 0) == 1
 										and valid_words.get(x['second'], 0) == 1, axis=1)]
