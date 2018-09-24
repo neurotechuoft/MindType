@@ -2,7 +2,7 @@ import time
 import nlp_setup
 
 
-def autocomplete(start_word, triee=None):
+async def autocomplete(start_word, triee=None):
     """
     Autocomplete a word by finding the most widely used n-gram starting with it.
     :param start_word: a word to autocomplete
@@ -14,9 +14,8 @@ def autocomplete(start_word, triee=None):
 
     # Get an appropriate trie
     if triee is None:
-        triee, popular_dict = nlp_setup.check_cache(start_word)
-    print("---------")
-    print(triee)
+        triee, popular_dict = nlp_setup.check_cache(start_word)\
+
     # Iterate over the trie elements that start with the start_word
     # and store the top 3 most frequent words
     item = triee.items(start_word)

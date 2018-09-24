@@ -1,11 +1,8 @@
 import sys
-
+from socketIO_client import SocketIO
 import trie_funcs
 
-
-# Use this import for testing
-# import trie_funcs
-
+test_port = 8001
 
 def autocomplete(word: str) -> str:
     """
@@ -17,6 +14,10 @@ def autocomplete(word: str) -> str:
     """
     return trie_funcs.autocomplete(word)
 
+# The code below is to simulate requests from the client
+def process_predictions(*args):
+    print("predictions: ", args)
+
 
 if __name__ == '__main__':
 
@@ -24,17 +25,7 @@ if __name__ == '__main__':
         print("Usage: python complete.py phrase_to_complete")
         exit(1)
 
-
-    # Benchmarks
-    # Time
-    # t = benchmark.benchmark('./random/test_data_w2')
-    # print(t)
-    # Performance
-    #a,b = benchmark.performance_test()
-    #print(a,b)
-
-    # This is the result
-    a1, a2, a3 = autocomplete(sys.argv[1])
-    print(a1, a2, a3)
-
-
+    socket_client = SocketIO("localhost", test_port)
+    socket_client.connect()
+    socket_client.emit("predict", sys.argv[1], process_predictions)
+    socket_client.wait_for_callbacks(seconds=1)
