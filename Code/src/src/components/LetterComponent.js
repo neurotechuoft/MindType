@@ -42,7 +42,7 @@ class Letters extends Component {
         <button className="entry-extra-wide row5 col1">____</button>
         <button className="entry row5 col3">y</button>
         <button className="entry row5 col4">z</button>
-        <button className="entry-extra-wide row5 col5">&uarr;</button>
+        <button className="entry-extra-wide row5 col6">&uarr;</button>
 
       </div>
     )
