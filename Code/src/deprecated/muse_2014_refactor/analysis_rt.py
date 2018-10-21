@@ -1,4 +1,4 @@
-from stream_rt import *
+from eeg_stream import *
 import lda
 import threading
 import time
