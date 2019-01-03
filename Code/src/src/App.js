@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import Letters from './components/LetterComponent';
@@ -34,7 +33,7 @@ class App extends Component {
   for loop the phrase (function)
   pass the letter to letter function
   generate random rows and columns and highlight them
-  check if letter in each row / column
+  check if letter in each row or column
   store in row selected and colulmn selected variables
   return letter to parent, put it on screen
   */

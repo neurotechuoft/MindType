@@ -4,33 +4,38 @@ class Emojis extends Component {
   render(){
     return (
       <div className="userInput">
-         <button className="entry">😄</button>
-         <button className="entry">😌</button>
-         <button className="entry">😀</button>
-         <button className="entry">😍</button>
-         <button className="entry">😎</button>
-         <button className="entry">😡</button>
-         <br />
-         <button className="entry">😅</button>
-         <button className="entry">😴</button>
-         <button className="entry">🙄</button>
-         <button className="entry">😲</button>
-         <button className="entry">😋</button>
-         <button className="entry">😭</button>
-         <br />
-         <button className="entry">😈</button>
-         <button className="entry">😇</button>
-         <button className="entry">🤑</button>
-         <button className="entry">🤵</button>
-         <button className="entry">👰</button>
-         <button className="entry">🤳</button>
-         <br />
-         <button className="entry">🙈</button>
-         <button className="entry">🙉</button>
-         <button className="entry">🙊</button>
-         <button className="entry">🎅</button>
-         <button className="entry">❤️️</button>
-         <button className="entry">💔</button>
+        <div>
+         <button className="entry"><span role="img" aria-label="Emoji">😄</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😌</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😀</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😍</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😎</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😡</span></button>
+        </div>
+        <div>
+         <button className="entry"><span role="img" aria-label="Emoji">😅</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😴</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🙄</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😲</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😋</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😭</span></button>
+        </div>
+        <div>
+         <button className="entry"><span role="img" aria-label="Emoji">😈</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">😇</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🤑</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🤵</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">👰</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🤳</span></button>
+        </div>
+        <div>
+         <button className="entry"><span role="img" aria-label="Emoji">🙈</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🙉</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🙊</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">🎅</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">❤️️</span></button>
+         <button className="entry"><span role="img" aria-label="Emoji">💔</span></button>
+        </div>
       </div>
     )
   }
