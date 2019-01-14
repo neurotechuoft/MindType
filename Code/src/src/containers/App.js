@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import './App.css';
+import '../App.css';
 
-import Letters from './components/LetterComponent';
-import Numbers from './components/NumberComponent';
-import Emojis from './components/EmojiComponent';
+import Letters from '../components/LetterComponent';
+import Numbers from '../components/NumberComponent';
+import Emojis from '../components/EmojiComponent';
 
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
@@ -28,6 +28,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
+      statement: '',
       display: 'letters', 
       displayText: '', 
       rows : rows, 
@@ -40,7 +41,7 @@ class App extends Component {
     this.handleNumClick = this.handleNumClick.bind(this);
     this.handleEmojiClick = this.handleEmojiClick.bind(this);
     this.handleLetterClick = this.handleLetterClick.bind(this);
-    this.writePhrase = this.writePhrase.bind(this);
+    this.writePhrase    = this.writePhrase.bind(this);
   }
 
   handleNumClick() {
@@ -56,7 +57,7 @@ class App extends Component {
   }
 
   writePhrase() {
-    if (this.state.iteration === this.props.statement.length) {
+    if (this.state.iteration === this.state.statement.length) {
       clearInterval(this.state.interval);
     } else {
       for (let j = 0; j < prev.length; j++) {
@@ -68,13 +69,13 @@ class App extends Component {
         const row = this.state.rows[Math.floor(Math.random() * 5)];
         prev = row;
         // Handling Spaces 
-        if (this.props.statement[this.state.iteration] === ' ' && row === this.state.rows[4]) {
+        if (this.state.statement[this.state.iteration] === ' ' && row === this.state.rows[4]) {
           this.setState({rowFound : true});
         }
         for (let j = 0; j < row.length; j++) {
           row[j].style.backgroundColor = 'white';
           row[j].style.color = '#3da8c4';
-          if (row[j].innerHTML === this.props.statement[this.state.iteration]) {
+          if (row[j].innerHTML === this.state.statement[this.state.iteration]) {
             this.setState({rowFound : true});
           }
         }
@@ -82,19 +83,19 @@ class App extends Component {
         const col = this.state.cols[Math.floor(Math.random() * 6)];
         prev = col;
         // Handling Spaces
-        if (this.props.statement[this.state.iteration] === ' ' && col === this.state.cols[0]) {
+        if (this.state.statement[this.state.iteration] === ' ' && col === this.state.cols[0]) {
           this.setState({colFound : true});
         }
         for (let j = 0; j < col.length; j++) {
           col[j].style.backgroundColor = 'white';
           col[j].style.color = '#3da8c4';
-          if (col[j].innerHTML === this.props.statement[this.state.iteration]) {
+          if (col[j].innerHTML === this.state.statement[this.state.iteration]) {
             this.setState({colFound : true});
           }
         }
       }
       if (this.state.rowFound && this.state.colFound) {
-        const displayText = this.state.displayText + this.props.statement[this.state.iteration];
+        const displayText = this.state.displayText + this.state.statement[this.state.iteration];
         const iteration = this.state.iteration + 1;
         this.setState({rowFound : false, colFound : false, displayText, iteration});
       }
@@ -102,8 +103,9 @@ class App extends Component {
   }
 
   componentDidMount() {
+    const statement = prompt("What would you like to type?");
     const interval = setInterval(this.writePhrase, 200);
-    this.setState({interval});
+    this.setState({interval, statement});
   }
 
   /*
