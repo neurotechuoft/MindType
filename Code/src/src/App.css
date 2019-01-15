@@ -1,3 +1,6 @@
+$background:  #3da8c4;
+$font-stack: Tahoma, Arial, Helvetica, sans-serif;
+
 body {
   overflow: hidden;
 }
@@ -10,11 +13,11 @@ body {
 .suggestion {
   width: 33vw;
   height: 12.5vh;
-  background-color: #3da8c4;
+  background-color: $background;
   color: white;
   font-size: 2.5vmin;
   /* font-weight: bold; */
-  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-family: $font-stack;
   border-width: 2px 2px 2px 0px;
   border-style: solid;
   border-color: white;
@@ -38,11 +41,11 @@ body {
 .entry {
   width: 16.5vw;
   height: 12.5vh;
-  background-color: #3da8c4;
+  background-color: $background;
   color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
 }
@@ -50,11 +53,11 @@ body {
 .entry-extra-wide {
   width: 33vw;
   height: 12.5vh;
-  background-color: #3da8c4;
+  background-color: $background;
   color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
 }
@@ -62,11 +65,11 @@ body {
 .entry-wide {
   width: 19.8vw;
   height: 12.5vh;
-  background-color: #3da8c4;
+  background-color: $background;
   color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
 }
@@ -79,11 +82,11 @@ body {
 .option {
   width: 19.8vw;
   height: 12.5vh;
-  background-color: #3da8c4;
+  background-color: $background;
   color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
 }
