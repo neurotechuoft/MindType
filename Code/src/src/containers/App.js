@@ -104,7 +104,7 @@ class App extends Component {
 
   componentDidMount() {
     const statement = prompt("What would you like to type?");
-    const interval = setInterval(this.writePhrase, 200);
+    const interval = setInterval(this.writePhrase, 500);
     this.setState({interval, statement});
   }
 
