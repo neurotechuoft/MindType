@@ -63,6 +63,7 @@ class App extends Component {
       for (let j = 0; j < prev.length; j++) {
         prev[j].style.backgroundColor = '#3da8c4';
         prev[j].style.color = 'white';
+        prev[j].style.fontWeight = 'normal';
       }
       const rc = Math.floor((Math.random() * 2) + 1);
       if (rc === 1) {
@@ -76,6 +77,10 @@ class App extends Component {
           row[j].style.backgroundColor = 'white';
           row[j].style.color = '#3da8c4';
           if (row[j].innerHTML === this.state.statement[this.state.iteration]) {
+            if (this.state.colFound) {
+              row[j].style.color = 'red';
+              row[j].style.fontWeight = 'bold';
+            }
             this.setState({rowFound : true});
           }
         }
@@ -90,6 +95,10 @@ class App extends Component {
           col[j].style.backgroundColor = 'white';
           col[j].style.color = '#3da8c4';
           if (col[j].innerHTML === this.state.statement[this.state.iteration]) {
+            if (this.state.rowFound) {
+              col[j].style.color = 'red';
+              col[j].style.fontWeight = 'bold';
+            }
             this.setState({colFound : true});
           }
         }
