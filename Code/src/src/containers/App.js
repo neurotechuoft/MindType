@@ -70,7 +70,12 @@ class App extends Component {
         prev[j].style.color = 'white';
         prev[j].style.fontWeight = 'normal';
       }
-      const rc = Math.floor((Math.random() * 2) + 1);
+      // making sure rows/cols don't flash if they've already been found.
+      let rc;
+      if (rowFound) rc = 2;
+      else if (colFound) rc = 1;
+      else rc = Math.floor((Math.random() * 2) + 1);
+      
       if (rc === 1) {
         const row = rows[rowOrder[curRow]];
         prev = row;
