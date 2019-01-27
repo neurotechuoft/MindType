@@ -21,6 +21,12 @@ def on_stream_started(*args):
     return on_type_stream_started()
 
 
+def on_retrieve_prediction_results(*args):
+    def on_retrieve_results(results=args[1], sid=args[0]):
+        print(f'Results: {results}')
+    return on_retrieve_results()
+
+
 class P300Client(object):
     def __init__(self):
         results = []
@@ -34,6 +40,7 @@ if __name__ == '__main__':
     socket_client.on("eeg_stream_started", on_stream_created)
     socket_client.on("marker_stream_started", on_stream_created)
     socket_client.on("ml_stream_started", on_stream_created)
+    socket_client.on("retrieve_prediction_results", on_retrieve_prediction_results)
     socket_client.connect()
     socket_client.emit("create_eeg_stream")
     socket_client.emit("create_marker_stream")
@@ -46,4 +53,5 @@ if __name__ == '__main__':
                         'train_epochs': 120,
                         'get_test': True,
                         })
+    socket_client.emit("start_marker_stream")
     socket_client.disconnect()

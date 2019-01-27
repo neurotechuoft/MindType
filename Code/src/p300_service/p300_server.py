@@ -68,6 +68,14 @@ class P300Service:
         ml_stream.lsl_connect()
         await self.sio.emit("ml_stream_started", sid, 'ml')
 
+    async def retrieve_prediction_results(self, sid):
+        if sid in self.ml_streams:
+            ml_stream = self.ml_streams[sid]
+        else:
+            raise Exception("Cannot start ML stream with sid {}".format(sid))
+        results = ml_stream.predictions
+        await self.sio.emit("retrieve_prediction_results", sid, results)
+
     def initialize_handlers(self):
         self.sio.on("create_eeg_stream", self.create_eeg_stream_handler)
         self.sio.on("create_marker_stream", self.create_marker_stream_handler)

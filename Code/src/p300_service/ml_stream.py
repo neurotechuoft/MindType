@@ -79,8 +79,13 @@ class MLStream(object):
             if not self.m_stream.analyze.empty():
                 print('Began analyzing data...')
 
-                trial_num, ts, marker_end = self.m_stream.remove_analysis()
-                self.data_duration = trial_num*self.event_time + self.analysis_time
+                marker_dict = self.m_stream.remove_analysis()
+                epoch_id = marker_dict['epoch_id']
+                num_events = marker_dict['num_events']
+                ts = marker_dict['t']
+                marker_end = marker_dict['marker_end']
+
+                self.data_duration = num_events*self.event_time + self.analysis_time
                 tmp = np.array(self.eeg_stream.data)
                 # get analysis_time seconds of data (in terms of the end_index) after the event
                 end_index = int((np.abs(tmp[:, -1] - ts)).argmin()
@@ -94,7 +99,7 @@ class MLStream(object):
                 epochs, identities, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
                                                                           end_index=end_index,
                                                                           marker_end=marker_end,
-                                                                          trial_num=trial_num,
+                                                                          trial_num=num_events,
                                                                           data_duration=self.data_duration,
                                                                           picks=[0, 1, 2, 3],
                                                                           tmin=0.0,
@@ -137,18 +142,21 @@ class MLStream(object):
                     classifier = ml.load(self.classifier_path)
                     i, t = ml.create_input_target(zip(targets, data))
                     prediction = ml.predict(i, classifier)
+                    prediction_output = []
                     intermediate = 0
                     for index, item in enumerate(prediction):
                         # To account for the fact that every marker is associated with 4 channels, average the output
                         # of each channel (or apply specific weights to each channel, to possibly implement in future).
                         # Predictions for a single event based on 4 channels is appended to a list.
-                        if (index + 1) % 4 == 0:
+                        i = (index + 1) % 4
+                        if i == 0:
                             intermediate += item/4
-                            self.predictions.append(intermediate)
+                            prediction_output.append({identities[i]: intermediate})
                             intermediate = 0
                         else:
                             intermediate += item/4
-                        #TODO: create method to return a predictions with events
+                    # TODO: create method to return a predictions with events
+                    self.predictions.append({'epoch_id': epoch_id, 'predictions': prediction_output})
             time.sleep(sleep_time)
 
     def start(self):

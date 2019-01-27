@@ -1,6 +1,7 @@
 import base_stream
 import pylsl
 import queue
+import json
 
 
 def look_for_markers_stream():
@@ -24,8 +25,9 @@ class MarkerStream(base_stream.BaseStream):
         super(MarkerStream, self).__init__()
         self.name = name
         self.analyze = queue.Queue()
-        self.trial_num = 0
+        self.num_events = 0
         self.count = 0
+        self.event_count_dict = {}
 
     def lsl_connect(self):
         # Connect to LSL stream
@@ -62,26 +64,31 @@ class MarkerStream(base_stream.BaseStream):
             # Get marker data from inlet
             sample, timestamp = inlet.pull_sample()
 
-            # Get trial num
-            tmp = sample[2]
+            # sample = {t: (timestamp), event: (int), num_events: (int), epoch_id: (uuid)}
+            t = sample[0]
+            event = sample[1]
+            target = sample[2]
+            num_events = sample[3]
+            epoch_id = sample[4]
 
-            # If trial_num is zero, simply increment count
-            if tmp == 0:
-                self.count += 1
-            # If trial_num has changed, update object's trial_num; should only be updated at the FIRST trial of a set
-            else:
-                self.trial_num = tmp
-                self.count = 1
+            # create epoch entry if not previously recorded
+            if epoch_id not in self.event_count_dict:
+                self.event_count_dict[epoch_id] = 0
 
             # update marker data
             time_correction = inlet.time_correction()
-            sample.append(timestamp + time_correction)
-            self._update(sample)
+            marker_sample = [event, target, timestamp + time_correction]
+            self._update(marker_sample)
 
-            # If the set of trials finishes, queue last trial_num events for analysis (as a set of epochs)
-            if self.count % self.trial_num == 0:
+            # append count of epoch
+            self.event_count_dict[epoch_id] += 1
+            if self.event_count_dict[epoch_id] == num_events:
                 # Get marker index of the last trial in that set
                 marker_end = len(self.data)
 
-                self.add_analysis([self.trial_num, timestamp, marker_end])
-                print('queue updated')
+                # If the set of trials finishes, queue last trial_num events for analysis (as a set of epochs)
+                self.add_analysis({'epoch_id': epoch_id,
+                                   'num_events': num_events,
+                                   't': timestamp + time_correction,
+                                   'marker_end': marker_end})
+                print(f"Analysis queue updated with epoch: {epoch_id}")
