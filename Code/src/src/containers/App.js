@@ -80,6 +80,7 @@ class App extends Component {
         const row = rows[rowOrder[curRow]];
         prev = row;
         curRow = curRow + 1;
+        let rowIdx = -1;
         // Handling Spaces 
         if (statement[lettersFound] === ' ' && row === rows[4]) {
           const rowOrder = getRandomArray(5);
@@ -87,22 +88,34 @@ class App extends Component {
           this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
+          // Flash styles
           row[j].style.backgroundColor = 'white';
           row[j].style.color = '#3da8c4';
           if (row[j].innerHTML === statement[lettersFound]) {
-            if (colFound) {
-              row[j].style.color = 'red';
-              row[j].style.fontWeight = 'bold';
-            }
+            rowIdx = j;
             const rowOrder = getRandomArray(5);
             curRow = 0;
             this.setState({rowFound : true, rowOrder});
+          }
+        }
+        if (colFound && rowIdx >= 0) {  // rowIdx >= 0 implies a letter has been found
+          for (let j = 0; j < row.length; j++) {
+            if (j === rowIdx) {
+              // "letter found" styles
+              row[j].style.color = 'red';
+              row[j].style.fontWeight = 'bold';
+            } else {
+              // Apply the default styles to other character
+              row[j].style.backgroundColor = '#3da8c4';
+              row[j].style.color = 'white';
+            }
           }
         }
       } else {
         const col = cols[colOrder[curCol]];
         prev = col;
         curCol = curCol + 1;
+        let colIdx = -1;
         // Handling Spaces
         if (statement[lettersFound] === ' ' && col === cols[0]) {
           const colOrder = getRandomArray(6);
@@ -110,16 +123,28 @@ class App extends Component {
           this.setState({colFound : true, colOrder});
         }
         for (let j = 0; j < col.length; j++) {
+          // Flash styles
           col[j].style.backgroundColor = 'white';
           col[j].style.color = '#3da8c4';
           if (col[j].innerHTML === statement[lettersFound]) {
-            if (rowFound) {
-              col[j].style.color = 'red';
-              col[j].style.fontWeight = 'bold';
-            }
+            colIdx = j;
             const colOrder = getRandomArray(6);
             curCol = 0;
+            
             this.setState({colFound : true, colOrder});
+          }
+        }
+        if (rowFound && colIdx >= 0) { // colIdx >= 0 implies a letter has been found
+          for (let j = 0; j < col.length; j++) {
+            if (j === colIdx)  {
+              // "letter found" styles
+              col[j].style.color = 'red';
+              col[j].style.fontWeight = 'bold';
+            } else {
+              // Apply the default styles to other character
+              col[j].style.backgroundColor = '#3da8c4';
+              col[j].style.color = 'white';
+            }
           }
         }
       }
