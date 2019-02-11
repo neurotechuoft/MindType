@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
+import { getRandomArray } from '../helpers/shuffle';
 
 import Letters from '../components/LetterComponent';
 import Numbers from '../components/NumberComponent';
@@ -23,6 +24,8 @@ const col6 = document.getElementsByClassName('col6');
 const cols = [col1, col2, col3, col4, col5, col6];
 
 let prev = rows[0];
+let curRow = 0; // Keeping track of which array index you're on for random rows.
+let curCol = 0; // Keeping track of which array index you're on for random cols.
 
 class App extends Component {
   constructor(props) {
@@ -31,10 +34,10 @@ class App extends Component {
       statement: '',
       display: 'letters', 
       displayText: '', 
-      rows : rows, 
-      cols : cols,
       interval : null,
-      iteration : 0,
+      lettersFound : 0,
+      rowOrder : null,
+      colOrder : null,
       rowFound : false,
       colFound : false
     };
@@ -57,64 +60,85 @@ class App extends Component {
   }
 
   writePhrase() {
-    if (this.state.iteration === this.state.statement.length) {
-      clearInterval(this.state.interval);
+    const {statement, interval, lettersFound, rowOrder, 
+      colOrder, rowFound, colFound, displayText} = this.state;
+    if (lettersFound === statement.length) {
+      clearInterval(interval);
     } else {
       for (let j = 0; j < prev.length; j++) {
         prev[j].style.backgroundColor = '#3da8c4';
         prev[j].style.color = 'white';
         prev[j].style.fontWeight = 'normal';
       }
-      const rc = Math.floor((Math.random() * 2) + 1);
+      // making sure rows/cols don't flash if they've already been found.
+      let rc;
+      if (rowFound) rc = 2;
+      else if (colFound) rc = 1;
+      else rc = Math.floor((Math.random() * 2) + 1);
+      
       if (rc === 1) {
-        const row = this.state.rows[Math.floor(Math.random() * 5)];
+        const row = rows[rowOrder[curRow]];
         prev = row;
+        curRow = curRow + 1;
         // Handling Spaces 
-        if (this.state.statement[this.state.iteration] === ' ' && row === this.state.rows[4]) {
-          this.setState({rowFound : true});
+        if (statement[lettersFound] === ' ' && row === rows[4]) {
+          const rowOrder = getRandomArray(5);
+          curRow = 0;
+          this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
           row[j].style.backgroundColor = 'white';
           row[j].style.color = '#3da8c4';
-          if (row[j].innerHTML === this.state.statement[this.state.iteration]) {
-            if (this.state.colFound) {
+          if (row[j].innerHTML === statement[lettersFound]) {
+            if (colFound) {
               row[j].style.color = 'red';
               row[j].style.fontWeight = 'bold';
             }
-            this.setState({rowFound : true});
+            const rowOrder = getRandomArray(5);
+            curRow = 0;
+            this.setState({rowFound : true, rowOrder});
           }
         }
       } else {
-        const col = this.state.cols[Math.floor(Math.random() * 6)];
+        const col = cols[colOrder[curCol]];
         prev = col;
+        curCol = curCol + 1;
         // Handling Spaces
-        if (this.state.statement[this.state.iteration] === ' ' && col === this.state.cols[0]) {
-          this.setState({colFound : true});
+        if (statement[lettersFound] === ' ' && col === cols[0]) {
+          const colOrder = getRandomArray(6);
+          curCol = 0;
+          this.setState({colFound : true, colOrder});
         }
         for (let j = 0; j < col.length; j++) {
           col[j].style.backgroundColor = 'white';
           col[j].style.color = '#3da8c4';
-          if (col[j].innerHTML === this.state.statement[this.state.iteration]) {
-            if (this.state.rowFound) {
+          if (col[j].innerHTML === statement[lettersFound]) {
+            if (rowFound) {
               col[j].style.color = 'red';
               col[j].style.fontWeight = 'bold';
             }
-            this.setState({colFound : true});
+            const colOrder = getRandomArray(6);
+            curCol = 0;
+            this.setState({colFound : true, colOrder});
           }
         }
       }
-      if (this.state.rowFound && this.state.colFound) {
-        const displayText = this.state.displayText + this.state.statement[this.state.iteration];
-        const iteration = this.state.iteration + 1;
-        this.setState({rowFound : false, colFound : false, displayText, iteration});
+      // If a letter has been found.
+      if (rowFound && colFound) {
+        [curRow, curCol] = [0, 0];
+        const newDisplay = displayText + statement[lettersFound];
+        this.setState({rowFound : false, colFound : false, 
+        displayText : newDisplay, lettersFound : lettersFound + 1});
       }
     }
   }
 
   componentDidMount() {
     const statement = prompt("What would you like to type?");
+    const rowOrder = getRandomArray(5);
+    const colOrder = getRandomArray(6); 
     const interval = setInterval(this.writePhrase, 500);
-    this.setState({interval, statement});
+    this.setState({interval, statement, rowOrder, colOrder});
   }
 
   /*
