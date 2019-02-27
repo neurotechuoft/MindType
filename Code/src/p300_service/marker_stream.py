@@ -1,13 +1,12 @@
 import base_stream
 import pylsl
 import queue
-import json
 
 
 def look_for_markers_stream():
     """returns an inlet for the first markers stream outlet if found."""
     print("looking for a Markers stream")
-    streams = pylsl.resolve_byprop('name', 'Markers', timeout=2)
+    streams = pylsl.resolve_byprop('name', 'Markers', timeout=30)
     if len(streams) == 0:
         raise (RuntimeError, "Can't find Markers stream")
     print("Start acquiring data")
@@ -21,17 +20,15 @@ class MarkerStream(base_stream.BaseStream):
     Receives markers over lsl and places them in a queue for analysis.
     """
 
-    def __init__(self, name='Marker_data'):
+    def __init__(self, thread_name='Marker_data'):
         super(MarkerStream, self).__init__()
-        self.name = name
+        self.thread_name = thread_name
         self.analyze = queue.Queue()
-        self.num_events = 0
-        self.count = 0
         self.event_count_dict = {}
 
     def lsl_connect(self):
         # Connect to LSL stream
-        self.connect(self._connect, self.name)
+        self.connect(self._connect, self.thread_name)
 
     def _connect(self):
         self._markers_stream = look_for_markers_stream()
@@ -41,6 +38,7 @@ class MarkerStream(base_stream.BaseStream):
         self._record_data_indefinitely(self._markers_stream)
 
     def add_analysis(self, item):
+        print('item added to queue!')
         self.analyze.put(item)
 
     def remove_analysis(self):
@@ -48,24 +46,31 @@ class MarkerStream(base_stream.BaseStream):
         return item
 
     def _record_data_indefinitely(self, inlet):
-        """Record data to list and correct for time differences. Updates marker count to trigger analysis.
-        The identifier is the letter/row/column/block/etc... that should be sent as an integer in the first channel.
-        The timestamp of the marker should be sent in the second channel.
-        Self.trial_num sets how many trials should be taken before analysis. The trial_num should be sent with marker
-        data in channel 3 for the FIRST marker. A trial_num of zero means there is no change to the trial_num.
-        Example: Keyboard has n trials. The first trial should send n, while the subsequent trials should send 0s. This
-        tells the program that every n trials, it should queue n events for analysis. If the next set of trials contains
-        m trials, the first marker of the new set should send m, with the subsequent trials sending 0s, etc...
+        """Record data to list and correct for time differences.
+        This function recognizes samples that are in an array with the format:
+            [
+                [0]: timestamp: float - point in time (in seconds) at which the sample is published,
+                [1]: event: int - identifier for the marker, i.e. a number that is mapped to a certain letter,
+                [2]: target: int - boolean (0 or 1) that is used in training to mark the sample as a target value,
+                [3]: num_events: int - number of events that are published in the epoch,
+                [4]: epoch_id: uuid - unique identifier for a specific epoch
+            ]
+
         Args:
             inlet: pylsl.StreamInlet; the LabStreamingLayer inlet of data.
         """
 
         while not self._kill_signal.is_set():
             # Get marker data from inlet
-            sample, timestamp = inlet.pull_sample()
+            sample, inlet_timestamp = inlet.pull_sample()
 
-            # sample = {t: (timestamp), event: (int), num_events: (int), epoch_id: (uuid)}
-            t = sample[0]
+            # TODO: unsure which data source to use for timestamps
+            inlet_time_correction = inlet.time_correction()
+            corrected_inlet_time = inlet_timestamp + inlet_time_correction
+
+            # sample parameters
+            # timestamp = sample[0]
+            timestamp = corrected_inlet_time
             event = sample[1]
             target = sample[2]
             num_events = sample[3]
@@ -76,19 +81,19 @@ class MarkerStream(base_stream.BaseStream):
                 self.event_count_dict[epoch_id] = 0
 
             # update marker data
-            time_correction = inlet.time_correction()
-            marker_sample = [event, target, timestamp + time_correction]
+            marker_sample = [event, target, timestamp]
             self._update(marker_sample)
 
             # append count of epoch
             self.event_count_dict[epoch_id] += 1
-            if self.event_count_dict[epoch_id] == num_events:
+            print('analysis', self.event_count_dict[epoch_id], num_events, epoch_id)
+            if self.event_count_dict[epoch_id] == int(num_events):
                 # Get marker index of the last trial in that set
                 marker_end = len(self.data)
 
                 # If the set of trials finishes, queue last trial_num events for analysis (as a set of epochs)
                 self.add_analysis({'epoch_id': epoch_id,
                                    'num_events': num_events,
-                                   't': timestamp + time_correction,
+                                   'timestamp': timestamp,
                                    'marker_end': marker_end})
                 print(f"Analysis queue updated with epoch: {epoch_id}")
