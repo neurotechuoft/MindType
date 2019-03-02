@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Start Screen</title>
+    <script src="https://unpkg.com/react@15/dist/react.min.js"> </script>
+  <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
+  </script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+    var screenType = 'welcome';
+
+    function loginChange(){
+      screenType = 'login';
+      alert(screenType);
+    }
+
+    function signUpChange(){
+      screenType = 'sign-up';
+      alert(screenType);
+    }
+
+    class Start extends React.Component {
+      constructor(props) {
+          super(props);
+          this.state = {display: 'welcome'};
+          this.handleLoginClick = this.handleLoginClick.bind(this);
+          this.handleSignUpClick = this.handleSignUpClick.bind(this);
+        }
+
+        handleLoginClick(){
+          this.setState({display: 'login'});
+        }
+
+        handleSignUpClick(){
+          this.setState({display: 'sign-up'});
+        }
+
+    render() {
+      let element;
+            if (this.state.display === 'welcome'){
+              element = (
+                <div>
+                  <button onClick={this.handleLoginClick} className="login">Login</button>
+                  <br />
+                  <button onClick={this.handleSignUpClick} className="sign-up">Sign Up</button>
+                </div>
+              );
+            } else if (this.state.display === 'login'){
+              element = <Login />;
+            } else if (this.state.display === 'sign-up') {
+              element = <SignUp />;
+            }
+      return (
+        <div>
+          {element}
+        </div>
+      )
+    }
+  }
+
+
+
+
+
+  class SignUp extends React.Component {
+    render(){
+      return (
+        <div>
+          Name: <br/>
+          <input type="text" className="name-user"></input><br />
+          Email: <br />
+          <input type="email" className="email-input"></input><br />
+          Password: <br />
+          <input type="password" className="password-input"></input><br />
+          <button className="sign-up">Sign Up</button>
+        </div>
+      )
+    }
+  }
+
+  class Login extends React.Component {
+    render(){
+      return (
+        <div>
+          Email:<br/>
+          <input type="email" className="email-input"></input><br />
+          Password:<br/>
+          <input type="password" className="password-input"></input><br />
+          <button className="login">Login</button>
+        </div>
+      )
+    }
+  }
+
+
+  ReactDOM.render(<Start />, document.getElementById("root"));
+
+  </script>
+  </body>
+
+</html>
