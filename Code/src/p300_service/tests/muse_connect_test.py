@@ -4,7 +4,6 @@ Adapted from:
     beats-muse: https://github.com/Oishe/beats-muse
 """
 import time
-import pylsl
 from p300_service import eeg_stream, marker_stream, ml_stream
 from tests.test_marker_publisher import test_marker_stream, start_marker_stream
 from tests.test_eeg_publisher import test_eeg_stream, start_eeg_stream
@@ -46,7 +45,7 @@ def main(random_eeg_data=False):
     analysis.start()
 
     while True:
-        print('marker', marker.data[-1])
+        print('marker', marker.data[-1], eeg.data[-1])
         time.sleep(1)
 
 

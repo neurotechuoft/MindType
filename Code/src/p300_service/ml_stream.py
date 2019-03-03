@@ -2,8 +2,8 @@ import ml
 import threading
 import time
 import numpy as np
-from marker_stream import MarkerStream
-from eeg_stream import EEGStream
+from p300_service.marker_stream import MarkerStream
+from p300_service.eeg_stream import EEGStream
 
 
 class MLStream(object):
@@ -32,12 +32,11 @@ class MLStream(object):
                  train_epochs=120,
                  get_test=False):
         if not isinstance(eeg_stream, EEGStream):
-            raise TypeError("Stream must be type `EEGStream`. {} "
-                            "was passed.".format(type(eeg_stream)))
+            raise TypeError(f"Stream must be type {EEGStream}. {type(eeg_stream)} was passed.")
         if not isinstance(m_stream, MarkerStream):
-            raise TypeError("Stream must be type `MarkerStream`. {} "
-                            "was passed.".format(type(m_stream)))
+            raise TypeError(f"Stream must be type {MarkerStream}. {type(m_stream)} was passed.")
         print("Analysis object created.")
+        self._loop_analysis_thread = None
         self.m_stream = m_stream
         self.eeg_stream = eeg_stream
         self.classifier_path = classifier_path
@@ -58,7 +57,7 @@ class MLStream(object):
         self.data_duration = None
 
         # Load test data
-        if not get_test:
+        if not train and not get_test:
             self.test_set = ml.load_test_data(self.test_path)
             self.inputs_test, self.targets_test = ml.create_input_target(self.test_set)
 
@@ -77,41 +76,43 @@ class MLStream(object):
         while not self._kill_signal.is_set():
             # when items exist in the marker analysis queue
             if not self.m_stream.analyze.empty():
-                print('Began analyzing data...')
-
                 marker_dict = self.m_stream.remove_analysis()
                 epoch_id = marker_dict['epoch_id']
-                num_events = marker_dict['num_events']
-                ts = marker_dict['t']
-                marker_end = marker_dict['marker_end']
+                num_events = int(marker_dict['num_events'])
+                timestamp = float(marker_dict['timestamp'])
+                marker_end = int(marker_dict['marker_end'])
+
+                print(f'Began analyzing data for epoch {epoch_id}...')
 
                 self.data_duration = num_events*self.event_time + self.analysis_time
                 tmp = np.array(self.eeg_stream.data)
                 # get analysis_time seconds of data (in terms of the end_index) after the event
-                end_index = int((np.abs(tmp[:, -1] - ts)).argmin()
+                end_index = int((np.abs(tmp[:, -1] - timestamp)).argmin()
                                 + self.analysis_time / (1 / self.eeg_stream.info['sfreq']))
+
+                print(end_index)
 
                 # ensure there is enough eeg data before analyzing; wait if there isn't
                 while len(self.eeg_stream.data) < end_index:
                     time.sleep(sleep_time)
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
-                epochs, identities, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
-                                                                          end_index=end_index,
-                                                                          marker_end=marker_end,
-                                                                          trial_num=num_events,
-                                                                          data_duration=self.data_duration,
-                                                                          picks=[0, 1, 2, 3],
-                                                                          tmin=0.0,
-                                                                          tmax=1,
-                                                                          decim=3)
+                epochs, events, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
+                                                                      end_index=end_index,
+                                                                      marker_end=marker_end,
+                                                                      trial_num=num_events,
+                                                                      data_duration=self.data_duration,
+                                                                      picks=[0, 1, 2, 3],
+                                                                      tmin=0.0,
+                                                                      tmax=1,
+                                                                      decim=3)
                 # get input to classifier
                 print('Formatting data for classifier...')
                 data = np.array(epochs.get_data())
                 # since the sample frequency is 220 Hz/3 = 73.33 Hz, indexes 8 and 55 is approximately 0.100 - 0.750 s
                 data = data[:, :, 8:56]
                 print('size of classifier-input: {}'.format(data.shape))
-                print('size of identities: {}'.format(identities.shape))
+                print('size of events: {}'.format(events.shape))
                 print('size of targets: {}'.format(targets.shape))
 
                 # If training classifier, send data to classifier with ground truth targets
@@ -151,7 +152,7 @@ class MLStream(object):
                         i = (index + 1) % 4
                         if i == 0:
                             intermediate += item/4
-                            prediction_output.append({identities[i]: intermediate})
+                            prediction_output.append({events[i]: intermediate})
                             intermediate = 0
                         else:
                             intermediate += item/4
@@ -166,6 +167,7 @@ class MLStream(object):
             self._loop_analysis_thread = threading.Thread(target=self._loop_analysis, name="Analysis-loop")
             self._loop_analysis_thread.daemon = True
             self._loop_analysis_thread.start()
+            print('Analysis loop started')
 
         else:
             print("Loop of analysis already running.")
