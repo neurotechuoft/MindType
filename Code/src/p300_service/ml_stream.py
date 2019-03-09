@@ -2,8 +2,8 @@ import ml
 import threading
 import time
 import numpy as np
-from p300_service.marker_stream import MarkerStream
-from p300_service.eeg_stream import EEGStream
+from marker_stream import MarkerStream
+from eeg_stream import EEGStream
 
 
 class MLStream(object):
@@ -121,16 +121,23 @@ class MLStream(object):
                     if self.train_number < self.train_epochs:
                         self.train_data.extend(data)
                         self.train_targets.extend(targets)
+
                     else:
                         print('Training ml classifier with {} epochs' .format(self.train_number))
-                        package = zip(self.train_targets, self.train_data)
+                        package = list(zip(self.train_targets, self.train_data))
+
                         if self.get_test:
                             ml.save_test_data(self.test_path, package)
                             print("test set created!")
                             self._kill_signal.set()
+
                         else:
+                            # Generate input and targets
                             i, t = ml.create_input_target(package)
-                            classifier = ml.ml_classifier(i, t)
+
+                            # Create and train classifier
+                            # See ml_classifier in ml.py for options for classifiers
+                            classifier = ml.ml_classifier(i, t, pipeline='erpcov_mdm')
                             print("Finished training.")
                             ml.save(self.classifier_path, classifier)
                             self.train_number = 0
