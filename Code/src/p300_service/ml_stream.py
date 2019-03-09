@@ -5,6 +5,7 @@ import numpy as np
 from marker_stream import MarkerStream
 from eeg_stream import EEGStream
 
+import pickle
 
 class MLStream(object):
     """Class to loop analysis of EEG data every time the markers stream notifies the end of the trial.
@@ -118,13 +119,16 @@ class MLStream(object):
                 # If training classifier, send data to classifier with ground truth targets
                 if self.train:
                     self.train_number += data.shape[0]
-                    if self.train_number < self.train_epochs:
-                        self.train_data.extend(data)
-                        self.train_targets.extend(targets)
+                    self.train_data.extend(data)
+                    self.train_targets.extend(targets)
 
-                    else:
+                    if self.train_number > self.train_epochs:
                         print('Training ml classifier with {} epochs' .format(self.train_number))
                         package = list(zip(self.train_targets, self.train_data))
+
+                        # # Save training data to pickle
+                        # with open('tests/data/my_data.pickle', 'wb') as f:
+                        #     pickle.dump(package, f)
 
                         if self.get_test:
                             ml.save_test_data(self.test_path, package)
@@ -135,9 +139,12 @@ class MLStream(object):
                             # Generate input and targets
                             i, t = ml.create_input_target(package)
 
-                            # Create and train classifier
-                            # See ml_classifier in ml.py for options for classifiers
-                            classifier = ml.ml_classifier(i, t, pipeline='erpcov_mdm')
+                            # Create and train classifier. See ml_classifier in ml.py for options for classifiers
+
+                            # TODO: there seems to be some indexing error with some of Barachant's
+                            # estimators in PyRiemann, so will use 'vect_lr' (all from sklearn) for now.
+                            # Note in Barachant's ipynb, 'erpcov_mdm' performed best
+                            classifier = ml.ml_classifier(i, t, pipeline='vect_lr')
                             print("Finished training.")
                             ml.save(self.classifier_path, classifier)
                             self.train_number = 0
