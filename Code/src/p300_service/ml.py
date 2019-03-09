@@ -68,7 +68,7 @@ def predict(inputs, classifier):
     Returns:
         classifier.predict([inputs]): vector of length (N trials * M channels) containing event predictions.
     """
-    predictions = classifier.predict([inputs])
+    predictions = classifier.predict(inputs)
     return predictions
 
 

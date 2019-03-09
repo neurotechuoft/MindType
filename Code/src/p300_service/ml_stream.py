@@ -57,8 +57,8 @@ class MLStream(object):
         self.predictions = []
         self.data_duration = None
 
-        # Load test data
-        if not train and not get_test:
+        # Load test data from pickle if we are not gathering test data
+        if not get_test:
             self.test_set = ml.load_test_data(self.test_path)
             self.inputs_test, self.targets_test = ml.create_input_target(self.test_set)
 
@@ -123,11 +123,15 @@ class MLStream(object):
                     self.train_targets.extend(targets)
 
                     if self.train_number > self.train_epochs:
+
+                        print('\n\n\n')
                         print('Training ml classifier with {} epochs' .format(self.train_number))
+                        print('\n\n\n')
+
                         package = list(zip(self.train_targets, self.train_data))
 
                         # # Save training data to pickle
-                        # with open('tests/data/my_data.pickle', 'wb') as f:
+                        # with open('tests/data/train_data.pickle', 'wb') as f:
                         #     pickle.dump(package, f)
 
                         if self.get_test:
@@ -152,26 +156,29 @@ class MLStream(object):
                             # Get accuracy of classifier based on test set
                             score = classifier.score(self.inputs_test, self.targets_test)
                             print('Test Set Accuracy: {}%' .format(score*100))
+
                 # else do a prediction
+                # TODO: right this occurs once every 12 samples (an epoch) and is not "realtime" realtime
                 else:
                     classifier = ml.load(self.classifier_path)
-                    i, t = ml.create_input_target(zip(targets, data))
+                    i, t = ml.create_input_target(list(zip(targets, data)))
+
                     prediction = ml.predict(i, classifier)
                     prediction_output = []
                     intermediate = 0
+
                     for index, item in enumerate(prediction):
                         # To account for the fact that every marker is associated with 4 channels, average the output
                         # of each channel (or apply specific weights to each channel, to possibly implement in future).
                         # Predictions for a single event based on 4 channels is appended to a list.
-                        i = (index + 1) % 4
-                        if i == 0:
-                            intermediate += item/4
-                            prediction_output.append({events[i]: intermediate})
+                        intermediate += item/4
+                        if (index + 1) % 4:
+                            prediction_output.append({events[index//4, 0]: intermediate})
                             intermediate = 0
-                        else:
-                            intermediate += item/4
+
                     # TODO: create method to return a predictions with events
                     self.predictions.append({'epoch_id': epoch_id, 'predictions': prediction_output})
+
             time.sleep(sleep_time)
 
     def start(self):
