@@ -201,3 +201,10 @@ class MLStream(object):
             print("Loop of analysis stopped.")
         else:
             print("Loop of analysis not running. Nothing to stop.")
+
+    def get_predictions(self):
+        """Returns one set of predictions if there are any, otherwise returns None"""
+        # TODO: emit data to p300_server and get them to handle predictions, instead
+        # of the loop worker
+        if len(self.predictions) > 0:
+            return self.predictions.pop(0)
