@@ -72,6 +72,33 @@ def predict(inputs, classifier):
     return predictions
 
 
+def score(data, labels, classifier):
+    """Like predictions, but we only count correct when p300 occurs and we correctly predicts it.
+    Count as incorrect if classifier makes a false positive prediction or when it fails to predict a
+    p300.
+    Args:
+        data: inputs containing (N trials * M channels) data segments of length(number of features).
+        labels: (N trials) 1 or 0 for every trial in data
+        classifier: classifier object.
+    Returns:
+        score: integer between 0 and 1 based on accuracy
+    """
+    predictions = predict(data, classifier)
+    count_correct = 0.
+    count_total = 0.
+
+    for i in range(len(labels)):
+        if labels[i] == 1:
+            count_total += 1
+            if predictions[i] == 1:
+                count_correct += 1
+
+        elif predictions[i] == 1:
+            count_total += 1
+
+    return count_correct / count_total
+
+
 def save(filepath, classifier):
     """Saves classifier as a pkl file to the provided filepath."""
     with open(filepath, 'wb') as f:

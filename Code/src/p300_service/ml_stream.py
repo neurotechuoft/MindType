@@ -154,7 +154,8 @@ class MLStream(object):
                             self.train_number = 0
 
                             # Get accuracy of classifier based on test set
-                            score = classifier.score(self.inputs_test, self.targets_test)
+                            # score = classifier.score(self.inputs_test, self.targets_test)
+                            score = ml.score(self.inputs_test, self.targets_test, classifier)
                             print('Test Set Accuracy: {}%' .format(score*100))
 
                 # else do a prediction
