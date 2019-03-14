@@ -86,7 +86,6 @@ class MarkerStream(base_stream.BaseStream):
 
             # append count of epoch
             self.event_count_dict[epoch_id] += 1
-            print('analysis', self.event_count_dict[epoch_id], num_events, epoch_id)
             if self.event_count_dict[epoch_id] == int(num_events):
                 # Get marker index of the last trial in that set
                 marker_end = len(self.data)

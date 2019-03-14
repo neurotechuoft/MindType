@@ -22,12 +22,9 @@ def main(random_eeg_data=False):
         time.sleep(0.1)
 
     # Create Marker Stream object
-    marker_outlet = test_marker_stream()
     marker = marker_stream.MarkerStream(thread_name='test_marker')
     marker.lsl_connect()
     time.sleep(5)
-    events = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    start_marker_stream(marker_outlet, events)
 
     while not marker.data:
         time.sleep(0.1)
@@ -37,20 +34,20 @@ def main(random_eeg_data=False):
         m_stream=marker,
         eeg_stream=eeg,
         classifier_path='classifier.pkl',
-        test_path='classifier.pkl',
+        test_path='train_data.pkl',
         event_time=0.4,
         train='True',
-        train_epochs=120
+        train_epochs=120,
+        get_test=True,
     )
     analysis.start()
 
     while True:
-        print('marker', marker.data[-1], eeg.data[-1])
-        time.sleep(1)
+        time.sleep(2)
 
 
 if __name__ == '__main__':
-    main(random_eeg_data=True)
+    main(random_eeg_data=False)
 
 
 

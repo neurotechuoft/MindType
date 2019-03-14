@@ -31,11 +31,12 @@ class MLStream(object):
                  event_time=0.2,
                  train=False,
                  train_epochs=120,
-                 get_test=False):
-        if not isinstance(eeg_stream, EEGStream):
-            raise TypeError(f"Stream must be type {EEGStream}. {type(eeg_stream)} was passed.")
-        if not isinstance(m_stream, MarkerStream):
-            raise TypeError(f"Stream must be type {MarkerStream}. {type(m_stream)} was passed.")
+                 get_test=False,
+                 ):
+        # if not isinstance(eeg_stream, EEGStream):
+        #     raise TypeError(f"Stream must be type {EEGStream}. {type(eeg_stream)} was passed.")
+        # if not isinstance(m_stream, MarkerStream):
+        #     raise TypeError(f"Stream must be type {MarkerStream}. {type(m_stream)} was passed.")
         print("Analysis object created.")
         self._loop_analysis_thread = None
         self.m_stream = m_stream
@@ -56,6 +57,9 @@ class MLStream(object):
         self.train_targets = []
         self.predictions = []
         self.data_duration = None
+
+        # extra time to ensure that all epochs are captured
+        self.extra_time = 0.1
 
         # Load test data from pickle if we are not gathering test data
         if not get_test:
@@ -85,16 +89,15 @@ class MLStream(object):
 
                 print(f'Began analyzing data for epoch {epoch_id}...')
 
-                self.data_duration = num_events*self.event_time + self.analysis_time
+                self.data_duration = num_events*self.event_time + self.analysis_time + self.extra_time
                 tmp = np.array(self.eeg_stream.data)
                 # get analysis_time seconds of data (in terms of the end_index) after the event
                 end_index = int((np.abs(tmp[:, -1] - timestamp)).argmin()
-                                + self.analysis_time / (1 / self.eeg_stream.info['sfreq']))
-
-                print(end_index)
+                                + self.analysis_time * self.eeg_stream.info['sfreq']
+                                + self.extra_time * self.eeg_stream.info['sfreq'])
 
                 # ensure there is enough eeg data before analyzing; wait if there isn't
-                while len(self.eeg_stream.data) < end_index:
+                while len(self.eeg_stream.data) < end_index + 1000:
                     time.sleep(sleep_time)
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
@@ -110,8 +113,8 @@ class MLStream(object):
                 # get input to classifier
                 print('Formatting data for classifier...')
                 data = np.array(epochs.get_data())
-                # since the sample frequency is 220 Hz/3 = 73.33 Hz, indexes 8 and 55 is approximately 0.100 - 0.750 s
-                data = data[:, :, 8:56]
+                # since the sample frequency is 256 Hz/3 = 85.33 Hz, indexes 8 and 64 is approximately 0.100 - 0.750 s
+                data = data[:, :, 8:64]
                 print('size of classifier-input: {}'.format(data.shape))
                 print('size of events: {}'.format(events.shape))
                 print('size of targets: {}'.format(targets.shape))

@@ -208,7 +208,6 @@ class EEGStream(base_stream.BaseStream):
             # Scale the data but not the timestamps.
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         else:
-            print('sfreq',self.info['sfreq'])
             start_index = int(end_index - data_duration * self.info['sfreq'])
             data = np.array(self.copy_data(start_index, end_index)).T
             # Scale the data but not the timestamps.

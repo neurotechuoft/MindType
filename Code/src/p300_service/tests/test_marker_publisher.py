@@ -23,7 +23,7 @@ def marker_publish(signal, outlet, events, log=False):
     count = 0
     start_time = pylsl.local_clock()
     if log:
-        print('Markers sending ...')
+        print('Markers sending ...\n\n\n\n\n')
     while not signal.is_set():
         if generator:
             # generate random marker data
@@ -33,12 +33,46 @@ def marker_publish(signal, outlet, events, log=False):
             if tmp == 1:
                 event = 1
                 if log:
-                    print('A')
+                    print("""
+                                       AAA               
+                                      A:::A              
+                                     A:::::A             
+                                    A:::::::A            
+                                   A:::::::::A           
+                                  A:::::A:::::A          
+                                 A:::::A A:::::A         
+                                A:::::A   A:::::A        
+                               A:::::A     A:::::A       
+                              A:::::AAAAAAAAA:::::A      
+                             A:::::::::::::::::::::A     
+                            A:::::AAAAAAAAAAAAA:::::A    
+                           A:::::A             A:::::A   
+                          A:::::A               A:::::A  
+                         A:::::A                 A:::::A 
+                        AAAAAAA                   AAAAAAA
+                    """)
                 target = 1
             else:
                 event = 0
                 if log:
-                    print('B')
+                    print("""
+                        BBBBBBBBBBBBBBBBB   
+                        B::::::::::::::::B  
+                        B::::::BBBBBB:::::B 
+                        BB:::::B     B:::::B
+                          B::::B     B:::::B
+                          B::::B     B:::::B
+                          B::::BBBBBB:::::B 
+                          B:::::::::::::BB  
+                          B::::BBBBBB:::::B 
+                          B::::B     B:::::B
+                          B::::B     B:::::B
+                          B::::B     B:::::B
+                        BB:::::BBBBBB::::::B
+                        B:::::::::::::::::B 
+                        B::::::::::::::::B  
+                        BBBBBBBBBBBBBBBBB   
+                    """)
                 target = 0
 
             # increment marker count
@@ -60,11 +94,11 @@ def marker_publish(signal, outlet, events, log=False):
 
             # down time in between sending markers
             time.sleep(0.4)
-            if count % trial_num == 0:
-                # after trial_num flashes, 1 set of trials complete
-                end_time = pylsl.local_clock()
-                if log:
-                    print('trial was {} seconds long'.format(end_time - start_time))
+            # if count % trial_num == 0:
+            #     # after trial_num flashes, 1 set of trials complete
+            #     end_time = pylsl.local_clock()
+            #     if log:
+            #         print('\n\n\n\n\ntrial was {} seconds long\n\n\n\n\n'.format(end_time - start_time))
         else:
             generator, epoch_id = repopulate_list(events)
             count = 0
@@ -83,10 +117,10 @@ def test_marker_stream():
     return outlet
 
 
-def start_marker_stream(outlet, events):
+def start_marker_stream(outlet, events, log=True):
     """Starts publishing marker data on the lsl stream in a new thread."""
     kill_signal = threading.Event()
-    marker_thread = threading.Thread(target=marker_publish, name='marker-generator', args=(kill_signal, outlet, events))
+    marker_thread = threading.Thread(target=marker_publish, name='marker-generator', args=(kill_signal, outlet, events, log))
     marker_thread.daemon = True
     marker_thread.start()
 
@@ -94,13 +128,8 @@ def start_marker_stream(outlet, events):
 if __name__ == '__main__':
     test_outlet = test_marker_stream()
     test_events = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    start_marker_stream(test_outlet, test_events)
-    print("looking for a Markers stream")
-    streams = pylsl.resolve_byprop('name', 'Markers', timeout=10)
-    if len(streams) == 0:
-        raise (RuntimeError, "Can't find Markers stream")
-    print("Start acquiring data")
-    marker_inlet = pylsl.StreamInlet(streams[0])
+    start_marker_stream(test_outlet, test_events, log=True)
+
     while True:
-        sample, _ = marker_inlet.pull_sample()
-        print(sample)
+        time.sleep(5)
+
