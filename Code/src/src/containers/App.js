@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import io from "socket.io-client";
 import '../App.css';
 import { getRandomArray } from '../helpers/shuffle';
 
@@ -27,6 +28,8 @@ let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
 let curCol = 0; // Keeping track of which array index you're on for random cols.
 
+const socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -39,11 +42,13 @@ class App extends Component {
       rowOrder : null,
       colOrder : null,
       rowFound : false,
-      colFound : false
+      colFound : false,
+      predictions: ['', '', '']
     };
     this.handleNumClick = this.handleNumClick.bind(this);
     this.handleEmojiClick = this.handleEmojiClick.bind(this);
     this.handleLetterClick = this.handleLetterClick.bind(this);
+    this.handlePredictions = this.handlePredictions.bind(this);
     this.writePhrase    = this.writePhrase.bind(this);
   }
 
@@ -57,6 +62,10 @@ class App extends Component {
 
   handleLetterClick() {
     this.setState({ display: 'letters' });
+  }
+
+  handlePredictions(...predictions) {
+    this.setState({predictions : predictions})
   }
 
   writePhrase() {
@@ -129,6 +138,8 @@ class App extends Component {
         const newDisplay = displayText + statement[lettersFound];
         this.setState({rowFound : false, colFound : false, 
         displayText : newDisplay, lettersFound : lettersFound + 1});
+        // Emitting an event to the socket to recieve word predictions.
+        socket.emit("autocomplete", newDisplay, this.handlePredictions);
       }
     }
   }
@@ -170,15 +181,15 @@ class App extends Component {
       button3 = <button onClick={this.handleLetterClick} className="option">abc</button>
     }
 
+    // Displaying word predictions
+    const predictions = this.state.predictions.map(prediction => <button className="suggestion"> { prediction } </button>)
 
     return (
       <div>
         <input type="text" className="display" value={this.state.displayText} readOnly></input>
         <button className="resume">Resume</button>
         <div className="suggestions">
-          <button className="suggestion">To</button>
-          <button className="suggestion">That</button>
-          <button className="suggestion">The</button>
+          { predictions }
         </div>
         {element}
         <div className="options">
