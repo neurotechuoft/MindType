@@ -12,7 +12,9 @@ from pyriemann.estimation import ERPCovariances
 from pyriemann.tangentspace import TangentSpace
 from pyriemann.classification import MDM
 from pyriemann.spatialfilters import Xdawn
+
 import pickle
+import numpy as np
 
 
 def create_input_target(data):
@@ -84,19 +86,9 @@ def score(data, labels, classifier):
         score: integer between 0 and 1 based on accuracy
     """
     predictions = predict(data, classifier)
-    count_correct = 0.
-    count_total = 0.
-
-    for i in range(len(labels)):
-        if labels[i] == 1:
-            count_total += 1
-            if predictions[i] == 1:
-                count_correct += 1
-
-        elif predictions[i] == 1:
-            count_total += 1
-
-    return count_correct / count_total
+    land = np.logical_and(predictions, labels)
+    lor = np.logical_or(predictions, labels)
+    return np.sum(land) / np.sum(lor)
 
 
 def save(filepath, classifier):

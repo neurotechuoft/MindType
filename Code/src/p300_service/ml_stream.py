@@ -64,7 +64,9 @@ class MLStream(object):
         # Load test data from pickle if we are not gathering test data
         if not get_test:
             self.test_set = ml.load_test_data(self.test_path)
-            self.inputs_test, self.targets_test = ml.create_input_target(self.test_set)
+            self.inputs_test = np.array([t[1] for t in self.test_set])
+            self.targets_test = np.squeeze(np.array([t[0] for t in self.test_set]))
+            self.inputs_test = self.inputs_test[:, [0, 3], :]
 
     def _loop_analysis(self):
         """Call a function every time the marker stream gives the signal"""
@@ -97,7 +99,7 @@ class MLStream(object):
                                 + self.extra_time * self.eeg_stream.info['sfreq'])
 
                 # ensure there is enough eeg data before analyzing; wait if there isn't
-                while len(self.eeg_stream.data) < end_index + 1000:
+                while len(self.eeg_stream.data) < end_index:
                     time.sleep(sleep_time)
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
@@ -131,10 +133,14 @@ class MLStream(object):
                         print('Training ml classifier with {} epochs' .format(self.train_number))
                         print('\n\n\n')
 
+                        # Load training data
+                        # with open('tests/data/train_data.pickle', 'rb') as f:
+                        #     package = pickle.load(f)
+
                         package = list(zip(self.train_targets, self.train_data))
 
-                        # # Save training data to pickle
-                        # with open('tests/data/train_data.pickle', 'wb') as f:
+                        # Save training data to pickle
+                        # with open('tests/data/train_2.pickle', 'wb') as f:
                         #     pickle.dump(package, f)
 
                         if self.get_test:
@@ -144,7 +150,9 @@ class MLStream(object):
 
                         else:
                             # Generate input and targets
-                            i, t = ml.create_input_target(package)
+                            i = np.array([p[1] for p in package])
+                            i = i[:, [0, 3], :]
+                            t = np.squeeze(np.array([p[0] for p in package]))
 
                             # Create and train classifier. See ml_classifier in ml.py for options for classifiers
 
@@ -162,7 +170,7 @@ class MLStream(object):
                             print('Test Set Accuracy: {}%' .format(score*100))
 
                 # else do a prediction
-                # TODO: right this occurs once every 12 samples (an epoch) and is not "realtime" realtime
+                # TODO: fix predict (since changing training process)
                 else:
                     classifier = ml.load(self.classifier_path)
                     i, t = ml.create_input_target(list(zip(targets, data)))
