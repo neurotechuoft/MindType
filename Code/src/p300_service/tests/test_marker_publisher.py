@@ -34,44 +34,44 @@ def marker_publish(signal, outlet, events, log=False):
                 event = 1
                 if log:
                     print("""
-                                       AAA               
-                                      A:::A              
-                                     A:::::A             
-                                    A:::::::A            
-                                   A:::::::::A           
-                                  A:::::A:::::A          
-                                 A:::::A A:::::A         
-                                A:::::A   A:::::A        
-                               A:::::A     A:::::A       
-                              A:::::AAAAAAAAA:::::A      
-                             A:::::::::::::::::::::A     
-                            A:::::AAAAAAAAAAAAA:::::A    
-                           A:::::A             A:::::A   
-                          A:::::A               A:::::A  
-                         A:::::A                 A:::::A 
-                        AAAAAAA                   AAAAAAA
+                   AAA
+                  A:::A
+                 A:::::A
+                A:::::::A
+               A:::::::::A
+              A:::::A:::::A
+             A:::::A A:::::A
+            A:::::A   A:::::A
+           A:::::A     A:::::A
+          A:::::AAAAAAAAA:::::A
+         A:::::::::::::::::::::A
+        A:::::AAAAAAAAAAAAA:::::A
+       A:::::A             A:::::A
+      A:::::A               A:::::A
+     A:::::A                 A:::::A
+    AAAAAAA                   AAAAAAA
                     """)
                 target = 1
             else:
                 event = 0
                 if log:
                     print("""
-                        BBBBBBBBBBBBBBBBB   
-                        B::::::::::::::::B  
-                        B::::::BBBBBB:::::B 
-                        BB:::::B     B:::::B
-                          B::::B     B:::::B
-                          B::::B     B:::::B
-                          B::::BBBBBB:::::B 
-                          B:::::::::::::BB  
-                          B::::BBBBBB:::::B 
-                          B::::B     B:::::B
-                          B::::B     B:::::B
-                          B::::B     B:::::B
-                        BB:::::BBBBBB::::::B
-                        B:::::::::::::::::B 
-                        B::::::::::::::::B  
-                        BBBBBBBBBBBBBBBBB   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     """)
                 target = 0
 
@@ -102,7 +102,7 @@ def marker_publish(signal, outlet, events, log=False):
         else:
             generator, epoch_id = repopulate_list(events)
             count = 0
-            time.sleep(4)
+            time.sleep(2)
             start_time = pylsl.local_clock()
     if log:
         print('Markers no longer sending.')
@@ -132,4 +132,3 @@ if __name__ == '__main__':
 
     while True:
         time.sleep(5)
-
