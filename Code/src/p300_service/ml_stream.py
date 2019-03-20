@@ -80,6 +80,10 @@ class MLStream(object):
         """
         sleep_time = 0.01  # Time to sleep between queries.
 
+        # Load classifier if we want to make predictions
+        if not self.train:
+            classifier = ml.load(self.classifier_path)
+
         while not self._kill_signal.is_set():
             # when items exist in the marker analysis queue
             if not self.m_stream.analyze.empty():
@@ -127,17 +131,18 @@ class MLStream(object):
                     self.train_data.extend(data)
                     self.train_targets.extend(targets)
 
-                    if self.train_number > self.train_epochs:
+                    # if self.train_number > self.train_epochs:
+                    if True:
 
                         print('\n\n\n')
                         print('Training ml classifier with {} epochs' .format(self.train_number))
                         print('\n\n\n')
 
                         # Load training data
-                        # with open('tests/data/train_data.pickle', 'rb') as f:
-                        #     package = pickle.load(f)
+                        with open('tests/data/train_data.pickle', 'rb') as f:
+                            package = pickle.load(f)
 
-                        package = list(zip(self.train_targets, self.train_data))
+                        # package = list(zip(self.train_targets, self.train_data))
 
                         # Save training data to pickle
                         # with open('tests/data/train_2.pickle', 'wb') as f:
@@ -169,27 +174,20 @@ class MLStream(object):
                             score = ml.score(self.inputs_test, self.targets_test, classifier)
                             print('Test Set Accuracy: {}%' .format(score*100))
 
+                            # should we move to prediction mode after?
+
                 # else do a prediction
                 # TODO: fix predict (since changing training process)
                 else:
-                    classifier = ml.load(self.classifier_path)
-                    i, t = ml.create_input_target(list(zip(targets, data)))
+                    # already loaded classifier earlier
+                    i = np.array(data)
+                    i = i[:, [0, 3], :]
 
-                    prediction = ml.predict(i, classifier)
-                    prediction_output = []
-                    intermediate = 0
-
-                    for index, item in enumerate(prediction):
-                        # To account for the fact that every marker is associated with 4 channels, average the output
-                        # of each channel (or apply specific weights to each channel, to possibly implement in future).
-                        # Predictions for a single event based on 4 channels is appended to a list.
-                        intermediate += item/4
-                        if (index + 1) % 4:
-                            prediction_output.append({events[index//4, 0]: intermediate})
-                            intermediate = 0
+                    predictions = ml.predict(i, classifier)
+                    print(predictions)
 
                     # TODO: create method to return a predictions with events
-                    self.predictions.append({'epoch_id': epoch_id, 'predictions': prediction_output})
+                    self.predictions.append({'epoch_id': epoch_id, 'predictions': predictions})
 
             time.sleep(sleep_time)
 
