@@ -22,6 +22,17 @@ OpenBCI Cyton. (The keyboard works with Muse as well, but you would need to use 
 2. Go into './Code/src'
 3. Run setup.sh
 
+## Dev Setup
+### Front End:
+Setup:
+1. `npm install`
+2. `npm install -g concurrently`
+3. `npm install -g wait-on`
+
+To run dev Electron build: 
+
+`npm run electron-dev`
+
 
 ## Usage:
 To use MindType:
@@ -44,6 +55,7 @@ isn't fully ready, use feature toggling to turn it off
 (*feature_flags/feature_flags.py*)
 4. Your code will go through a review. Once it passes, merge the pull reqest!
 5. Repeat :D
+
 
 
 ## Algorithm approaches

@@ -29,6 +29,7 @@ let curRow = 0; // Keeping track of which array index you're on for random rows.
 let curCol = 0; // Keeping track of which array index you're on for random cols.
 
 const socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
+const FLASHING_PAUSE = 500;
 
 class App extends Component {
   constructor(props) {
@@ -89,6 +90,7 @@ class App extends Component {
         const row = rows[rowOrder[curRow]];
         prev = row;
         curRow = curRow + 1;
+
         // Handling Spaces 
         if (statement[lettersFound] === ' ' && row === rows[4]) {
           const rowOrder = getRandomArray(5);
@@ -145,10 +147,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const statement = prompt("What would you like to type?");
+    // const statement = prompt("What would you like to type?");
+    const statement = "what would you like to type";
     const rowOrder = getRandomArray(5);
     const colOrder = getRandomArray(6); 
-    const interval = setInterval(this.writePhrase, 500);
+    const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
     this.setState({interval, statement, rowOrder, colOrder});
   }
 
