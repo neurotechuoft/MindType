@@ -33,10 +33,6 @@ class MLStream(object):
                  train_epochs=120,
                  get_test=False,
                  ):
-        # if not isinstance(eeg_stream, EEGStream):
-        #     raise TypeError(f"Stream must be type {EEGStream}. {type(eeg_stream)} was passed.")
-        # if not isinstance(m_stream, MarkerStream):
-        #     raise TypeError(f"Stream must be type {MarkerStream}. {type(m_stream)} was passed.")
         print("Analysis object created.")
         self._loop_analysis_thread = None
         self.m_stream = m_stream
@@ -117,13 +113,9 @@ class MLStream(object):
                                                                       tmax=1,
                                                                       decim=3)
                 # get input to classifier
-                print('Formatting data for classifier...')
                 data = np.array(epochs.get_data())
                 # since the sample frequency is 256 Hz/3 = 85.33 Hz, indexes 8 and 64 is approximately 0.100 - 0.750 s
                 data = data[:, :, 8:64]
-                print('size of classifier-input: {}'.format(data.shape))
-                print('size of events: {}'.format(events.shape))
-                print('size of targets: {}'.format(targets.shape))
 
                 # If training classifier, send data to classifier with ground truth targets
                 if self.train:
@@ -131,22 +123,13 @@ class MLStream(object):
                     self.train_data.extend(data)
                     self.train_targets.extend(targets)
 
-                    # if self.train_number > self.train_epochs:
-                    if True:
+                    if self.train_number > self.train_epochs:
 
                         print('\n\n\n')
                         print('Training ml classifier with {} epochs' .format(self.train_number))
                         print('\n\n\n')
 
-                        # Load training data
-                        with open('tests/data/train_data.pickle', 'rb') as f:
-                            package = pickle.load(f)
-
-                        # package = list(zip(self.train_targets, self.train_data))
-
-                        # Save training data to pickle
-                        # with open('tests/data/train_2.pickle', 'wb') as f:
-                        #     pickle.dump(package, f)
+                        package = list(zip(self.train_targets, self.train_data))
 
                         if self.get_test:
                             ml.save_test_data(self.test_path, package)
@@ -161,9 +144,8 @@ class MLStream(object):
 
                             # Create and train classifier. See ml_classifier in ml.py for options for classifiers
 
-                            # TODO: there seems to be some indexing error with some of Barachant's
-                            # estimators in PyRiemann, so will use 'vect_lr' (all from sklearn) for now.
-                            # Note in Barachant's ipynb, 'erpcov_mdm' performed best
+                            # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
+                            # universal one for EEG data.
                             classifier = ml.ml_classifier(i, t, pipeline='vect_lr')
                             print("Finished training.")
                             ml.save(self.classifier_path, classifier)
@@ -177,16 +159,11 @@ class MLStream(object):
                             # should we move to prediction mode after?
 
                 # else do a prediction
-                # TODO: fix predict (since changing training process)
                 else:
-                    # already loaded classifier earlier
                     i = np.array(data)
                     i = i[:, [0, 3], :]
-
                     predictions = ml.predict(i, classifier)
-                    print(predictions)
 
-                    # TODO: create method to return a predictions with events
                     self.predictions.append({'epoch_id': epoch_id, 'predictions': predictions})
 
             time.sleep(sleep_time)
