@@ -4,6 +4,9 @@ from eeg_stream import EEGStream
 from marker_stream import MarkerStream
 from ml_stream import MLStream
 
+# for testing
+import random
+
 
 class P300Service:
     def __init__(self):
@@ -76,6 +79,14 @@ class P300Service:
         results = ml_stream.predictions
         await self.sio.emit("retrieve_prediction_results", sid, results)
 
+    # for testing
+    async def retrieve_prediction_results_test(self, sid, args):
+        uid, ts, data = args
+        p300 = random.choice([True, False])
+        results = (uid, ts, p300)
+        return sid, results
+
+
     def initialize_handlers(self):
         self.sio.on("create_eeg_stream", self.create_eeg_stream_handler)
         self.sio.on("create_marker_stream", self.create_marker_stream_handler)
@@ -83,6 +94,8 @@ class P300Service:
         self.sio.on("start_eeg_stream", self.eeg_stream_start_handler)
         self.sio.on("start_marker_stream", self.marker_stream_start_handler)
         self.sio.on("start_ml_stream", self.ml_stream_start_handler)
+
+        self.sio.on("retrieve_prediction_results", self.retrieve_prediction_results_test)
 
 
 if __name__ == '__main__':
