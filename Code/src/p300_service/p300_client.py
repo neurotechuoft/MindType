@@ -44,15 +44,26 @@ class P300Client(object):
         for stream in ['eeg', 'marker', 'ml']:
             self._start_stream(stream)
 
-    def train_classifier(self, user_id, timestamp, eeg_data):
-        data = (user_id, timestamp, eeg_data)
-        self.socket_client.emit("train_classifier", data, None)
-        self.socket_client.wait_for_callbacks(seconds=1)
+    def train_classifier(self, user_id):
+        inputs, targets = self.streams['ml'].get_training_data()
+        if inputs is None or targets is None:
+            raise Exception("No data to use for training")
+        else:
+            eeg_data = (inputs, targets)
+            data = (user_id, timestamp, eeg_data)
+            self.socket_client.emit("train_classifier", data, None)
+            self.socket_client.wait_for_callbacks(seconds=1)
 
-    def predict(self, user_id, timestamp, eeg_data):
-        data = (user_id, timestamp, eeg_data)
-        self.socket_client.emit("retrieve_prediction_results", data, self.on_retrieve_prediction_results)
-        self.socket_client.wait_for_callbacks(seconds=1)
+    def predict(self, user_id):
+        eeg_data = self.streams['ml'].get_prediction_data()
+        eeg_data.get('prediction_data')
+        if eeg_data is None:
+            raise Exception("No data to make predictions for")
+        else:
+            data = (user_id, eeg_data)
+            self.socket_client.emit("retrieve_prediction_results", data, self.on_retrieve_prediction_results)
+            self.socket_client.wait_for_callbacks(seconds=1)
+
 
     #
     # Private methods for creating and starting streams

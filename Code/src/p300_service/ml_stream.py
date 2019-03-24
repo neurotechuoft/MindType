@@ -51,8 +51,12 @@ class MLStream(object):
         self.train_number = 0
         self.train_data = []
         self.train_targets = []
-        self.predictions = []
         self.data_duration = None
+
+        # for sending to p300 server
+        self.inputs = []
+        self.targets = []
+        self.predictions = []
 
         # extra time to ensure that all epochs are captured
         self.extra_time = 0.1
@@ -126,10 +130,10 @@ class MLStream(object):
                     if self.train_number > self.train_epochs:
 
                         print('\n\n\n')
-                        print('Training ml classifier with {} epochs' .format(self.train_number))
+                        print('Training ml classifier with {} epochs'.format(self.train_number))
                         print('\n\n\n')
 
-                        package = list(zip(self.train_targets, self.train_data))
+                        # package = list(zip(self.train_targets, self.train_data))
 
                         if self.get_test:
                             ml.save_test_data(self.test_path, package)
@@ -138,33 +142,36 @@ class MLStream(object):
 
                         else:
                             # Generate input and targets
-                            i = np.array([p[1] for p in package])
+                            # i = np.array([p[1] for p in package])
+                            # i = i[:, [0, 3], :]
+                            # t = np.squeeze(np.array([p[0] for p in package]))
+
+                            i = np.array(self.train_data)
                             i = i[:, [0, 3], :]
-                            t = np.squeeze(np.array([p[0] for p in package]))
+                            t = np.squeeze(np.array(self.train_targets))
 
-                            # Create and train classifier. See ml_classifier in ml.py for options for classifiers
+                            self.inputs.append(i)
+                            self.target.append(t)
 
-                            # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
-                            # universal one for EEG data.
-                            classifier = ml.ml_classifier(i, t, pipeline='vect_lr')
-                            print("Finished training.")
-                            ml.save(self.classifier_path, classifier)
-                            self.train_number = 0
-
-                            # Get accuracy of classifier based on test set
-                            # score = classifier.score(self.inputs_test, self.targets_test)
-                            score = ml.score(self.inputs_test, self.targets_test, classifier)
-                            print('Test Set Accuracy: {}%' .format(score*100))
-
-                            # should we move to prediction mode after?
+                            # # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
+                            # # universal one for EEG data.
+                            # classifier = ml.ml_classifier(i, t, pipeline='vect_lr')
+                            # print("Finished training.")
+                            # ml.save(self.classifier_path, classifier)
+                            # self.train_number = 0
+                            #
+                            # # Get accuracy of classifier based on test set
+                            # # score = classifier.score(self.inputs_test, self.targets_test)
+                            # score = ml.score(self.inputs_test, self.targets_test, classifier)
+                            # print('Test Set Accuracy: {}%' .format(score*100))
 
                 # else do a prediction
                 else:
                     i = np.array(data)
                     i = i[:, [0, 3], :]
-                    predictions = ml.predict(i, classifier)
+                    # predictions = ml.predict(i, classifier)
 
-                    self.predictions.append({'epoch_id': epoch_id, 'predictions': predictions})
+                    self.predictions.append({'epoch_id': epoch_id, 'prediction_data': i})
 
             time.sleep(sleep_time)
 
@@ -189,9 +196,13 @@ class MLStream(object):
         else:
             print("Loop of analysis not running. Nothing to stop.")
 
-    def get_predictions(self):
-        """Returns one set of predictions if there are any, otherwise returns None"""
-        # TODO: emit data to p300_server and get them to handle predictions, instead
-        # of the loop worker
+    def get_training_data(self):
+        if len(self.inputs) > 0 and len(self.targets) > 0:
+            i = self.inputs.pop()
+            t = self.targets.pop()
+            return i, t
+
+    def get_prediction_data(self):
+        """Returns one set of prediction data if there are any, otherwise returns None"""
         if len(self.predictions) > 0:
             return self.predictions.pop(0)
