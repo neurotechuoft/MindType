@@ -44,6 +44,11 @@ class P300Client(object):
         for stream in ['eeg', 'marker', 'ml']:
             self._start_stream(stream)
 
+    def train_classifier(self, user_id, timestamp, eeg_data):
+        data = (user_id, timestamp, eeg_data)
+        self.socket_client.emit("train_classifier", data, None)
+        self.socket_client.wait_for_callbacks(seconds=1)
+
     def predict(self, user_id, timestamp, eeg_data):
         data = (user_id, timestamp, eeg_data)
         self.socket_client.emit("retrieve_prediction_results", data, self.on_retrieve_prediction_results)
