@@ -1,3 +1,5 @@
+import time
+
 from socketIO_client import SocketIO
 from sanic import Sanic
 from eeg_stream import EEGStream
@@ -56,10 +58,10 @@ class P300Client(object):
 
     def predict(self, user_id):
         eeg_data = self.streams['ml'].get_prediction_data()
-        eeg_data.get('prediction_data')
         if eeg_data is None:
             raise Exception("No data to make predictions for")
         else:
+            eeg_data.get('prediction_data')
             data = (user_id, eeg_data)
             self.socket_client.emit("retrieve_prediction_results", data, self.on_retrieve_prediction_results)
             self.socket_client.wait_for_callbacks(seconds=1)
@@ -85,7 +87,6 @@ class P300Client(object):
                         eeg_stream=self.streams['eeg'],
                         classifier_path=data['classifier_path'],
                         test_path=data['test_path'],
-                        analysis_time=data['analysis_time'],
                         event_time=data['event_time'],
                         train=data['train'],
                         train_epochs=data['train_epochs'],
@@ -95,16 +96,18 @@ class P300Client(object):
         if self.streams.get(stream) is None:
             raise RuntimeError("Cannot start {0} stream, stream does not exist".format(stream))
         else:
-            self.streams[stream].lsl_connect()
+            if stream == 'ml':
+                while not (self.streams['eeg'].data and self.streams['marker'].data):
+                    time.sleep(0.1)
+                self.streams[stream].start()
+            else:
+                self.streams[stream].lsl_connect()
 
 
 if __name__ == '__main__':
     p300_client = P300Client()
+    p300_client.create_streams()
+    p300_client.start_streams()
     p300_client.connect("localhost", 8001)
-
-    user_id = 1123
-    timestamp = 1238794
-    eeg_data = ['data']
-    p300_client.predict(user_id, timestamp, eeg_data)
 
     p300_client.disconnect()

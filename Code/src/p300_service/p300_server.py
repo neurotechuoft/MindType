@@ -20,7 +20,12 @@ class P300Service:
     async def train_classifier(self, sid, args):
         uid, ts, data = args
         i, t = data
+
+        # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
+        # universal one for EEG data.
         self.clfs[sid] = ml.ml_classifier(i, t, pipeline='vect_lr')
+        
+        ml.save(f"clf/{sid}.pkl", classifier)
 
     async def retrieve_prediction_results(self, sid, args):
         if self.clfs[sid] is None:

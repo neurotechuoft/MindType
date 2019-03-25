@@ -142,10 +142,6 @@ class MLStream(object):
 
                         else:
                             # Generate input and targets
-                            # i = np.array([p[1] for p in package])
-                            # i = i[:, [0, 3], :]
-                            # t = np.squeeze(np.array([p[0] for p in package]))
-
                             i = np.array(self.train_data)
                             i = i[:, [0, 3], :]
                             t = np.squeeze(np.array(self.train_targets))
@@ -153,13 +149,6 @@ class MLStream(object):
                             self.inputs.append(i)
                             self.target.append(t)
 
-                            # # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
-                            # # universal one for EEG data.
-                            # classifier = ml.ml_classifier(i, t, pipeline='vect_lr')
-                            # print("Finished training.")
-                            # ml.save(self.classifier_path, classifier)
-                            # self.train_number = 0
-                            #
                             # # Get accuracy of classifier based on test set
                             # # score = classifier.score(self.inputs_test, self.targets_test)
                             # score = ml.score(self.inputs_test, self.targets_test, classifier)
@@ -169,8 +158,6 @@ class MLStream(object):
                 else:
                     i = np.array(data)
                     i = i[:, [0, 3], :]
-                    # predictions = ml.predict(i, classifier)
-
                     self.predictions.append({'epoch_id': epoch_id, 'prediction_data': i})
 
             time.sleep(sleep_time)
