@@ -1,9 +1,5 @@
 from sanic import Sanic
 import socketio
-
-from eeg_stream import EEGStream
-from marker_stream import MarkerStream
-from ml_stream import MLStream
 import ml
 
 import numpy as np
