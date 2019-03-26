@@ -22,12 +22,6 @@ class P300Client(object):
     def disconnect(self):
         self.socket_client.disconnect()
 
-    def on_retrieve_prediction_results(self, *args):
-        def on_retrieve_results(sid=args[0], results=args[1]):
-            uid, p300 = results
-            print(f'p300: {p300}')
-        return on_retrieve_results()
-
     def create_streams(self):
         self.streams['eeg'] = self._create_eeg_stream()
         self.streams['marker'] = self._create_marker_stream()
@@ -65,6 +59,31 @@ class P300Client(object):
             data = (user_id, eeg_data)
             self.socket_client.emit("retrieve_prediction_results", data, self.on_retrieve_prediction_results)
             self.socket_client.wait_for_callbacks(seconds=1)
+
+
+    # for testing
+    def predict_test(self, uuid, timestamp):
+        data = (uuid, timestamp)
+        self.socket_client.emit("retrieve_prediction_results_test", data, self.on_retrieve_prediction_results)
+        self.socket_client.wait_for_callbacks(seconds=1)
+
+    def on_retrieve_prediction_results(self, *args):
+        sid=args[0]
+        results=args[1]
+        uuid, p300, score = results
+        print(f'p300: {p300}')
+        print(f'score: {score}')
+
+    def train_test(self, uuid, timestamp, p300):
+        data = (uuid, timestamp, p300)
+        self.socket_client.emit("train_classifier_test", data, self.on_train_results)
+        self.socket_client.wait_for_callbacks(seconds=1)
+
+    def on_train_results(self, *args):
+        sid=args[0]
+        results=args[1]
+        uuid, acc = results
+        print(f'accuracy: {acc}')
 
     #
     # Private methods for creating and starting streams
@@ -106,13 +125,16 @@ class P300Client(object):
 
 if __name__ == '__main__':
     p300_client = P300Client()
-    p300_client.create_streams()
-    p300_client.start_streams()
+    # p300_client.create_streams()
+    # p300_client.start_streams()
 
     p300_client.connect("localhost", 8001)
-    time.sleep(12)
+    # time.sleep(12)
 
-    user_id = 123
-    p300_client.train_classifier(user_id)
+    user_id = 1123
+    timestamp = 53423
+    p300 = True
+    p300_client.predict_test(user_id, timestamp)
+    p300_client.train_test(user_id, timestamp, p300)
 
     p300_client.disconnect()

@@ -49,17 +49,27 @@ class P300Service:
 
     # for testing
     async def retrieve_prediction_results_test(self, sid, args):
-        uid, data = args
+        uuid, timestamp = args
         p300 = random.choice([True, False])
-        results = (uid, p300)
+        score = random.random()
+        results = (uuid, p300, score)
+        return sid, results
+
+    async def train_classifier_test(self, sid, args):
+        uuid, timestamp, data = args
+        acc = random.random()
+        results = (uuid, acc)
         return sid, results
 
 
     def initialize_handlers(self):
-        self.sio.on("retrieve_prediction_results", self.retrieve_prediction_results_test)
+        self.sio.on("retrieve_prediction_results", self.retrieve_prediction_results)
         self.sio.on("train_classifier", self.train_classifier)
         self.sio.on("load_classifier", self.load_classifier)
 
+        # for testing
+        self.sio.on("retrieve_prediction_results_test", self.retrieve_prediction_results_test)
+        self.sio.on("train_classifier_test", self.train_classifier_test)
 
 
 if __name__ == '__main__':
