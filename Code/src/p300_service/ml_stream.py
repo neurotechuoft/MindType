@@ -25,20 +25,14 @@ class MLStream(object):
     def __init__(self,
                  m_stream,
                  eeg_stream,
-                 classifier_path,
-                 test_path,
                  analysis_time=1.0,
                  event_time=0.2,
                  train=False,
-                 train_epochs=120,
-                 get_test=False,
-                 ):
+                 train_epochs=120):
         print("Analysis object created.")
         self._loop_analysis_thread = None
         self.m_stream = m_stream
         self.eeg_stream = eeg_stream
-        self.classifier_path = classifier_path
-        self.test_path = test_path
         self.analysis_time = analysis_time
         self.event_time = event_time
         self.running = False
@@ -46,7 +40,6 @@ class MLStream(object):
         self.classifier_input = None
         self.train = train
         self.train_epochs = train_epochs
-        self.get_test = get_test
 
         self.train_number = 0
         self.train_data = []
@@ -62,11 +55,11 @@ class MLStream(object):
         self.extra_time = 0.1
 
         # Load test data from pickle if we are not gathering test data
-        if not get_test:
-            self.test_set = ml.load_test_data(self.test_path)
-            self.inputs_test = np.array([t[1] for t in self.test_set])
-            self.targets_test = np.squeeze(np.array([t[0] for t in self.test_set]))
-            self.inputs_test = self.inputs_test[:, [0, 3], :]
+        # if not get_test:
+        #     self.test_set = ml.load_test_data(self.test_path)
+        #     self.inputs_test = np.array([t[1] for t in self.test_set])
+        #     self.targets_test = np.squeeze(np.array([t[0] for t in self.test_set]))
+        #     self.inputs_test = self.inputs_test[:, [0, 3], :]
 
     def _loop_analysis(self):
         """Call a function every time the marker stream gives the signal"""
@@ -79,10 +72,6 @@ class MLStream(object):
         Structure is adapted from rteeg.rteeg.analysis._loop_worker.
         """
         sleep_time = 0.01  # Time to sleep between queries.
-
-        # Load classifier if we want to make predictions
-        if not self.train:
-            classifier = ml.load(self.classifier_path)
 
         while not self._kill_signal.is_set():
             # when items exist in the marker analysis queue
@@ -116,6 +105,7 @@ class MLStream(object):
                                                                       tmin=0.0,
                                                                       tmax=1,
                                                                       decim=3)
+
                 # get input to classifier
                 data = np.array(epochs.get_data())
                 # since the sample frequency is 256 Hz/3 = 85.33 Hz, indexes 8 and 64 is approximately 0.100 - 0.750 s
@@ -127,32 +117,32 @@ class MLStream(object):
                     self.train_data.extend(data)
                     self.train_targets.extend(targets)
 
-                    if self.train_number > self.train_epochs:
+                    # if self.train_number > self.train_epochs:
+                    if True:
 
                         print('\n\n\n')
                         print('Training ml classifier with {} epochs'.format(self.train_number))
                         print('\n\n\n')
 
-                        # package = list(zip(self.train_targets, self.train_data))
+                        # ##### FOR TESTING #####
+                        # with open('tests/data/train_data.pickle', 'rb') as f:
+                        #     package = pickle.load(f)
+                        # self.train_data = [p[1].tolist() for p in package]
+                        # self.train_targets = [p[0][0] for p in package]
+                        # ##### FOR TESTING #####
 
-                        if self.get_test:
-                            ml.save_test_data(self.test_path, package)
-                            print("test set created!")
-                            self._kill_signal.set()
+                        # Generate input and targets
+                        i = np.array(self.train_data)
+                        i = i[:, [0, 3], :]
+                        t = np.squeeze(np.array(self.train_targets))
 
-                        else:
-                            # Generate input and targets
-                            i = np.array(self.train_data)
-                            i = i[:, [0, 3], :]
-                            t = np.squeeze(np.array(self.train_targets))
+                        self.inputs.append(self)
+                        self.targets.append(t)
 
-                            self.inputs.append(i)
-                            self.target.append(t)
-
-                            # # Get accuracy of classifier based on test set
-                            # # score = classifier.score(self.inputs_test, self.targets_test)
-                            # score = ml.score(self.inputs_test, self.targets_test, classifier)
-                            # print('Test Set Accuracy: {}%' .format(score*100))
+                        # # Get accuracy of classifier based on test set
+                        # # score = classifier.score(self.inputs_test, self.targets_test)
+                        # score = ml.score(self.inputs_test, self.targets_test, classifier)
+                        # print('Test Set Accuracy: {}%' .format(score*100))
 
                 # else do a prediction
                 else:
@@ -170,7 +160,6 @@ class MLStream(object):
             self._loop_analysis_thread.daemon = True
             self._loop_analysis_thread.start()
             print('Analysis loop started')
-
         else:
             print("Loop of analysis already running.")
 
@@ -184,10 +173,8 @@ class MLStream(object):
             print("Loop of analysis not running. Nothing to stop.")
 
     def get_training_data(self):
-        if len(self.inputs) > 0 and len(self.targets) > 0:
-            i = self.inputs.pop()
-            t = self.targets.pop()
-            return i, t
+        if len(self.train_data) > 0 and len(self.train_targets) > 0:
+            return (self.train_data, self.train_targets)
 
     def get_prediction_data(self):
         """Returns one set of prediction data if there are any, otherwise returns None"""
