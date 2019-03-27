@@ -31,6 +31,8 @@ class P300Client(object):
         self.results = []
         self.socket_client = None
         self.marker_outlet = None
+        self.train_mode = True  # True for training mode, False for prediction mode
+                                # will stay in training mode until first prediction
         self.streams = {}
 
         self.sio = socketio.AsyncServer(async_mode='sanic')
@@ -61,36 +63,39 @@ class P300Client(object):
         for stream in ['eeg', 'marker', 'ml']:
             self._start_stream(stream)
 
-    def train_classifier(self, user_id):
-        eeg_data = self.streams['ml'].get_training_data()
-        if eeg_data is None:
-            raise Exception("No data to use for training")
-        else:
-            data = (user_id, eeg_data)
+    def start_loop_worker(self):
+        """Continuously pulls data from ml_stream and sends to server based on
+        whether we are training or predicting"""
+        if self.streams.get('ml') is None:
+            raise Exception(f"ml stream does not exist")
 
-            # TODO: cannot send all the data at once -- too large
-            self.socket_client.emit("train_classifier", data, self.on_retrieve_prediction_results)
-            self.socket_client.wait_for_callbacks(seconds=1)
+        while True:
+            # send training jobs to server
+            if self.train_mode:
+                data = self.streams['ml'].get_training_data()
+                if data is not None:
+                    train_data, train_targets = data
+                    self.train(uuid, train_data, train_targets)
 
-    def predict(self, user_id, timestamp):
-        eeg_data = self.streams['ml'].get_prediction_data()
-        if eeg_data is None:
-            raise Exception("No data to make predictions for")
-        else:
-            eeg_data.get('prediction_data')
-            data = (user_id, eeg_data)
-            self.socket_client.emit("retrieve_prediction_results", data, self.on_retrieve_prediction_results)
-            self.socket_client.wait_for_callbacks(seconds=1)
+            # send prediction jobs to server
+            else:
+                data = self.streams['ml'].get_prediction_data()
+                if data is not None:
+                    uuid = data['epoch_id']
+                    eeg_data = data['eeg_data']
+                    self.predict(uuid, eeg_data)
+
+            sleep(0.1)
 
 
     # for testing
-    def predict_test(self, uuid, timestamp):
-        data = (uuid, timestamp)
+    def predict(self, uuid, eeg_data):
+        data = (uuid, eeg_data)
         self.socket_client.emit("retrieve_prediction_results_test", data, self.on_retrieve_prediction_results)
         self.socket_client.wait_for_callbacks(seconds=1)
 
-    def train_test(self, uuid, timestamp, p300):
-        data = (uuid, timestamp, p300)
+    def train(self, uuid, eeg_data, p300):
+        data = (uuid, eeg_data, p300)
         self.socket_client.emit("train_classifier_test", data, self.on_train_results)
         self.socket_client.wait_for_callbacks(seconds=1)
 
@@ -150,6 +155,7 @@ class P300Client(object):
         self.marker_outlet.push_sample(package)
 
     async def predict_handler(self, sid, args):
+        self.train_mode = False
         uuid, timestamp = args
         package = [
             str(timestamp),

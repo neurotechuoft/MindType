@@ -114,41 +114,37 @@ class MLStream(object):
                 # If training classifier, send data to classifier with ground truth targets
                 if self.train:
                     self.train_number += data.shape[0]
-                    self.train_data.extend(data)
-                    self.train_targets.extend(targets)
+                    # self.train_data.extend(data)
+                    # self.train_targets.extend(targets)
 
                     # if self.train_number > self.train_epochs:
-                    if True:
+                    # if True:
 
-                        print('\n\n\n')
-                        print('Training ml classifier with {} epochs'.format(self.train_number))
-                        print('\n\n\n')
+                    # ##### FOR TESTING #####
+                    # with open('tests/data/train_data.pickle', 'rb') as f:
+                    #     package = pickle.load(f)
+                    # self.train_data = [p[1].tolist() for p in package]
+                    # self.train_targets = [p[0][0] for p in package]
+                    # ##### FOR TESTING #####
 
-                        # ##### FOR TESTING #####
-                        # with open('tests/data/train_data.pickle', 'rb') as f:
-                        #     package = pickle.load(f)
-                        # self.train_data = [p[1].tolist() for p in package]
-                        # self.train_targets = [p[0][0] for p in package]
-                        # ##### FOR TESTING #####
+                    # Generate input and targets
+                    i = np.array(self.data)
+                    i = i[:, [0, 3], :]
+                    t = np.squeeze(np.array(self.targets))
 
-                        # Generate input and targets
-                        i = np.array(self.train_data)
-                        i = i[:, [0, 3], :]
-                        t = np.squeeze(np.array(self.train_targets))
+                    self.train_data.append(i)
+                    self.train_targets.append(t)
 
-                        self.inputs.append(self)
-                        self.targets.append(t)
-
-                        # # Get accuracy of classifier based on test set
-                        # # score = classifier.score(self.inputs_test, self.targets_test)
-                        # score = ml.score(self.inputs_test, self.targets_test, classifier)
-                        # print('Test Set Accuracy: {}%' .format(score*100))
+                    # # Get accuracy of classifier based on test set
+                    # # score = classifier.score(self.inputs_test, self.targets_test)
+                    # score = ml.score(self.inputs_test, self.targets_test, classifier)
+                    # print('Test Set Accuracy: {}%' .format(score*100))
 
                 # else do a prediction
                 else:
                     i = np.array(data)
                     i = i[:, [0, 3], :]
-                    self.predictions.append({'epoch_id': epoch_id, 'prediction_data': i})
+                    self.predictions.append({'epoch_id': epoch_id, 'eeg_data': i})
 
             time.sleep(sleep_time)
 

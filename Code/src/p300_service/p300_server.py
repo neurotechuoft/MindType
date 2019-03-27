@@ -18,45 +18,41 @@ class P300Service:
         self.app = Sanic()
         self.sio.attach(self.app)
 
-        self.clfs = {}
+        self.clf = None
+
+    async def load_classifier(self, sid):
+        try:
+            self.clf = ml.load(f"tests/data/classifier.pkl")
+        except FileNotFoundError:
+            raise Exception(f"Cannot load classifier")
 
     async def train_classifier(self, sid, args):
-        uid, data = args
-        i, t = data
-        i = np.array(i)
-        t = np.array(t)
+        uuid, eeg_data, p300 = args
+        i = np.array(eeg_data)
+        t = np.array(p300)
 
         # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
         # universal one for EEG data.
-        self.clfs[uid] = ml.ml_classifier(i, t, pipeline='vect_lr')
-        ml.save(f"clf/{uid}.pkl", classifier)
-
-    async def load_classifier(self, sid, uid):
-        try:
-            self.clfs[uid] = ml.load(f"clf/{uid}.pkl")
-        except FileNotFoundError:
-            raise Exception(f"There is no trained classifier with user id {uid}")
+        self.clf = ml.ml_classifier(i, t, pipeline='vect_lr')
+        ml.save(f"tests/data/clf.pkl", classifier)
 
     async def retrieve_prediction_results(self, sid, args):
-        uid, data = args
-        if self.clfs[uid] is None:
-            raise Exception(f"Cannot start ML stream with user id {uid}")
-        else:
-            uid, data = args
-            p300 = self.clfs[sid].predict(data)
-            results = (uid, p300)
-            return sid, results
+        uuid, data = args
+        p300 = self.clf.predict(data)
+        results = (uid, p300)
+        return sid, results
+
 
     # for testing
     async def retrieve_prediction_results_test(self, sid, args):
-        uuid, timestamp = args
+        uuid, eeg_data = args
         p300 = random.choice([True, False])
         score = random.random()
         results = (uuid, p300, score)
         return sid, results
 
     async def train_classifier_test(self, sid, args):
-        uuid, timestamp, data = args
+        uuid, eeg_data, p300 = args
         acc = random.random()
         results = (uuid, acc)
         return sid, results
