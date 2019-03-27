@@ -64,13 +64,8 @@ class MarkerStream(base_stream.BaseStream):
             # Get marker data from inlet
             sample, inlet_timestamp = inlet.pull_sample()
 
-            # TODO: unsure which data source to use for timestamps
-            inlet_time_correction = inlet.time_correction()
-            corrected_inlet_time = inlet_timestamp + inlet_time_correction
-
             # sample parameters
-            # timestamp = sample[0]
-            timestamp = corrected_inlet_time
+            timestamp = sample[0]
             event = sample[1]
             target = sample[2]
             num_events = sample[3]
