@@ -1,19 +1,41 @@
-import time
-
+import pylsl
+import socketio
 from socketIO_client import SocketIO
 from sanic import Sanic
+import threading
+import time
+
 from eeg_stream import EEGStream
 from marker_stream import MarkerStream
 from ml_stream import MLStream
 
 from tests.test_marker_publisher import test_marker_stream, start_marker_stream
 
+
+def on_retrieve_prediction_results(self, *args):
+    sid=args[0]
+    results=args[1]
+    uuid, p300, score = results
+    print(f'p300: {p300}')
+    print(f'score: {score}')
+
+def on_train_results(self, *args):
+    sid=args[0]
+    results=args[1]
+    uuid, acc = results
+    print(f'accuracy: {acc}')
+
 class P300Client(object):
 
     def __init__(self):
         self.results = []
         self.socket_client = None
+        self.marker_outlet = None
         self.streams = {}
+
+        self.sio = socketio.AsyncServer(async_mode='sanic')
+        self.app = Sanic()
+        self.sio.attach(self.app)
 
     def connect(self, ip, port):
         self.socket_client = SocketIO(ip, port)
@@ -50,7 +72,7 @@ class P300Client(object):
             self.socket_client.emit("train_classifier", data, self.on_retrieve_prediction_results)
             self.socket_client.wait_for_callbacks(seconds=1)
 
-    def predict(self, user_id):
+    def predict(self, user_id, timestamp):
         eeg_data = self.streams['ml'].get_prediction_data()
         if eeg_data is None:
             raise Exception("No data to make predictions for")
@@ -67,23 +89,11 @@ class P300Client(object):
         self.socket_client.emit("retrieve_prediction_results_test", data, self.on_retrieve_prediction_results)
         self.socket_client.wait_for_callbacks(seconds=1)
 
-    def on_retrieve_prediction_results(self, *args):
-        sid=args[0]
-        results=args[1]
-        uuid, p300, score = results
-        print(f'p300: {p300}')
-        print(f'score: {score}')
-
     def train_test(self, uuid, timestamp, p300):
         data = (uuid, timestamp, p300)
         self.socket_client.emit("train_classifier_test", data, self.on_train_results)
         self.socket_client.wait_for_callbacks(seconds=1)
 
-    def on_train_results(self, *args):
-        sid=args[0]
-        results=args[1]
-        uuid, acc = results
-        print(f'accuracy: {acc}')
 
     #
     # Private methods for creating and starting streams
@@ -93,12 +103,10 @@ class P300Client(object):
         return EEGStream(thread_name='EEG_data', event_channel_name='P300')
 
     def _create_marker_stream(self):
-        # TODO: run marker stream with p300 targets from front end somehow
-        test_outlet = test_marker_stream()
-        test_events = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        start_marker_stream(test_outlet, test_events, log=False)
+        info = pylsl.StreamInfo('Markers', 'Markers', 5, 0, 'string', 'mywid32')
+        self.marker_outlet = pylsl.StreamOutlet(info)
 
-        return MarkerStream()
+        return MarkerStream(thread_name='Marker_stream')
 
     def _create_ml_stream(self, data):
         if self.streams.get('eeg') is None:
@@ -122,19 +130,40 @@ class P300Client(object):
             while not self.streams[stream].data:
                 time.sleep(0.1)
 
+    #
+    # Handlers for communication with front end
+    #
+
+    def initialize_handlers(self):
+        self.sio.on("train", self.train_handler)
+        self.sio.on("predict", self.predict_handler)
+
+    async def train_handler(self, sid, args):
+        uuid, timestamp, p300 = args
+        package = [
+            str(timestamp),
+            "",             # event
+            str(p300),      # target
+            str(1),         # 1 event total
+            str(uuid)       # take uuid for epoch id
+        ]
+        self.marker_outlet.push_sample(package)
+
+    async def predict_handler(self, sid, args):
+        uuid, timestamp = args
+        package = [
+            str(timestamp),
+            "",             # event
+            str(True),      # target
+            str(1),         # 1 event total
+            str(uuid)       # take uuid for epoch id
+        ]
+        self.marker_outlet.push_sample(package)
+
+
 
 if __name__ == '__main__':
     p300_client = P300Client()
-    # p300_client.create_streams()
-    # p300_client.start_streams()
-
-    p300_client.connect("localhost", 8001)
-    # time.sleep(12)
-
-    user_id = 1123
-    timestamp = 53423
-    p300 = True
-    p300_client.predict_test(user_id, timestamp)
-    p300_client.train_test(user_id, timestamp, p300)
-
-    p300_client.disconnect()
+    p300_client.create_streams()
+    p300_client.initialize_handlers()
+    p300_client.app.run(host='localhost', port=8001)
