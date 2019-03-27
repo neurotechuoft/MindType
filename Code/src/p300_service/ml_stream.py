@@ -42,24 +42,15 @@ class MLStream(object):
         self.train_epochs = train_epochs
 
         self.train_number = 0
-        self.train_data = []
-        self.train_targets = []
         self.data_duration = None
 
         # for sending to p300 server
-        self.inputs = []
-        self.targets = []
+        self.train_data = []
         self.predictions = []
 
         # extra time to ensure that all epochs are captured
         self.extra_time = 0.1
 
-        # Load test data from pickle if we are not gathering test data
-        # if not get_test:
-        #     self.test_set = ml.load_test_data(self.test_path)
-        #     self.inputs_test = np.array([t[1] for t in self.test_set])
-        #     self.targets_test = np.squeeze(np.array([t[0] for t in self.test_set]))
-        #     self.inputs_test = self.inputs_test[:, [0, 3], :]
 
     def _loop_analysis(self):
         """Call a function every time the marker stream gives the signal"""
@@ -113,27 +104,25 @@ class MLStream(object):
 
                 # If training classifier, send data to classifier with ground truth targets
                 if self.train:
-                    self.train_number += data.shape[0]
-                    # self.train_data.extend(data)
-                    # self.train_targets.extend(targets)
-
-                    # if self.train_number > self.train_epochs:
-                    # if True:
+                    # self.train_number += data.shape[0]
 
                     # ##### FOR TESTING #####
                     # with open('tests/data/train_data.pickle', 'rb') as f:
                     #     package = pickle.load(f)
-                    # self.train_data = [p[1].tolist() for p in package]
-                    # self.train_targets = [p[0][0] for p in package]
+                    #
+                    # data = ['data']
+                    # targets = [1]
                     # ##### FOR TESTING #####
 
                     # Generate input and targets
-                    i = np.array(self.data)
+                    i = np.array(data)
                     i = i[:, [0, 3], :]
-                    t = np.squeeze(np.array(self.targets))
+                    i = i.tolist()
 
-                    self.train_data.append(i)
-                    self.train_targets.append(t)
+                    t = np.squeeze(np.array(targets))
+                    t = t.tolist()
+
+                    self.train_data.append({'uuid': epoch_id, 'train_data': i, 'train_targets':t})
 
                     # # Get accuracy of classifier based on test set
                     # # score = classifier.score(self.inputs_test, self.targets_test)
@@ -144,7 +133,8 @@ class MLStream(object):
                 else:
                     i = np.array(data)
                     i = i[:, [0, 3], :]
-                    self.predictions.append({'epoch_id': epoch_id, 'eeg_data': i})
+                    i = i.tolist()
+                    self.predictions.append({'uuid': epoch_id, 'eeg_data': i})
 
             time.sleep(sleep_time)
 
@@ -169,8 +159,8 @@ class MLStream(object):
             print("Loop of analysis not running. Nothing to stop.")
 
     def get_training_data(self):
-        if len(self.train_data) > 0 and len(self.train_targets) > 0:
-            return (self.train_data, self.train_targets)
+        if len(self.train_data) > 0:
+            return self.train_data.pop(0)
 
     def get_prediction_data(self):
         """Returns one set of prediction data if there are any, otherwise returns None"""

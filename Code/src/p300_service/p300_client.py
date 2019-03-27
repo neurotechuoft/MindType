@@ -12,14 +12,14 @@ from ml_stream import MLStream
 from tests.test_marker_publisher import test_marker_stream, start_marker_stream
 
 
-def on_retrieve_prediction_results(self, *args):
+def on_retrieve_prediction_results(*args):
     sid=args[0]
     results=args[1]
     uuid, p300, score = results
     print(f'p300: {p300}')
     print(f'score: {score}')
 
-def on_train_results(self, *args):
+def on_train_results(*args):
     sid=args[0]
     results=args[1]
     uuid, acc = results
@@ -54,7 +54,7 @@ class P300Client(object):
         # is opened) and predictions. The contents of data need to be synced
         # with the front end and database, based on what the user wants.
         data = {'event_time': 0.4,      # or 0.2?
-                'train': True,
+                'train': False,
                 'train_epochs': 120}    # 120 for 2 min, 240 for 4 min
 
         self.streams['ml'] = self._create_ml_stream(data)
@@ -63,40 +63,43 @@ class P300Client(object):
         for stream in ['eeg', 'marker', 'ml']:
             self._start_stream(stream)
 
-    def start_loop_worker(self):
+    async def start_event_loop(self):
         """Continuously pulls data from ml_stream and sends to server based on
         whether we are training or predicting"""
         if self.streams.get('ml') is None:
             raise Exception(f"ml stream does not exist")
 
-        while True:
+        data = None
+        while data is None:
             # send training jobs to server
             if self.train_mode:
                 data = self.streams['ml'].get_training_data()
                 if data is not None:
-                    train_data, train_targets = data
+                    uuid = data['uuid']
+                    train_data = data['train_data']
+                    train_targets = data['train_targets']
                     self.train(uuid, train_data, train_targets)
 
             # send prediction jobs to server
             else:
                 data = self.streams['ml'].get_prediction_data()
                 if data is not None:
-                    uuid = data['epoch_id']
+                    print(data)
+                    uuid = data['uuid']
                     eeg_data = data['eeg_data']
                     self.predict(uuid, eeg_data)
 
-            sleep(0.1)
-
+            time.sleep(0.1)
 
     # for testing
-    def predict(self, uuid, eeg_data):
+    def predict(self, uuid, eeg_data, callback_func=on_retrieve_prediction_results):
         data = (uuid, eeg_data)
-        self.socket_client.emit("retrieve_prediction_results_test", data, self.on_retrieve_prediction_results)
+        self.socket_client.emit("retrieve_prediction_results_test", data, callback_func)
         self.socket_client.wait_for_callbacks(seconds=1)
 
-    def train(self, uuid, eeg_data, p300):
+    def train(self, uuid, eeg_data, p300, callback_func=on_train_results):
         data = (uuid, eeg_data, p300)
-        self.socket_client.emit("train_classifier_test", data, self.on_train_results)
+        self.socket_client.emit("train_classifier_test", data, callback_func)
         self.socket_client.wait_for_callbacks(seconds=1)
 
 
@@ -132,8 +135,6 @@ class P300Client(object):
             self.streams[stream].start()
         else:
             self.streams[stream].lsl_connect()
-            while not self.streams[stream].data:
-                time.sleep(0.1)
 
     #
     # Handlers for communication with front end
@@ -147,29 +148,35 @@ class P300Client(object):
         uuid, timestamp, p300 = args
         package = [
             str(timestamp),
-            "",             # event
+            str(p300),      # event
             str(p300),      # target
             str(1),         # 1 event total
             str(uuid)       # take uuid for epoch id
         ]
         self.marker_outlet.push_sample(package)
+        await self.start_event_loop()
 
     async def predict_handler(self, sid, args):
         self.train_mode = False
         uuid, timestamp = args
         package = [
             str(timestamp),
-            "",             # event
-            str(True),      # target
+            str(0),         # event
+            str(0),         # target
             str(1),         # 1 event total
             str(uuid)       # take uuid for epoch id
         ]
         self.marker_outlet.push_sample(package)
-
+        await self.start_event_loop()
 
 
 if __name__ == '__main__':
     p300_client = P300Client()
     p300_client.create_streams()
+    p300_client.start_streams()
+
+    p300_client.connect('localhost', 8001)
+    # p300_client.start_event_loop()
+
     p300_client.initialize_handlers()
-    p300_client.app.run(host='localhost', port=8001)
+    p300_client.app.run(host='localhost', port=8002)
