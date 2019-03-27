@@ -12,27 +12,15 @@ from ml_stream import MLStream
 from tests.test_marker_publisher import test_marker_stream, start_marker_stream
 
 
-def on_retrieve_prediction_results(*args):
-    sid=args[0]
-    results=args[1]
-    uuid, p300, score = results
-    print(f'p300: {p300}')
-    print(f'score: {score}')
-
-def on_train_results(*args):
-    sid=args[0]
-    results=args[1]
-    uuid, acc = results
-    print(f'accuracy: {acc}')
-
 class P300Client(object):
 
     def __init__(self):
-        self.results = []
         self.socket_client = None
         self.marker_outlet = None
         self.train_mode = True  # True for training mode, False for prediction mode
                                 # will stay in training mode until first prediction
+        self.train_results = []
+        self.pred_results = []
         self.streams = {}
 
         self.sio = socketio.AsyncServer(async_mode='sanic')
@@ -91,16 +79,25 @@ class P300Client(object):
 
             time.sleep(0.1)
 
-    # for testing
-    def predict(self, uuid, eeg_data, callback_func=on_retrieve_prediction_results):
+    def on_retrieve_prediction_results(self, *args):
+        results=args[1]
+        uuid, p300, score = results
+        self.pred_results.append(results)
+
+    def on_train_results(*args):
+        results=args[1]
+        uuid, acc = results
+        self.train_results.append(results)
+
+    def predict(self, uuid, eeg_data):
         data = (uuid, eeg_data)
-        self.socket_client.emit("retrieve_prediction_results_test", data, callback_func)
+        self.socket_client.emit("retrieve_prediction_results_test", data, self.on_retrieve_prediction_results)
         self.socket_client.wait_for_callbacks(seconds=1)
 
-    def train(self, uuid, eeg_data, p300, callback_func=on_train_results):
+    def train(self, uuid, eeg_data, p300):
         data = (uuid, eeg_data, p300)
-        self.socket_client.emit("train_classifier_test", data, callback_func)
-        self.socket_client.wait_for_callbacks(seconds=1)
+        self.socket_client.emit("train_classifier_test", data, self.on_train_results)
+        self.socket_client.wait_for_callbacks(seconds=5)
 
 
     #
@@ -156,6 +153,11 @@ class P300Client(object):
         self.marker_outlet.push_sample(package)
         await self.start_event_loop()
 
+        score = None
+        while score is None:
+            score = self.train_results.pop(0)
+        return score
+
     async def predict_handler(self, sid, args):
         self.train_mode = False
         uuid, timestamp = args
@@ -168,6 +170,12 @@ class P300Client(object):
         ]
         self.marker_outlet.push_sample(package)
         await self.start_event_loop()
+
+        pred = None
+        while pred is None:
+            pred = self.pred_results.pop(0)
+        return pred
+
 
 
 if __name__ == '__main__':
