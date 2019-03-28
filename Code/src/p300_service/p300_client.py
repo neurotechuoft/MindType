@@ -38,9 +38,7 @@ class P300Client(object):
         self.streams['eeg'] = self._create_eeg_stream()
         self.streams['marker'] = self._create_marker_stream()
 
-        # TODO: data is only variable between training (ie. first time the app
-        # is opened) and predictions. The contents of data need to be synced
-        # with the front end and database, based on what the user wants.
+        # TODO: some kind of switching between training and prediction modes
         data = {'event_time': 0.4,      # or 0.2?
                 'train': self.train_mode,
                 'train_epochs': 120}    # 120 for 2 min, 240 for 4 min
@@ -72,7 +70,6 @@ class P300Client(object):
             else:
                 data = self.streams['ml'].get_prediction_data()
                 if data is not None:
-                    print(data)
                     uuid = data['uuid']
                     eeg_data = data['eeg_data']
                     self.predict(uuid, eeg_data)
@@ -183,8 +180,9 @@ if __name__ == '__main__':
     p300_client.create_streams()
     p300_client.start_streams()
 
+    # connect to p300 server
     p300_client.connect('localhost', 8001)
-    # p300_client.start_event_loop()
 
+    # run client as server as well (to allow API for front end)
     p300_client.initialize_handlers()
     p300_client.app.run(host='localhost', port=8002)

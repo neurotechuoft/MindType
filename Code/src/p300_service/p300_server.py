@@ -7,6 +7,7 @@ from ml_stream import MLStream
 import ml
 
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 # for testing
 import random
@@ -19,6 +20,11 @@ class P300Service:
         self.sio.attach(self.app)
 
         self.clf = None
+        self.inputs = []
+        self.targets = []
+
+        self.last_uuid = -1
+        self.last_acc = 0.
 
     async def load_classifier(self, sid):
         try:
@@ -28,18 +34,32 @@ class P300Service:
 
     async def train_classifier(self, sid, args):
         uuid, eeg_data, p300 = args
-        i = np.array(eeg_data)
-        t = np.array(p300)
+        self.inputs.append(np.array(eeg_data))
+        self.targets.append(np.array(p300))
 
-        # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
-        # universal one for EEG data.
-        self.clf = ml.ml_classifier(i, t, pipeline='vect_lr')
-        ml.save(f"tests/data/clf.pkl", classifier)
+        if len(self.targets) % 10 == 0 and len(self.targets) > 70:
+            X = np.array(self.inputs)
+            y = np.array(self.targets)
+
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+            # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
+            # universal one for EEG data.
+            self.clf = ml.ml_classifier(X_train, y_train, pipeline='vect_lr')
+            acc = self.clf.score(X_test, y_test)
+            ml.save(f"tests/data/clf.pkl", classifier)
+
+            self.last_uuid = uuid
+            self.last_acc = acc
+
+        results = (self.last_uuid, self.last_acc)
+        return sid, results
 
     async def retrieve_prediction_results(self, sid, args):
         uuid, data = args
         p300 = self.clf.predict(data)
-        results = (uid, p300)
+        score = 1
+        results = (uid, p300, score)
         return sid, results
 
 
