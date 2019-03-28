@@ -11,7 +11,7 @@ from mne import create_info, Epochs, io
 def look_for_eeg_stream():
     """returns an inlet of the first eeg stream outlet found."""
     print("looking for an EEG stream...")
-    streams = pylsl.resolve_byprop('type', 'EEG', timeout=2)
+    streams = pylsl.resolve_byprop('type', 'EEG', timeout=30)
     if len(streams) == 0:
         raise (RuntimeError, "Can't find EEG stream")
     print("Start acquiring data")
@@ -78,8 +78,8 @@ def plot(raw, events, duration, n_channels, scalings):
 
 
 def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
-    """Create array of events.
-    This function creates an array of events that is compatible with mne.Epochs. If no marker is found, returns ndarray
+    """Create array of markers.
+    This function creates an array of markers that is compatible with mne.Epochs. If no marker is found, returns ndarray
     indicating that one event occurred at the same time as the first sample of the EEG data, effectively making an
     Epochs object out of all of the data (until tmax of mne.Epochs).
     Args:
@@ -89,39 +89,39 @@ def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
         trial_num: number of trials in a set
         event_duration: int (defaults to 0); duration of each event marker in seconds. This is not epoch duration.
     Returns:
-        events: ndarray (n_events x 3); details the occurence index in main data, duration, and target.
-        identities: list containing the row/column that was flashed in order.
+        markers: ndarray (n_events x 3); details the occurence index in main data, duration, and target.
+        events: list containing the row/column that was flashed in order.
         targets: list containing target values for training; i.e. 0 or 1.
     """
     # Get the markers between two times.
-    lower_time_limit = data[-1, 0]
-    upper_time_limit = data[-1, -1]
+    lower_time_limit = float(data[-1, 0])
+    upper_time_limit = float(data[-1, -1])
 
     # Copy markers into a Numpy ndarray.
     tmp = np.array([row[:] for row in marker_stream.data[(marker_end - trial_num):marker_end]
-                    if upper_time_limit >= row[-1] >= lower_time_limit])
+                    if upper_time_limit >= float(row[-1]) >= lower_time_limit])
 
     # Pre-allocate array for speed.
-    events = np.zeros(shape=(tmp.shape[0], 3), dtype='int32')
-    identities = np.zeros(shape=(tmp.shape[0], 1))
+    markers = np.zeros(shape=(tmp.shape[0], 3), dtype='int32')
+    events = np.zeros(shape=(tmp.shape[0], 1))
     targets = np.zeros(shape=(tmp.shape[0], 1))
 
     # If there is at least one marker:
     if tmp.shape[0] > 0:
-        for event_index, (identity, marker_int, _, timestamp) in enumerate(tmp):
+        for marker_index, (event, marker_int, timestamp) in enumerate(tmp):
             # Get the index where this marker happened in the EEG data.
-            eeg_index = (np.abs(data[-1, :] - timestamp)).argmin()
+            eeg_index = (np.abs(data[-1, :] - float(timestamp))).argmin()
 
-            # Add a row to the events array.
-            events[event_index, :] = eeg_index, event_duration, marker_int
+            # Add a row to the markers array.
+            markers[marker_index, :] = eeg_index, event_duration, marker_int
 
-            # identity and target arrays
-            identities[event_index] = identity
-            targets[event_index] = marker_int
-        return events, identities, targets
+            # event and target arrays
+            events[marker_index] = event
+            targets[marker_index] = marker_int
+        return markers, events, targets
     else:
-        # Make empty events, identities, and targets array
-        print("Creating empty events array. No events found.")
+        # Make empty markers, events, and targets array
+        print("Creating empty markers array. No markers found.")
         return np.array([[0, 0, 0]]), np.array([[0]]), np.array([[0]])
 
 
@@ -208,7 +208,6 @@ class EEGStream(base_stream.BaseStream):
             # Scale the data but not the timestamps.
             data[:-1, :] = np.multiply(data[:-1, :], scale)
         else:
-            print('sfreq',self.info['sfreq'])
             start_index = int(end_index - data_duration * self.info['sfreq'])
             data = np.array(self.copy_data(start_index, end_index)).T
             # Scale the data but not the timestamps.

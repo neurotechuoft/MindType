@@ -1,8 +1,12 @@
 from sanic import Sanic
 import socketio
-from eeg_stream import EEGStream
-from marker_stream import MarkerStream
-from ml_stream import MLStream
+import ml
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+# for testing
+import random
 
 
 class P300Service:
@@ -10,71 +14,74 @@ class P300Service:
         self.sio = socketio.AsyncServer(async_mode='sanic')
         self.app = Sanic()
         self.sio.attach(self.app)
-        self.eeg_streams = {}
-        self.marker_streams = {}
-        self.ml_streams = {}
 
-    async def create_eeg_stream_handler(self, sid):
-        self.eeg_streams[sid] = EEGStream(thread_name='EEG_data', event_channel_name='P300')
-        print("New eeg stream created.")
-        print(self.eeg_streams)
-        await self.sio.emit("eeg_stream_created", sid)
+        self.clf = None
+        self.inputs = []
+        self.targets = []
 
-    async def create_marker_stream_handler(self, sid):
-        self.marker_streams[sid] = MarkerStream()
-        print("New marker stream created.")
-        print(self.marker_streams)
-        await self.sio.emit("marker_stream_created", sid)
+        self.last_uuid = -1
+        self.last_acc = 0.
 
-    async def create_ml_stream_handler(self, sid, data):
-        if sid not in self.eeg_streams:
-            raise Exception(f"eeg stream in channel {sid} does not exist")
-        if sid not in self.marker_streams:
-            raise Exception(f"marker stream in channel {sid} does not exist")
-        self.ml_streams[sid] = MLStream(m_stream=self.marker_streams[sid],
-                                        eeg_stream=self.eeg_streams[sid],
-                                        classifier_path=data['classifier_path'],
-                                        test_path=data['test_path'],
-                                        analysis_time=data['analysis_time'],
-                                        event_time=data['event_time'],
-                                        train=data['train'],
-                                        train_epochs=data['train_epochs'],
-                                        get_test=data['get_test'])
-        print("New ml_stream created.")
-        print(self.ml_streams)
-        await self.sio.emit("ml_stream_created", sid)
+    async def load_classifier(self, sid):
+        try:
+            self.clf = ml.load(f"tests/data/classifier.pkl")
+        except FileNotFoundError:
+            raise Exception(f"Cannot load classifier")
 
-    async def eeg_stream_start_handler(self, sid):
-        if sid in self.eeg_streams:
-            eeg_stream = self.eeg_streams[sid]
-        else:
-            raise (RuntimeError, "Cannot start EEG stream with sid {}".format(sid))
-        eeg_stream.lsl_connect()
-        await self.sio.emit("eeg_stream_started", sid, 'eeg')
+    async def train_classifier(self, sid, args):
+        uuid, eeg_data, p300 = args
+        self.inputs.append(np.array(eeg_data))
+        self.targets.append(np.array(p300))
 
-    async def marker_stream_start_handler(self, sid):
-        if sid in self.marker_streams:
-            marker_stream = self.marker_streams[sid]
-        else:
-            raise Exception("Cannot start marker stream with sid {}".format(sid))
-        marker_stream.lsl_connect()
-        await self.sio.emit("marker_stream_started", sid, 'marker')
+        if len(self.targets) % 10 == 0 and len(self.targets) > 70:
+            X = np.array(self.inputs)
+            y = np.array(self.targets)
 
-    async def ml_stream_start_handler(self, sid):
-        if sid in self.ml_streams:
-            ml_stream = self.ml_streams[sid]
-        else:
-            raise Exception("Cannot start ML stream with sid {}".format(sid))
-        ml_stream.lsl_connect()
-        await self.sio.emit("ml_stream_started", sid, 'ml')
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+            # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
+            # universal one for EEG data.
+            self.clf = ml.ml_classifier(X_train, y_train, pipeline='vect_lr')
+            acc = self.clf.score(X_test, y_test)
+            ml.save(f"tests/data/clf.pkl", classifier)
+
+            self.last_uuid = uuid
+            self.last_acc = acc
+
+        results = (self.last_uuid, self.last_acc)
+        return sid, results
+
+    async def retrieve_prediction_results(self, sid, args):
+        uuid, data = args
+        p300 = self.clf.predict(data)
+        score = 1
+        results = (uid, p300, score)
+        return sid, results
+
+
+    # for testing
+    async def retrieve_prediction_results_test(self, sid, args):
+        uuid, eeg_data = args
+        p300 = random.choice([True, False])
+        score = random.random()
+        results = (uuid, p300, score)
+        return sid, results
+
+    async def train_classifier_test(self, sid, args):
+        uuid, eeg_data, p300 = args
+        acc = random.random()
+        results = (uuid, acc)
+        return sid, results
+
 
     def initialize_handlers(self):
-        self.sio.on("create_eeg_stream", self.create_eeg_stream_handler)
-        self.sio.on("create_marker_stream", self.create_marker_stream_handler)
-        self.sio.on("create_ml_stream", self.create_ml_stream_handler)
-        self.sio.on("start_eeg_stream", self.eeg_stream_start_handler)
-        self.sio.on("start_marker_stream", self.marker_stream_start_handler)
-        self.sio.on("start_ml_stream", self.ml_stream_start_handler)
+        self.sio.on("retrieve_prediction_results", self.retrieve_prediction_results)
+        self.sio.on("train_classifier", self.train_classifier)
+        self.sio.on("load_classifier", self.load_classifier)
+
+        # for testing
+        self.sio.on("retrieve_prediction_results_test", self.retrieve_prediction_results_test)
+        self.sio.on("train_classifier_test", self.train_classifier_test)
 
 
 if __name__ == '__main__':

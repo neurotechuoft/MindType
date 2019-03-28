@@ -12,7 +12,9 @@ from pyriemann.estimation import ERPCovariances
 from pyriemann.tangentspace import TangentSpace
 from pyriemann.classification import MDM
 from pyriemann.spatialfilters import Xdawn
+
 import pickle
+import numpy as np
 
 
 def create_input_target(data):
@@ -68,8 +70,25 @@ def predict(inputs, classifier):
     Returns:
         classifier.predict([inputs]): vector of length (N trials * M channels) containing event predictions.
     """
-    predictions = classifier.predict([inputs])
+    predictions = classifier.predict(inputs)
     return predictions
+
+
+def score(data, labels, classifier):
+    """Like predictions, but we only count correct when p300 occurs and we correctly predicts it.
+    Count as incorrect if classifier makes a false positive prediction or when it fails to predict a
+    p300.
+    Args:
+        data: inputs containing (N trials * M channels) data segments of length(number of features).
+        labels: (N trials) 1 or 0 for every trial in data
+        classifier: classifier object.
+    Returns:
+        score: integer between 0 and 1 based on accuracy
+    """
+    predictions = predict(data, classifier)
+    land = np.logical_and(predictions, labels)
+    lor = np.logical_or(predictions, labels)
+    return np.sum(land) / np.sum(lor)
 
 
 def save(filepath, classifier):
