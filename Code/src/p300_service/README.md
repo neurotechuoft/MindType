@@ -26,47 +26,52 @@
 
 How is data inputted into P300 service:
 - create lsl stream object and create server messages
-- create 
+- create
 
 How should data be returned:
 - dfdf
 
- 
+
 
 ## Dummy client usage
 
-Start P300 server:
+Start the p300 dummy client with `python p300_dummy_client.py`. This creates a dummy client and initializes handlers for requests.
+
+Connect to this dummy with a SocketIO client, and emit `predict` to make a prediction and `train` to train the classifier with p300 data. Example from `tests/test.py`:
 ```
-from p300_server import P300Service
+from socketIO_client import SocketIO
+import random
 
-service = P300Service()
-service.initialize_handlers()
-service.app.run(host='localhost', port=8001)
-```
 
-Start P300 client, try making a prediction and sending some training data:
-```
-from p300_dummy_client import P300Client
-
-p300_client = P300Client()
-p300_client.connect("localhost", 8001)
-
-user_id = 1123
-timestamp = 53423
-p300 = True
-
-p300_client.train(user_id, timestamp, p300)
-p300_client.predict(user_id, timestamp)
-```
-
-The prints for accuracy, p300, and score are the default callback functions (in p300_dummy_client.py). You may optionally pass in a callback function as another parameter to train and predict. For example:
-```
+# callback functions to print out results
 def on_retrieve_prediction_results(*args):
-    sid=args[0]
-    results=args[1]
+    sid = args[0]
+    results = args[1]
     uuid, p300, score = results
     print(f'p300: {p300}')
     print(f'score: {score}')
-    
-p300_client.predict(user_id, timestamp, on_retrieve_prediction_results)
+
+def on_train_results(*args):
+    sid = args[0]
+    results = args[1]
+    uuid, accuracy = results
+    print(f'accuracy: {accuracy}')
+
+
+# p300 server running on localhost:8001
+socket_client = SocketIO('localhost', 8001)
+socket_client.connect()
+
+# generate random values for parameters (for testing)
+uuid = random.randint(0, 1e10)
+timestamp = random.randint(0, 1e7)
+p300 = 1
+
+# predict whether p300 happens
+socket_client.emit("predict", (uuid, timestamp), on_retrieve_prediction_results)
+socket_client.wait_for_callbacks(seconds=1)
+
+# train with a timestamp and p300 target
+socket_client.emit("train", (uuid, timestamp, p300), on_train_results)
+socket_client.wait_for_callbacks(seconds=1)
 ```
