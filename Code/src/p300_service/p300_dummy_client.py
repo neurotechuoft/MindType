@@ -1,57 +1,34 @@
-from socketIO_client import SocketIO
-
-
-# callback functions to print results
-def on_retrieve_prediction_results(*args):
-    sid=args[0]
-    results=args[1]
-    uuid, p300, score = results
-    print(f'p300: {p300}')
-    print(f'score: {score}')
-
-def on_train_results(*args):
-    sid=args[0]
-    results=args[1]
-    uuid, acc = results
-    print(f'accuracy: {acc}')
-
+import socketio
+from sanic import Sanic
+import random
 
 class P300Client(object):
 
     def __init__(self):
-        self.results = []
-        self.socket_client = None
-        self.streams = {}
+        self.sio = socketio.AsyncServer(async_mode='sanic')
+        self.app = Sanic()
+        self.sio.attach(self.app)
 
-    def connect(self, ip, port):
-        self.socket_client = SocketIO(ip, port)
-        self.socket_client.connect()
+    def initialize_handlers(self):
+        self.sio.on("train", self.train_handler)
+        self.sio.on("predict", self.predict_handler)
 
-    def disconnect(self):
-        self.socket_client.disconnect()
+    async def train_handler(self, sid, args):
+        uuid, timestamp, p300 = args
+        acc = random.random()
+        results = (uuid, acc)
+        return sid, results
 
-    # for testing
-    def predict(self, uuid, timestamp, callback_func=on_retrieve_prediction_results):
-        data = (uuid, timestamp)
-        self.socket_client.emit("retrieve_prediction_results_test", data, callback_func)
-        self.socket_client.wait_for_callbacks(seconds=1)
-
-    def train(self, uuid, timestamp, p300, callback_func=on_train_results):
-        data = (uuid, timestamp, p300)
-        self.socket_client.emit("train_classifier_test", data, callback_func)
-        self.socket_client.wait_for_callbacks(seconds=1)
+    async def predict_handler(self, sid, args):
+        uuid, timestamp = args
+        p300 = random.choice([True, False])
+        score = random.random()
+        results = (uuid, p300, score)
+        return sid, results
 
 
 
 if __name__ == '__main__':
     p300_client = P300Client()
-    p300_client.connect("localhost", 8001)
-
-    user_id = 1123
-    timestamp = 53423
-    p300 = True
-
-    p300_client.train(user_id, timestamp, p300)
-    p300_client.predict(user_id, timestamp)
-
-    p300_client.disconnect()
+    p300_client.initialize_handlers()
+    p300_client.app.run(host='localhost', port=8001)
