@@ -42,7 +42,7 @@ class P300Client(object):
         # is opened) and predictions. The contents of data need to be synced
         # with the front end and database, based on what the user wants.
         data = {'event_time': 0.4,      # or 0.2?
-                'train': False,
+                'train': self.train_mode,
                 'train_epochs': 120}    # 120 for 2 min, 240 for 4 min
 
         self.streams['ml'] = self._create_ml_stream(data)
@@ -84,7 +84,7 @@ class P300Client(object):
         uuid, p300, score = results
         self.pred_results.append(results)
 
-    def on_train_results(*args):
+    def on_train_results(self, *args):
         results=args[1]
         uuid, acc = results
         self.train_results.append(results)

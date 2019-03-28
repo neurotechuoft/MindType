@@ -1,4 +1,5 @@
 from socketIO_client import SocketIO
+import random
 
 def on_retrieve_prediction_results(results):
     uuid, p300, score = results
@@ -9,8 +10,8 @@ def on_retrieve_prediction_results(results):
 socket_client = SocketIO('localhost', 8002)
 socket_client.connect()
 
-uuid = 1123
-timestamp = 677700
+uuid = random.randint(0, 2**20)
+timestamp = random.randint(0, 80000)
 p300 = 1
 
 socket_client.emit("predict", (uuid, timestamp), on_retrieve_prediction_results)
