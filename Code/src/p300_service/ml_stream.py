@@ -87,15 +87,15 @@ class MLStream(object):
                     time.sleep(sleep_time)
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
-                epochs, events, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
-                                                                      end_index=end_index,
-                                                                      marker_end=marker_end,
-                                                                      trial_num=num_events,
-                                                                      data_duration=self.data_duration,
-                                                                      picks=[0, 1, 2, 3],
-                                                                      tmin=0.0,
-                                                                      tmax=1,
-                                                                      decim=3)
+                epochs, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
+                                                              end_index=end_index,
+                                                              marker_end=marker_end,
+                                                              trial_num=num_events,
+                                                              data_duration=self.data_duration,
+                                                              picks=[0, 1, 2, 3],
+                                                              tmin=0.0,
+                                                              tmax=1,
+                                                              decim=3)
 
                 # get input to classifier
                 data = np.array(epochs.get_data())

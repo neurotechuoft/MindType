@@ -66,10 +66,9 @@ class MarkerStream(base_stream.BaseStream):
 
             # sample parameters
             timestamp = sample[0]
-            event = sample[1]
-            target = sample[2]
-            num_events = sample[3]
-            epoch_id = sample[4]
+            target = sample[1]
+            num_events = sample[2]
+            epoch_id = sample[3]
 
             # create epoch entry if not previously recorded
             if epoch_id not in self.event_count_dict:
