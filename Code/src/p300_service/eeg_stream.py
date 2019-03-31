@@ -251,7 +251,10 @@ class EEGStream(base_stream.BaseStream):
 
         # Populate events in event channel
         raw.add_events(events, self.event_channel_name)
-        event_id = {'Non-Target': 0, 'Target': 1}
+        if targets[0][0] == 0:
+            event_id = {'Non-Target': 0}
+        else:
+            event_id = {'Target': 1}
 
         # Plot power spectral density
         # plot_psd(raw, 'std', picks=[0, 1, 2, 3])
