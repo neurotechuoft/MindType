@@ -142,7 +142,6 @@ class P300Client(object):
         uuid, timestamp, p300 = args
         package = [
             str(timestamp),
-            str(p300),      # event
             str(p300),      # target
             str(1),         # 1 event total
             str(uuid)       # take uuid for epoch id
@@ -160,7 +159,6 @@ class P300Client(object):
         uuid, timestamp = args
         package = [
             str(timestamp),
-            str(0),         # event
             str(0),         # target
             str(1),         # 1 event total
             str(uuid)       # take uuid for epoch id
