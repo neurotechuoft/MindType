@@ -1,0 +1,15 @@
+.explanation {
+        margin-left: 18%;
+        margin-right: 18%;
+        padding-left: 2%;
+        padding-right: 2%;
+        border: 1px solid black;
+      }
+	  
+.redText {
+	color: red;
+}
+
+.blueText {
+	color: blue;
+}
