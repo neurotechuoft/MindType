@@ -28,7 +28,8 @@ let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
 let curCol = 0; // Keeping track of which array index you're on for random cols.
 
-const socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
+const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
+const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = 500;
 
 class App extends Component {
@@ -140,8 +141,10 @@ class App extends Component {
         const newDisplay = displayText + statement[lettersFound];
         this.setState({rowFound : false, colFound : false, 
         displayText : newDisplay, lettersFound : lettersFound + 1});
+        // Emitting an event to the socket to type letter.
+        robot_socket.emit('typing', statement[lettersFound]);
         // Emitting an event to the socket to recieve word predictions.
-        socket.emit("autocomplete", newDisplay, this.handlePredictions);
+        nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
       }
     }
   }
