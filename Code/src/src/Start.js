@@ -31,7 +31,7 @@ render() {
             <div>
               <img src="mindTypeWelcome.png" className="welcomeLogo"/><br />
               <button onClick={this.handleLoginClick} className="login">Login</button>
-              <br /><br />
+			  <br />
               <button onClick={this.handleSignUpClick} className="sign-up">Sign Up</button>
             </div>
           );

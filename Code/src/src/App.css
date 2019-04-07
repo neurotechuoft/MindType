@@ -38,6 +38,11 @@ body {
   height: 5vh;
 }
 
+.displayWide {
+  width: 66vw;
+  height: 5vh;
+}
+
 .entry {
   width: 16.5vw;
   height: 12.5vh;
@@ -82,6 +87,22 @@ body {
 .option {
   width: 19.8vw;
   height: 12.5vh;
+  background-color: $background;
+  color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+}
+
+.twoByTwo {
+	margin-left: 33vh;
+}
+
+.entryTwo {
+  width: 33vw;
+  height: 25vh;
   background-color: $background;
   color: white;
   font-size: 4vmin;

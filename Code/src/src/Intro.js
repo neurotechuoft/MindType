@@ -40,7 +40,7 @@ letter on the screen.
 
       <center><img src="simpsonMind.jpg" /></center>
 
-<h3> Now you know how it works. Time to mind your own keyboard!</h3>
+<h3> Now you know how it works. Let's practice using the keyboard!</h3>
 <button onClick={this.props.introHandler}>Continue</button>
       </div>
     )
