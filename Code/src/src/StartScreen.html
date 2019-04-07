@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Start Screen</title>
+    <script src="https://unpkg.com/react@15/dist/react.min.js"> </script>
+  <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
+  </script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+  <style>
+
+  #root{
+    width: 15vw;
+    margin-left: 40vw;
+    height: 45vh;
+    margin-top: 25vh;
+    border: 1px solid black;
+    padding-left: 2vw;
+    padding-top: 3vh;
+  }
+
+  .welcomeLogo {
+    margin-left: 10px;
+  }
+
+  .logo{
+    margin-left: 25px;
+  }
+
+  .login {
+	-moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5));
+	background:-moz-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:-webkit-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:-o-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:-ms-linear-gradient(top, #79bbff 5%, #378de5 100%);
+	background:linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#378de5',GradientType=0);
+	background-color:#79bbff;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:10px 65px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #528ecc;
+}
+.login:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff));
+	background:-moz-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:-webkit-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:-o-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:-ms-linear-gradient(top, #378de5 5%, #79bbff 100%);
+	background:linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#378de5', endColorstr='#79bbff',GradientType=0);
+	background-color:#378de5;
+}
+.login:active {
+	position:relative;
+	top:1px;
+}
+
+.sign-up {
+	-moz-box-shadow:inset 0px 1px 0px 0px #fbafe3;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #fbafe3;
+	box-shadow:inset 0px 1px 0px 0px #fbafe3;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ff5bb0), color-stop(1, #ef027d));
+	background:-moz-linear-gradient(top, #ff5bb0 5%, #ef027d 100%);
+	background:-webkit-linear-gradient(top, #ff5bb0 5%, #ef027d 100%);
+	background:-o-linear-gradient(top, #ff5bb0 5%, #ef027d 100%);
+	background:-ms-linear-gradient(top, #ff5bb0 5%, #ef027d 100%);
+	background:linear-gradient(to bottom, #ff5bb0 5%, #ef027d 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bb0', endColorstr='#ef027d',GradientType=0);
+	background-color:#ff5bb0;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #ee1eb5;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:10px 57px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #c70067;
+}
+.sign-up:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ef027d), color-stop(1, #ff5bb0));
+	background:-moz-linear-gradient(top, #ef027d 5%, #ff5bb0 100%);
+	background:-webkit-linear-gradient(top, #ef027d 5%, #ff5bb0 100%);
+	background:-o-linear-gradient(top, #ef027d 5%, #ff5bb0 100%);
+	background:-ms-linear-gradient(top, #ef027d 5%, #ff5bb0 100%);
+	background:linear-gradient(to bottom, #ef027d 5%, #ff5bb0 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ef027d', endColorstr='#ff5bb0',GradientType=0);
+	background-color:#ef027d;
+}
+.sign-up:active {
+	position:relative;
+	top:1px;
+
+}
+
+
+
+  </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+    var screenType = 'welcome';
+
+    function loginChange(){
+      screenType = 'login';
+      alert(screenType);
+    }
+
+    function signUpChange(){
+      screenType = 'sign-up';
+      alert(screenType);
+    }
+
+    class Start extends React.Component {
+      constructor(props) {
+          super(props);
+          this.state = {display: 'welcome'};
+          this.handleLoginClick = this.handleLoginClick.bind(this);
+          this.handleSignUpClick = this.handleSignUpClick.bind(this);
+        }
+
+        handleLoginClick(){
+          this.setState({display: 'login'});
+        }
+
+        handleSignUpClick(){
+          this.setState({display: 'sign-up'});
+        }
+
+    render() {
+      let element;
+            if (this.state.display === 'welcome'){
+              element = (
+                <div>
+                  <img src="mindTypeWelcome.png" className="welcomeLogo"/><br />
+                  <button onClick={this.handleLoginClick} className="login">Login</button>
+                  <br /><br />
+                  <button onClick={this.handleSignUpClick} className="sign-up">Sign Up</button>
+                </div>
+              );
+            } else if (this.state.display === 'login'){
+              element = <Login />;
+            } else if (this.state.display === 'sign-up') {
+              element = <SignUp />;
+            }
+      return (
+        <div>
+          {element}
+        </div>
+      )
+    }
+  }
+
+
+
+
+
+  class SignUp extends React.Component {
+    render(){
+      return (
+        <div>
+          <img src="mindTypeLogo.png"className="logo"/><br />
+          <br/>
+          <input type="text" className="name-user" placeholder="Name"></input><br />
+          <br />
+          <input type="email" className="email-input" placeholder="Email"></input><br />
+          <br />
+          <input type="password" className="password-input" placeholder="Password"></input><br />
+          <br />
+          <button className="sign-up">Sign Up</button>
+        </div>
+      )
+    }
+  }
+
+  class Login extends React.Component {
+    render(){
+      return (
+        <div>
+          <img src="mindTypeLogo.png" className="logo"/><br />
+          <br/>
+          <input type="email" className="email-input" placeholder="Email"></input><br />
+          <br />
+          <input type="password" className="password-input" placeholder="Password"></input><br />
+          <br />
+          <button className="login">Login</button>
+        </div>
+      )
+    }
+  }
+
+
+  ReactDOM.render(<Start />, document.getElementById("root"));
+
+  </script>
+  </body>
+
+</html>
