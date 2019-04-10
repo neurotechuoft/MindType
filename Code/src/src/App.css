@@ -10,6 +10,24 @@ body {
   width: 99vw;
 }
 
+
+
+.explanation {
+        margin-left: 18%;
+        margin-right: 18%;
+        padding-left: 2%;
+        padding-right: 2%;
+        border: 1px solid black;
+      }
+	  
+.redText {
+	color: red;
+}
+
+.blueText {
+	color: blue;
+}
+
 .suggestion {
   width: 33vw;
   height: 12.5vh;
@@ -41,6 +59,11 @@ body {
 .displayWide {
   width: 66vw;
   height: 5vh;
+}
+
+.displayInstruction{
+	height: 5vh;
+	width: 98vw;
 }
 
 .entry {
@@ -96,9 +119,7 @@ body {
   border: none;
 }
 
-.twoByTwo {
-	margin-left: 33vh;
-}
+
 
 .entryTwo {
   width: 33vw;
@@ -110,4 +131,15 @@ body {
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
+}
+
+.instructionScreen{
+background-color: #52A0B4;
+height: 100vh;
+width: 100vw;
+margin-top: 0;
+}
+
+.twoByTwo {
+	margin-left: 15vw;
 }

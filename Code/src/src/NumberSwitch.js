@@ -9,9 +9,9 @@ class NumberSwitch extends React.Component {
 	
   render(){
     return (
-      <div>
+      <div className="instructionScreen">
         <h3>Now you can select 'abc' to return to the letter keyboard.</h3>
-		<input type="text" className="display" readOnly></input>
+		<input type="text" className="displayInstruction" readOnly></input>
 		<Numbers />
 		<button className="option">.</button>
 		<button onClick={this.handleLetterClick} className="option">abc</button>

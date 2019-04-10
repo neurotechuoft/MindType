@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class InstructionOne extends React.Component {
+class InstructionOneLetter extends React.Component {
 	
 
 	
@@ -14,4 +14,4 @@ class InstructionOne extends React.Component {
   }
 }
 
-export default InstructionOne;
+export default InstructionOneLetter;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class InstructionTwo extends React.Component {
+class InstructionOneWord extends React.Component {
 	
 
 	
@@ -8,10 +8,10 @@ class InstructionTwo extends React.Component {
     return (
       <div>
         <h3>Under construction</h3>
-		<button onClick={this.props.instructionTwoHandler}>Continue</button>
+		<button onClick={this.props.instructionOneWordHandler}>Continue</button>
       </div>
     )
   }
 }
 
-export default InstructionTwo;
+export default InstructionOneWord;

@@ -9,9 +9,9 @@ class EmojiSwitch extends React.Component {
 	
   render(){
     return (
-      <div>
+      <div className="instructionScreen">
         <h3>Nice! Select &123 to access numbers and symbols.</h3>
-		<input type="text" className="display" readOnly></input>
+		<input type="text" className="displayInstruction" readOnly></input>
 		<Emojis />
 		<button className="option">.</button>
 		<button onClick={this.handleNumClick} className="option">0</button>

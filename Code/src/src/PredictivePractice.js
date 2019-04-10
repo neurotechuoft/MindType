@@ -8,11 +8,10 @@ class PredictivePractice extends React.Component {
 
   render(){
     return (
-      <div>
-        <h3>Let's try to save some time with predictive test.</h3>
-		<h3>Type "I am typing with my mind! 🎉"</h3>
+      <div className="instructionScreen">
+        <h3>Let's try to save some time with predictive test. Type "I am typing with my mind! 🎉"</h3>
 		<p>Insert predictions here</p>
-		<input type="text" className="display" readOnly></input>
+		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
 		<button className="option">.</button>
 		<button onClick={this.handleNumClick} className="option">0</button>

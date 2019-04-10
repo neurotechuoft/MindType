@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Practice extends React.Component {
+class LetterSwitch extends React.Component {
 	
 
 	
@@ -14,4 +14,4 @@ class Practice extends React.Component {
   }
 }
 
-export default Practice;
+export default LetterSwitch;

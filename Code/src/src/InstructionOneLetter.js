@@ -9,12 +9,14 @@ class InstructionOneLetter extends React.Component {
 	  
 	
     return (
+	<div className="instructionScreen">
       <div className="twoByTwo">
-        <h2>Try to type the letter 'b'</h2>
+        <h3>Try to type the letter 'b'</h3>
 		<input type="text" className="displayWide" readOnly></input>
 		<TwoByTwo />
 		<button onClick={this.props.instructionOneLetterHandler}>Continue</button>
       </div>
+	 </div>
     )
   }
 }

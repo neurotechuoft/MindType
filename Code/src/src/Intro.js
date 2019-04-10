@@ -41,7 +41,7 @@ letter on the screen.
       <center><img src="simpsonMind.jpg" /></center>
 
 <h3> Now you know how it works. Let's practice using the keyboard!</h3>
-<button onClick={this.props.introHandler}>Continue</button>
+<button className="continueButton" onClick={this.props.introHandler}>Continue</button>
       </div>
     )
   }

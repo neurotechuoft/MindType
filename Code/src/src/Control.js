@@ -83,6 +83,8 @@ class Control extends React.Component {
 	finalHandler(){
 		this.setState({screenDisplay: 'app'});
 	}
+	
+
 
 render() {
   let element;
