@@ -262,9 +262,13 @@ class P300Service:
 
                     connection.execute(
                         text('''
-                            INSERT INTO auth_user ("last_login")
-                            VALUES (NOW()::date)
-                        ''')
+                            UPDATE auth_user
+                            SET 
+                                last_login = NOW()::date
+                            WHERE 
+                                username = :username
+                        '''),
+                        username=username
                     )
                     return sid, True
             return sid, False
