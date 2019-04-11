@@ -96,12 +96,20 @@ class P300Client(object):
         self.socket_client.emit("train_classifier_test", data, self.on_train_results)
         self.socket_client.wait_for_callbacks(seconds=5)
 
+    def register(self, username, password, email):
+        data = (username, password, email)
+        self.socket_client.emit("register", data)
+
+    def login(self, username, password):
+        data = (username, password)
+        self.socket_client.emit("login", data)
 
     #
     # Private methods for creating and starting streams
     #
 
-    def _create_eeg_stream(self):
+    @staticmethod
+    def _create_eeg_stream():
         return EEGStream(thread_name='EEG_data', event_channel_name='P300')
 
     def _create_marker_stream(self):
@@ -153,7 +161,7 @@ class P300Client(object):
         score = None
         while score is None:
             score = self.train_results.pop(0)
-        return score
+        return sid, score
 
     async def predict_handler(self, sid, args):
         self.train_mode = False
@@ -171,8 +179,7 @@ class P300Client(object):
         pred = None
         while pred is None:
             pred = self.pred_results.pop(0)
-        return pred
-
+        return sid, pred
 
 
 if __name__ == '__main__':
