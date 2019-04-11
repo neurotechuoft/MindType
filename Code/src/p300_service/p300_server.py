@@ -42,51 +42,139 @@ class P300Service:
         self.app = Sanic()
         self.sio.attach(self.app)
 
-        self.clf = None
-        self.inputs = []
-        self.targets = []
+        self.clf = {}
+        self.inputs = {}
+        self.targets = {}
 
-        self.last_uuid = -1
-        self.last_acc = 0.
+        self.last_uuid = {}
+        self.last_acc = {}
 
         self.users = {}
 
-    async def load_classifier(self, sid):
-        try:
-            self.clf = ml.load(f"tests/data/classifier.pkl")
-        except FileNotFoundError:
-            raise Exception(f"Cannot load classifier")
+    def update_weights(self, sid, accuracy, weights_path):
+        engine = create_engine(os.environ['DATABASE_URL'])
+        with engine.begin() as connection:
+            user_id = connection.execute(
+                text('''
+                    SELECT 
+                        u.id
+                    FROM auth_user u 
+                    WHERE u.username = :username
+                '''),
+                username=self.users[sid]['username']
+            ).fetchall()
+            if user_id:
+                user_id_exists = connection.exceute(
+                    text('''
+                        SELECT 
+                            w.id
+                        FROM user_weights w 
+                        WHERE w.user_id = :user_id
+                    '''),
+                    user_id=user_id[0]
+                )
+                if user_id_exists:
+                    connection.execute(
+                        text('''
+                            UPDATE user_weights 
+                            SET 
+                                accuracy = :accuracy,
+                                weights = :weights,
+                                last_update = NOW()::date
+                            WHERE 
+                                user_id = :user_id
+                        '''),
+                        user_id=user_id[0],
+                        accuracy=accuracy,
+                        weights=weights_path
+                    )
+                    return True
+                else:
+                    connection.execute(
+                        text('''
+                            INSERT INTO user_weights ("user_id", "accuracy", "weights", "last_updated") 
+                            VALUES (
+                                :user_id, 
+                                :accuracy, 
+                                :weights, 
+                                NOW()::date
+                            )
+                        '''),
+                        user_id=user_id[0],
+                        accuracy=accuracy,
+                        weights=weights_path
+                    )
+                    return True
+            return False
+
+    async def load_classifier(self, sid, args):
+        if self.users[sid]:
+            if self.users[sid]['weights']:
+                try:
+                    self.clf[sid] = ml.load(self.users[sid]['weights'])
+                    return sid, True
+                except FileNotFoundError:
+                    raise Exception(f'Cannot load classifier')
+            else:
+                self.clf[sid] = None
+                return sid, False
+        else:
+            raise Exception(f'User not logged in!')
 
     async def train_classifier(self, sid, args):
-        uuid, eeg_data, p300 = args
-        self.inputs.append(np.array(eeg_data))
-        self.targets.append(np.array(p300))
+        if self.users[sid]:
+            uuid, eeg_data, p300 = args
+            if not self.inputs[sid]:
+                self.inputs[sid] = []
+            if not self.targets[sid]:
+                self.targets[sid] = []
+            self.inputs[sid].append(np.array(eeg_data))
+            self.targets[sid].append(np.array(p300))
 
-        if len(self.targets) % 10 == 0 and len(self.targets) > 70:
-            X = np.array(self.inputs)
-            y = np.array(self.targets)
+            if len(self.targets[sid]) % 10 == 0 and len(self.targets[sid]) > 70:
+                X = np.array(self.inputs[sid])
+                y = np.array(self.targets[sid])
 
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-            # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
-            # universal one for EEG data.
-            self.clf = ml.ml_classifier(X_train, y_train, pipeline='vect_lr')
-            acc = self.clf.score(X_test, y_test)
-            ml.save(f"tests/data/clf.pkl", classifier)
+                # Note in Barachant's ipynb, 'erpcov_mdm' performed best. 'vect_lr' is the
+                # universal one for EEG data.
 
-            self.last_uuid = uuid
-            self.last_acc = acc
+                # train
+                self.clf[sid] = ml.ml_classifier(X_train, y_train, classifier=self.clf[sid], pipeline='vect_lr')
+                acc = self.clf[sid].score(X_test, y_test)
 
-        results = (self.last_uuid, self.last_acc)
-        return sid, results
+                # save classifier
+                if not os.path.exists('clfs'):
+                    os.makedirs('clfs')
+                if not os.path.exists(f'clfs/{self.users[sid]["username"]}'):
+                    os.makedirs(f'clfs/{self.users[sid]["username"]}')
+                ml.save(f'clfs/{self.users[sid]["username"]}', self.clf[sid])
+
+                self.update_weights(sid=sid, accuracy=acc, weights_path=f'clfs/{self.users[sid]["username"]}')
+
+                if not self.last_uuid[sid]:
+                    self.last_uuid[sid] = []
+                if not self.last_acc[sid]:
+                    self.last_acc[sid] = []
+                self.last_uuid[sid].append(uuid)
+                self.last_acc[sid].append(acc)
+
+                results = (self.last_uuid[sid], self.last_acc[sid])
+                return sid, results
+            return sid, None
+        else:
+            raise Exception(f'User not logged in!')
 
     async def retrieve_prediction_results(self, sid, args):
-        uuid, data = args
-        p300 = self.clf.predict(data)
-        score = 1
-        results = (uid, p300, score)
-        return sid, results
-
+        if self.users[sid]:
+            uuid, data = args
+            p300 = self.clf[sid].predict(data)
+            score = 1
+            results = (uuid, p300, score)
+            return sid, results
+        else:
+            raise Exception(f'User not logged in!')
 
     # for testing
     async def retrieve_prediction_results_test(self, sid, args):
@@ -180,69 +268,17 @@ class P300Service:
                     return sid, True
             return sid, False
 
-    async def update_weights(self, sid, args):
-        accuracy, weights = args
-        if self.users[sid]['login']:
-            engine = create_engine(os.environ['DATABASE_URL'])
-            with engine.begin() as connection:
-                user_id = connection.execute(
-                    text('''
-                        SELECT 
-                            u.id
-                        FROM auth_user u 
-                        WHERE u.username = :username
-                    '''),
-                    username=self.users[sid]['username']
-                ).fetchall()
-                if user_id:
-                    user_id_exists = connection.exceute(
-                        text('''
-                            SELECT 
-                                w.id
-                            FROM user_weights w 
-                            WHERE w.user_id = :user_id
-                        '''),
-                        user_id=user_id[0]
-                    )
-                    if user_id_exists:
-                        connection.execute(
-                            text('''
-                                UPDATE user_weights 
-                                SET 
-                                    accuracy = :accuracy,
-                                    weights = :weights,
-                                    last_update = NOW()::date
-                                WHERE 
-                                    user_id = :user_id
-                            '''),
-                            user_id=user_id[0],
-                            accuracy=accuracy,
-                            weights=weights
-                        )
-                        return sid, True
-                    else:
-                        connection.execute(
-                            text('''
-                                INSERT INTO user_weights ("user_id", "accuracy", "weights", "last_updated") 
-                                VALUES (
-                                    :user_id, 
-                                    :accuracy, 
-                                    :weights, 
-                                    NOW()::date
-                                )
-                            '''),
-                            user_id=user_id[0],
-                            accuracy=accuracy,
-                            weights=weights
-                        )
-                        return sid, True
-                return sid, False
+    async def logout(self, sid, args):
+        # logout
+        self.users[sid] = None
+        # reset classifier for channel
+        self.clf[sid] = None
 
     def initialize_handlers(self):
-        # login and weights
+        # login
         self.sio.on("register", self.register)
         self.sio.on("login", self.login)
-        self.sio.on("update_weights", self.update_weights)
+        self.sio.on("logout", self.logout)
 
         self.sio.on("retrieve_prediction_results", self.retrieve_prediction_results)
         self.sio.on("train_classifier", self.train_classifier)
