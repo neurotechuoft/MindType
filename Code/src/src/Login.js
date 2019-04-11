@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import logo from './mindTypeLogo.png';
 
 class Login extends React.Component {
 	
@@ -7,7 +8,7 @@ class Login extends React.Component {
   render(){
     return (
       <div>
-        <img src="mindTypeLogo.png" className="logo"/><br />
+        <img src={logo} className="logoMindType"/><br />
         <br/>
         <input type="email" className="email-input" placeholder="Email"></input><br />
         <br />

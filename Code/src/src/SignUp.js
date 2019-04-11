@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import logo from './mindTypeLogo.png';
 
 class SignUp extends React.Component {
   render(){
     return (
       <div>
-        <img src="mindTypeLogo.png"className="logo"/><br />
+        <img src={logo} className="logoMindType"/><br />
         <br/>
         <input type="text" className="name-user" placeholder="Name"></input><br />
         <br />

@@ -10,7 +10,7 @@ class SentenceEmoji extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3>Time to combine it all! Type "I am typing with my mind! 🎉"</h3>
+        <h3 className="mindTypeColorText">Time to combine it all! Type "I am typing with my mind! 🎉"</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
 		<button className="option">.</button>

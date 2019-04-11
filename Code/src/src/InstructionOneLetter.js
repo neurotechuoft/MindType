@@ -11,8 +11,8 @@ class InstructionOneLetter extends React.Component {
     return (
 	<div className="instructionScreen">
       <div className="twoByTwo">
-        <h3>Try to type the letter 'b'</h3>
-		<input type="text" className="displayWide" readOnly></input>
+        <h3 className="mindTypeColorText">Try to type the letter 'b'</h3>
+		<input type="text" className="displayWideInstruction" readOnly></input>
 		<TwoByTwo />
 		<button onClick={this.props.instructionOneLetterHandler}>Continue</button>
       </div>

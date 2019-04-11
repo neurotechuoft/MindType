@@ -10,7 +10,7 @@ class LetterSwitch extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3>Let's practice switching between keyboards. Select :) to access the emojis</h3>
+        <h3 className="mindTypeColorText">Let's practice switching between keyboards. Select :) to access the emojis</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
 		<button className="option">.</button>
