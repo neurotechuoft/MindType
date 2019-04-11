@@ -93,8 +93,12 @@ def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
         targets: list containing target values for training; i.e. 0 or 1.
     """
     # Get the markers between two times.
-    lower_time_limit = float(data[-1, 0])
-    upper_time_limit = float(data[-1, -1])
+    if data.shape[0] == 0:
+        lower_time_limit = float(data[0, 0])
+        upper_time_limit = float(data[0, -1])
+    else:
+        lower_time_limit = float(data[-1, 0])
+        upper_time_limit = float(data[-1, -1])
 
     # Copy markers into a Numpy ndarray.
     tmp = np.array([row[:] for row in marker_stream.data[(marker_end - trial_num):marker_end]
@@ -202,13 +206,15 @@ class EEGStream(base_stream.BaseStream):
         """
         if data_duration is None:
             data = np.array(self.copy_data()).T
-            # Scale the data but not the timestamps.
-            data[:-1, :] = np.multiply(data[:-1, :], scale)
         else:
             start_index = int(end_index - data_duration * self.info['sfreq'])
             data = np.array(self.copy_data(start_index, end_index)).T
-            # Scale the data but not the timestamps.
-            data[:-1, :] = np.multiply(data[:-1, :], scale)
+
+        if data.ndim == 1:
+            data = np.expand_dims(data, axis=0)
+        # Scale the data but not the timestamps.
+        data[:-1, :] = np.multiply(data[:-1, :], scale)
+
         return data
 
     def make_epochs(self,
@@ -266,7 +272,7 @@ class EEGStream(base_stream.BaseStream):
         raw_filter(raw, filter_range[0], filter_range[1], picks=[0, 1, 2, 3])
 
         # plot raw data for visualization/validation
-        plot(raw, events, duration=data_duration, n_channels=5, scalings='auto')
+        # plot(raw, events, duration=data_duration, n_channels=5, scalings='auto')
 
         return Epochs(raw, events, event_id=event_id, tmin=tmin, tmax=tmax,
                       baseline=baseline, picks=picks,
