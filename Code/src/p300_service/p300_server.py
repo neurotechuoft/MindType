@@ -235,9 +235,10 @@ class P300Service:
                     WHERE u.username = :username
                 '''),
                 username=username
-            ).fetchall()[0]
-            if stored_password is not None:
-                verified = verify_password(stored_password, password)
+            ).fetchall()
+            if stored_password:
+                # query returns list of tuples (tuple of rows for each column)
+                verified = verify_password(stored_password[0][0], password)
                 if verified:
                     result = connection.execute(
                         text('''
@@ -255,7 +256,7 @@ class P300Service:
                         username=username,
                         password=password
                     ).fetchall()
-                    user_details = dict(zip(['username', 'accuracy', 'weights', 'last_updated'], result))
+                    user_details = dict(zip(['username', 'accuracy', 'weights', 'last_updated'], result[0]))
                     user_details['login'] = True
                     self.users[sid] = user_details
 
