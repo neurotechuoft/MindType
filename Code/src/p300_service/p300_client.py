@@ -40,7 +40,6 @@ class P300Client(object):
 
         # TODO: some kind of switching between training and prediction modes
         data = {'event_time': 0.4,      # or 0.2?
-                'train': self.train_mode,
                 'train_epochs': 120}    # 120 for 2 min, 240 for 4 min
 
         self.streams['ml'] = self._create_ml_stream(data)
@@ -65,6 +64,7 @@ class P300Client(object):
                     train_data = data['train_data']
                     train_targets = data['train_targets']
                     self.train(uuid, train_data, train_targets)
+                    return
 
             # send prediction jobs to server
             else:
@@ -73,6 +73,7 @@ class P300Client(object):
                     uuid = data['uuid']
                     eeg_data = data['eeg_data']
                     self.predict(uuid, eeg_data)
+                    return
 
             time.sleep(0.1)
 
@@ -113,7 +114,7 @@ class P300Client(object):
         return EEGStream(thread_name='EEG_data', event_channel_name='P300')
 
     def _create_marker_stream(self):
-        info = pylsl.StreamInfo('Markers', 'Markers', 5, 0, 'string', 'mywid32')
+        info = pylsl.StreamInfo('Markers', 'Markers', 4, 0, 'string', 'mywid32')
         self.marker_outlet = pylsl.StreamOutlet(info)
 
         return MarkerStream(thread_name='Marker_stream')
@@ -127,14 +128,13 @@ class P300Client(object):
         return MLStream(m_stream=self.streams['marker'],
                         eeg_stream=self.streams['eeg'],
                         event_time=data['event_time'],
-                        train=data['train'],
                         train_epochs=data['train_epochs'])
 
     def _start_stream(self, stream):
         if self.streams.get(stream) is None:
             raise RuntimeError("Cannot start {0} stream, stream does not exist".format(stream))
         elif stream == 'ml':
-            self.streams[stream].start()
+            self.streams[stream].start(self.train_mode)
         else:
             self.streams[stream].lsl_connect()
 
@@ -147,10 +147,12 @@ class P300Client(object):
         self.sio.on("predict", self.predict_handler)
 
     async def train_handler(self, sid, args):
+        if not self.train_mode:
+            RuntimeError("Stream is currently in predict mode, cannot train")
+
         uuid, timestamp, p300 = args
         package = [
             str(timestamp),
-            str(p300),      # event
             str(p300),      # target
             str(1),         # 1 event total
             str(uuid)       # take uuid for epoch id
@@ -164,11 +166,12 @@ class P300Client(object):
         return sid, score
 
     async def predict_handler(self, sid, args):
-        self.train_mode = False
+        if self.train_mode:
+            RuntimeError("Stream is currently in train mode, cannot predict")
+
         uuid, timestamp = args
         package = [
             str(timestamp),
-            str(0),         # event
             str(0),         # target
             str(1),         # 1 event total
             str(uuid)       # take uuid for epoch id

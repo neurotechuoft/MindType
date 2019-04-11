@@ -90,12 +90,15 @@ def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
         event_duration: int (defaults to 0); duration of each event marker in seconds. This is not epoch duration.
     Returns:
         markers: ndarray (n_events x 3); details the occurence index in main data, duration, and target.
-        events: list containing the row/column that was flashed in order.
         targets: list containing target values for training; i.e. 0 or 1.
     """
     # Get the markers between two times.
-    lower_time_limit = float(data[-1, 0])
-    upper_time_limit = float(data[-1, -1])
+    if data.shape[0] == 0:
+        lower_time_limit = float(data[0, 0])
+        upper_time_limit = float(data[0, -1])
+    else:
+        lower_time_limit = float(data[-1, 0])
+        upper_time_limit = float(data[-1, -1])
 
     # Copy markers into a Numpy ndarray.
     tmp = np.array([row[:] for row in marker_stream.data[(marker_end - trial_num):marker_end]
@@ -103,12 +106,11 @@ def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
 
     # Pre-allocate array for speed.
     markers = np.zeros(shape=(tmp.shape[0], 3), dtype='int32')
-    events = np.zeros(shape=(tmp.shape[0], 1))
     targets = np.zeros(shape=(tmp.shape[0], 1))
 
     # If there is at least one marker:
     if tmp.shape[0] > 0:
-        for marker_index, (event, marker_int, timestamp) in enumerate(tmp):
+        for marker_index, (marker_int, timestamp) in enumerate(tmp):
             # Get the index where this marker happened in the EEG data.
             eeg_index = (np.abs(data[-1, :] - float(timestamp))).argmin()
 
@@ -116,9 +118,8 @@ def make_events(data, marker_stream, marker_end, trial_num, event_duration=0):
             markers[marker_index, :] = eeg_index, event_duration, marker_int
 
             # event and target arrays
-            events[marker_index] = event
             targets[marker_index] = marker_int
-        return markers, events, targets
+        return markers, targets
     else:
         # Make empty markers, events, and targets array
         print("Creating empty markers array. No markers found.")
@@ -205,13 +206,15 @@ class EEGStream(base_stream.BaseStream):
         """
         if data_duration is None:
             data = np.array(self.copy_data()).T
-            # Scale the data but not the timestamps.
-            data[:-1, :] = np.multiply(data[:-1, :], scale)
         else:
             start_index = int(end_index - data_duration * self.info['sfreq'])
             data = np.array(self.copy_data(start_index, end_index)).T
-            # Scale the data but not the timestamps.
-            data[:-1, :] = np.multiply(data[:-1, :], scale)
+
+        if data.ndim == 1:
+            data = np.expand_dims(data, axis=0)
+        # Scale the data but not the timestamps.
+        data[:-1, :] = np.multiply(data[:-1, :], scale)
+
         return data
 
     def make_epochs(self,
@@ -241,11 +244,10 @@ class EEGStream(base_stream.BaseStream):
             identities: list containing the row/column that was flashed in order.
             targets: list containing target values for training; i.e. 0 or 1.
         """
-        identities = []
         targets = []
         raw_data = self.get_data(end_index, data_duration=data_duration)
         if events is None:
-            events, identities, targets = make_events(raw_data, marker_stream, marker_end, trial_num, event_duration)
+            events, targets = make_events(raw_data, marker_stream, marker_end, trial_num, event_duration)
 
         # Replace timestamps with zeros.
         raw_data[-1, :] = 0
@@ -255,7 +257,10 @@ class EEGStream(base_stream.BaseStream):
 
         # Populate events in event channel
         raw.add_events(events, self.event_channel_name)
-        event_id = {'Non-Target': 0, 'Target': 1}
+        if targets[0][0] == 0:
+            event_id = {'Non-Target': 0}
+        else:
+            event_id = {'Target': 1}
 
         # Plot power spectral density
         # plot_psd(raw, 'std', picks=[0, 1, 2, 3])
@@ -267,7 +272,7 @@ class EEGStream(base_stream.BaseStream):
         raw_filter(raw, filter_range[0], filter_range[1], picks=[0, 1, 2, 3])
 
         # plot raw data for visualization/validation
-        plot(raw, events, duration=data_duration, n_channels=5, scalings='auto')
+        # plot(raw, events, duration=data_duration, n_channels=5, scalings='auto')
 
         return Epochs(raw, events, event_id=event_id, tmin=tmin, tmax=tmax,
                       baseline=baseline, picks=picks,
@@ -275,4 +280,4 @@ class EEGStream(base_stream.BaseStream):
                       reject_tmin=reject_tmin,
                       reject_tmax=reject_tmax, detrend=detrend, on_missing=on_missing,
                       reject_by_annotation=reject_by_annotation,
-                      verbose=verbose), identities, targets
+                      verbose=verbose), targets
