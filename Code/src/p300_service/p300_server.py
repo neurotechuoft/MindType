@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import random
 
 # for database
-# from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text
 import os
 import hashlib
 import binascii
