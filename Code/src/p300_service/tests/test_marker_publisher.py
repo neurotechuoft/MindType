@@ -81,7 +81,6 @@ def marker_publish(signal, outlet, events, log=False):
             t = pylsl.local_clock()
             package = [
                 str(t),
-                str(event),
                 str(target),
                 str(trial_num),
                 str(epoch_id)
@@ -111,7 +110,7 @@ def marker_publish(signal, outlet, events, log=False):
 def test_marker_stream():
     """Create and return marker lsl outlet."""
     # create
-    info = pylsl.StreamInfo('Markers', 'Markers', 5, 0, 'string', 'mywid32')
+    info = pylsl.StreamInfo('Markers', 'Markers', 4, 0, 'string', 'mywid32')
     # next make an outlet
     outlet = pylsl.StreamOutlet(info)
     return outlet

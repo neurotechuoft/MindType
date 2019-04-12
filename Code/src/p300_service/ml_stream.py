@@ -27,7 +27,6 @@ class MLStream(object):
                  eeg_stream,
                  analysis_time=1.0,
                  event_time=0.2,
-                 train=False,
                  train_epochs=120):
         print("Analysis object created.")
         self._loop_analysis_thread = None
@@ -38,7 +37,7 @@ class MLStream(object):
         self.running = False
         self._kill_signal = threading.Event()
         self.classifier_input = None
-        self.train = train
+        self.train = None
         self.train_epochs = train_epochs
 
         self.train_number = 0
@@ -87,15 +86,15 @@ class MLStream(object):
                     time.sleep(sleep_time)
 
                 # Make an MNE epoch from channels 0-3 (EEG), decim = keep every nth sample
-                epochs, events, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
-                                                                      end_index=end_index,
-                                                                      marker_end=marker_end,
-                                                                      trial_num=num_events,
-                                                                      data_duration=self.data_duration,
-                                                                      picks=[0, 1, 2, 3],
-                                                                      tmin=0.0,
-                                                                      tmax=1,
-                                                                      decim=3)
+                epochs, targets = self.eeg_stream.make_epochs(marker_stream=self.m_stream,
+                                                              end_index=end_index,
+                                                              marker_end=marker_end,
+                                                              trial_num=num_events,
+                                                              data_duration=self.data_duration,
+                                                              picks=[0, 1, 2, 3],
+                                                              tmin=0.0,
+                                                              tmax=1,
+                                                              decim=3)
 
                 # get input to classifier
                 data = np.array(epochs.get_data())
@@ -104,15 +103,6 @@ class MLStream(object):
 
                 # If training classifier, send data to classifier with ground truth targets
                 if self.train:
-                    # self.train_number += data.shape[0]
-
-                    # ##### FOR TESTING #####
-                    # with open('tests/data/train_data.pickle', 'rb') as f:
-                    #     package = pickle.load(f)
-                    #
-                    # data = ['data']
-                    # targets = [1]
-                    # ##### FOR TESTING #####
 
                     # Generate input and targets
                     i = np.array(data)
@@ -138,8 +128,9 @@ class MLStream(object):
 
             time.sleep(sleep_time)
 
-    def start(self):
+    def start(self, train_mode):
         """Start the analysis loop."""
+        self.train=train_mode
         if not self.running:
             self.running = True
             self._loop_analysis_thread = threading.Thread(target=self._loop_analysis, name="Analysis-loop")
@@ -166,3 +157,10 @@ class MLStream(object):
         """Returns one set of prediction data if there are any, otherwise returns None"""
         if len(self.predictions) > 0:
             return self.predictions.pop(0)
+
+    def get_mode(self):
+        """ Returns true if in training mode, False if not """
+        return self.train
+
+    def set_mode(self, train_mode):
+        self.train = train_mode
