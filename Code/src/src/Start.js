@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SignUp from './SignUp';
 import Login from './Login';
+import logo from './mindTypeWelcome.png'
 
 class Start extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ render() {
         if (this.state.display === 'welcome'){
           element = (
             <div>
-              <img src="mindTypeWelcome.png" className="welcomeLogo"/><br />
+              <img src={logo} className="welcomeLogo"/><br />
               <button onClick={this.handleLoginClick} className="login">Login</button>
 			  <br />
               <button onClick={this.handleSignUpClick} className="sign-up">Sign Up</button>

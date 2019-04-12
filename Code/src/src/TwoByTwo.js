@@ -4,7 +4,7 @@ class TwoByTwo extends React.Component {
 	
   render(){
     return (
-      <div>
+      <div >
 			
 			<button className="entryTwo row1 col1">a</button>
             <button className="entryTwo row1 col2">b</button>

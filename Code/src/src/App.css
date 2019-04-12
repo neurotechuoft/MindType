@@ -5,6 +5,7 @@ $font-stack: Tahoma, Arial, Helvetica, sans-serif;
 
 body {
 	overflow-x: hidden;
+	
 }
 
 
@@ -12,6 +13,13 @@ body {
 #root {
   height: 100vh;
   width: 99vw;
+  
+}
+
+.instructionScreen{
+	background-color: white;
+	height: 100vh;
+	margin-top: -3vh;
 }
 	  
 .redText {
@@ -25,21 +33,23 @@ body {
 }
 
 .mindTypeColorText {
-	color: #3da8c4;
+	color: #52A0B4;
 	font-weight: bold;
+	
 }
 
 .suggestion {
   width: 33vw;
   height: 12.5vh;
-  background-color: #3da8c4;
-  color: white;
+  color: #52A0B4;
+  background-color: white;
   font-size: 2.5vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   border-width: 2px 2px 2px 0px;
   border-style: solid;
   border-color: white;
+  font-weight: bold;
 }
 
 .suggestions {
@@ -55,11 +65,13 @@ body {
 .display {
   width: 48vw;
   height: 5vh;
+  background-color: #E6E5E5;
 }
 
 .displayWide {
   width: 66vw;
   height: 5vh;
+  background-color: #E6E5E5;
 }
 
 .displayInstruction{
@@ -77,74 +89,78 @@ body {
 .entry {
   width: 16.5vw;
   height: 12.5vh;
-  background-color: #3da8c4;
-  color: white;
+  color: #52A0B4;
+  background-color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
+  font-weight: bold;
 }
 
 .entry-extra-wide {
   width: 33vw;
   height: 12.5vh;
-  background-color: #3da8c4;
-  color: white;
+  color: #52A0B4;
+  background-color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
+  font-weight: bold;
 }
 
 .entry-wide {
   width: 19.8vw;
   height: 12.5vh;
-  background-color: #3da8c4;
-  color: white;
+  background-color: white;
+  color: #52A0B4;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
+  font-weight: bold;
 }
 
 .userInput,
 .options {
   margin-top: 1vh;
+  font-weight: bold;
 }
 
 .option {
   width: 19.8vw;
   height: 12.5vh;
-  background-color: #3da8c4;
-  color: white;
+  color: #52A0B4;
+  background-color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
+  font-weight: bold;
 }
 
 
 
 .entryTwo {
-  width: 33vw;
-  height: 25vh;
-  color: white;
-  background-color: #3da8c4;
+  width: 47vw;
+  margin-right: 1vw;
+  margin-left: 1vw;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  height: 40vh;
+  background-color: white;
+  color: #52A0B4;
   font-size: 8vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
-}
-
-
-
-.twoByTwo {
-	margin-left: 15vw;
+  font-weight: bold;
 }
 
 
@@ -200,9 +216,13 @@ body {
 
 .heading{
 	font-weight: bold;
-	font-size: 3vh;
+	font-size: 5vh;
 }
 
 .text{
+	font-size: 3vh;
+}
+
+.ppText{
 	font-size: 2.5vh;
 }
