@@ -66,6 +66,19 @@ w
   border: 1px solid white;
 }
 
+.entry-extra-wide {
+  margin: auto;
+  width: 20vh;
+  height: 10vh;
+  background-color: $background;
+  color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: 1px solid white;
+}
+
 .userInput,
 .options {
   margin-top: 1vh;
