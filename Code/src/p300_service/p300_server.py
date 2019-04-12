@@ -191,88 +191,92 @@ class P300Service:
         return sid, results
 
     async def register(self, sid, args):
-        # username, password, email = args
-        # engine = create_engine(os.environ['DATABASE_URL'])
-        # with engine.begin() as connection:
-        #     user_exists = connection.execute(
-        #         text('''
-        #             SELECT
-        #                 u.username
-        #             FROM auth_user u
-        #             WHERE u.username = :username
-        #         '''),
-        #         username=username
-        #     ).fetchall()
-        #     if not user_exists:
-        #         password = hash_password(password)
-        #         connection.execute(
-        #             text('''
-        #                 INSERT INTO auth_user ("username", "password", "email", "created_on")
-        #                 VALUES (
-        #                     :username,
-        #                     :password,
-        #                     :email,
-        #                     NOW()::date
-        #                 )
-        #             '''),
-        #             username=username,
-        #             password=password,
-        #             email=email,
-        #         )
-        #         return sid, True
+        username, password, email = args
+        engine = create_engine(os.environ['DATABASE_URL'])
+        with engine.begin() as connection:
+            user_exists = connection.execute(
+                text('''
+                    SELECT
+                        u.username
+                    FROM auth_user u
+                    WHERE u.username = :username
+                '''),
+                username=username
+            ).fetchall()
+            if not user_exists:
+                password = hash_password(password)
+                connection.execute(
+                    text('''
+                        INSERT INTO auth_user ("username", "password", "email", "created_on")
+                        VALUES (
+                            :username,
+                            :password,
+                            :email,
+                            NOW()::date
+                        )
+                    '''),
+                    username=username,
+                    password=password,
+                    email=email,
+                )
+                return sid, True
         return sid, False
 
     async def login(self, sid, args):
-        # username, password = args
-        # engine = create_engine(os.environ['DATABASE_URL'])
-        #
-        # with engine.begin() as connection:
-        #     stored_password = connection.execute(
-        #         text('''
-        #             SELECT
-        #                 u.password
-        #             FROM auth_user u
-        #             WHERE u.username = :username
-        #         '''),
-        #         username=username
-        #     ).fetchall()[0]
-        #     if stored_password is not None:
-        #         verified = verify_password(stored_password, password)
-        #         if verified:
-        #             result = connection.execute(
-        #                 text('''
-        #                     SELECT
-        #                         u.username,
-        #                         w.accuracy,
-        #                         w.weights,
-        #                         w.last_updated
-        #                     FROM auth_user u
-        #                     INNER JOIN user_weights w
-        #                         ON w.user_id = u.id
-        #                     WHERE u.username = :username
-        #                     AND u.password = :password
-        #                 '''),
-        #                 username=username,
-        #                 password=password
-        #             ).fetchall()
-        #             user_details = dict(zip(['username', 'accuracy', 'weights', 'last_updated'], result))
-        #             user_details['login'] = True
-        #             self.users[sid] = user_details
-        #
-        #             connection.execute(
-        #                 text('''
-        #                     INSERT INTO auth_user ("last_login")
-        #                     VALUES (NOW()::date)
-        #                 ''')
-        #             )
-        #             return sid, True
-        return sid, False
+        username, password = args
+        engine = create_engine(os.environ['DATABASE_URL'])
+
+        with engine.begin() as connection:
+            stored_password = connection.execute(
+                text('''
+                    SELECT
+                        u.password
+                    FROM auth_user u
+                    WHERE u.username = :username
+                '''),
+                username=username
+            ).fetchall()
+            if stored_password:
+                # query returns list of tuples (tuple of rows for each column)
+                verified = verify_password(stored_password[0][0], password)
+                if verified:
+                    result = connection.execute(
+                        text('''
+                            SELECT
+                                u.username,
+                                w.accuracy,
+                                w.weights,
+                                w.last_updated
+                            FROM auth_user u
+                            LEFT JOIN user_weights w
+                                ON w.user_id = u.id
+                            WHERE u.username = :username
+                        '''),
+                        username=username,
+                    ).fetchall()
+                    user_details = dict(zip(['username', 'accuracy', 'weights', 'last_updated'], result[0]))
+                    user_details['login'] = True
+                    self.users[sid] = user_details
+
+                    connection.execute(
+                        text('''
+                            UPDATE auth_user
+                            SET
+                                last_login = NOW()::date
+                            WHERE
+                                username = :username
+                        '''),
+                        username=username
+                    )
+                    return sid, True
+            return sid, False
 
     async def logout(self, sid, args):
         # logout
         self.users[sid] = None
         # reset classifier for channel
         self.clf[sid] = None
+        return sid, True
 
     def initialize_handlers(self):
         # login
