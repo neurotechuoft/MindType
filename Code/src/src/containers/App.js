@@ -76,9 +76,9 @@ class App extends Component {
       clearInterval(interval);
     } else {
       for (let j = 0; j < prev.length; j++) {
-        prev[j].style.backgroundColor = '#3da8c4';
-        prev[j].style.color = 'white';
-        prev[j].style.fontWeight = 'normal';
+        prev[j].classList.add("entry");
+        prev[j].classList.remove("selected");
+        prev[j].classList.remove("chosen");
       }
       // making sure rows/cols don't flash if they've already been found.
       let rc;
@@ -98,12 +98,11 @@ class App extends Component {
           this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
-          row[j].style.backgroundColor = 'white';
-          row[j].style.color = '#3da8c4';
+          row[j].classList.remove("entry");
+          row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
-              row[j].style.color = 'red';
-              row[j].style.fontWeight = 'bold';
+              row[j].classList.add("chosen");
             }
             const rowOrder = getRandomArray(5);
             curRow = 0;
@@ -121,12 +120,11 @@ class App extends Component {
           this.setState({colFound : true, colOrder});
         }
         for (let j = 0; j < col.length; j++) {
-          col[j].style.backgroundColor = 'white';
-          col[j].style.color = '#3da8c4';
+          col[j].classList.remove("entry");
+          col[j].classList.add("selected");
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
-              col[j].style.color = 'red';
-              col[j].style.fontWeight = 'bold';
+              col[j].classList.add("chosen");
             }
             const colOrder = getRandomArray(6);
             curCol = 0;
@@ -190,9 +188,8 @@ class App extends Component {
     const predictions = this.state.predictions.map(prediction => <button className="suggestion"> { prediction } </button>)
 
     return (
-      <div>
-        <input type="text" className="display" value={this.state.displayText} readOnly></input>
-        <button className="resume">Resume</button>
+      <div class="container">
+        <input type="text" className="display form-control" value={this.state.displayText} readOnly></input>
         <div className="suggestions">
           { predictions }
         </div>

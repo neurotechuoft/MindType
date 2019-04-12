@@ -102,18 +102,38 @@ body {
   background-color: #E6E5E5;
 }
 
+.chosen {
+  width: 16.5vw;
+  height: 12.5vh;
+  color: #ffffff;
+  background-color: red;
+  font-size: 4vmin;
+  font-family: $font-stack;
+  border: 1px solid white;
+  font-weight: bold;
+}
+
+.selected {
+  width: 16.5vw;
+  height: 12.5vh;
+  color: white;
+  background-color: #3da8c4;
+  font-size: 4vmin;
+  font-family: $font-stack;
+  border: 1px solid white;
+}
+
 .entry {
   width: 16.5vw;
   height: 12.5vh;
-  color: #52A0B4;
+  color: #3da8c4;
   background-color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
-  font-weight: bold;
-}
+  border: 1px solid white;
+} 
 
 .entrySmall {
 	width: 7.75vw;
