@@ -248,7 +248,7 @@ class P300Service:
                                 w.weights, 
                                 w.last_updated 
                             FROM auth_user u 
-                            INNER JOIN user_weights w 
+                            LEFT JOIN user_weights w 
                                 ON w.user_id = u.id
                             WHERE u.username = :username
                         '''),
@@ -276,6 +276,7 @@ class P300Service:
         self.users[sid] = None
         # reset classifier for channel
         self.clf[sid] = None
+        return sid, True
 
     def initialize_handlers(self):
         # login
