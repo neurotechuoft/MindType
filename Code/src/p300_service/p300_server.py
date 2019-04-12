@@ -251,10 +251,8 @@ class P300Service:
                             INNER JOIN user_weights w 
                                 ON w.user_id = u.id
                             WHERE u.username = :username
-                            AND u.password = :password
                         '''),
                         username=username,
-                        password=password
                     ).fetchall()
                     user_details = dict(zip(['username', 'accuracy', 'weights', 'last_updated'], result[0]))
                     user_details['login'] = True
