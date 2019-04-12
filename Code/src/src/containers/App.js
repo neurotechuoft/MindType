@@ -193,7 +193,6 @@ class App extends Component {
     return (
       <div>
         <input type="text" className="display" value={this.state.displayText} readOnly></input>
-        <button className="resume">Resume</button>
         <div className="suggestions">
           { predictions }
         </div>
