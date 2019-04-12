@@ -259,13 +259,6 @@ body {
 }
 
 
-  
-  .continueButton{
-	background-color: blue;
-	margin-right: 15vw;
-	margin-bottom: 5vh;
-}
-
 .login, .sign-up, .back, .continueButton, .goToMindType {
   border: none;
   color: white;
@@ -281,6 +274,13 @@ body {
   text-decoration: none;
   cursor: pointer;
   border-radius: 2vmin;
+}
+
+  .continueButton{
+	background-color: blue;
+	margin-bottom: 5vh;
+	margin-left: 0vw;
+	
 }
 
 .welcomeLogo {
