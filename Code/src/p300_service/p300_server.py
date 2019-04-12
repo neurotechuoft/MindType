@@ -56,9 +56,9 @@ class P300Service:
         with engine.begin() as connection:
             user_id = connection.execute(
                 text('''
-                    SELECT 
+                    SELECT
                         u.id
-                    FROM auth_user u 
+                    FROM auth_user u
                     WHERE u.username = :username
                 '''),
                 username=self.users[sid]['username']
@@ -66,9 +66,9 @@ class P300Service:
             if user_id:
                 user_id_exists = connection.exceute(
                     text('''
-                        SELECT 
+                        SELECT
                             w.id
-                        FROM user_weights w 
+                        FROM user_weights w
                         WHERE w.user_id = :user_id
                     '''),
                     user_id=user_id[0]
@@ -76,12 +76,12 @@ class P300Service:
                 if user_id_exists:
                     connection.execute(
                         text('''
-                            UPDATE user_weights 
-                            SET 
+                            UPDATE user_weights
+                            SET
                                 accuracy = :accuracy,
                                 weights = :weights,
                                 last_update = NOW()::date
-                            WHERE 
+                            WHERE
                                 user_id = :user_id
                         '''),
                         user_id=user_id[0],
@@ -92,11 +92,11 @@ class P300Service:
                 else:
                     connection.execute(
                         text('''
-                            INSERT INTO user_weights ("user_id", "accuracy", "weights", "last_updated") 
+                            INSERT INTO user_weights ("user_id", "accuracy", "weights", "last_updated")
                             VALUES (
-                                :user_id, 
-                                :accuracy, 
-                                :weights, 
+                                :user_id,
+                                :accuracy,
+                                :weights,
                                 NOW()::date
                             )
                         '''),
@@ -108,31 +108,32 @@ class P300Service:
             return False
 
     async def load_classifier(self, sid, args):
-        if self.users[sid]:
-            if self.users[sid]['weights']:
-                try:
-                    self.clf[sid] = ml.load(self.users[sid]['weights'])
-                    return sid, True
-                except FileNotFoundError:
-                    raise Exception(f'Cannot load classifier')
-            else:
-                self.clf[sid] = None
-                return sid, False
+        if self.users.get(sid) is not None:
+            try:
+                self.clf[sid] = ml.load(f'clfs/{self.users[sid]["username"]}')
+                return sid, True
+            except FileNotFoundError:
+                raise Exception(f'Cannot load classifier')
+
+            self.clf[sid] = None
+            return sid, False
         else:
             raise Exception(f'User not logged in!')
 
     async def train_classifier(self, sid, args):
-        if self.users[sid]:
+        if self.users.get(sid) is not None:
             uuid, eeg_data, p300 = args
-            if not self.inputs[sid]:
-                self.inputs[sid] = []
-            if not self.targets[sid]:
-                self.targets[sid] = []
+
+            # initialize if empty
+            self.inputs[sid] = self.inputs.get(sid, [])
+            self.targets[sid] = self.targets.get(sid, [])
+
             self.inputs[sid].append(np.array(eeg_data))
             self.targets[sid].append(np.array(p300))
 
-            if len(self.targets[sid]) % 10 == 0 and len(self.targets[sid]) > 70:
+            if len(self.targets[sid]) % 10 == 0 and len(self.targets[sid]) >= 20:
                 X = np.array(self.inputs[sid])
+                print(X.shape)
                 y = np.array(self.targets[sid])
 
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
@@ -141,35 +142,34 @@ class P300Service:
                 # universal one for EEG data.
 
                 # train
-                self.clf[sid] = ml.ml_classifier(X_train, y_train, classifier=self.clf[sid], pipeline='vect_lr')
+                self.clf[sid] = ml.ml_classifier(X_train, y_train, classifier=None, pipeline='vect_lr')
                 acc = self.clf[sid].score(X_test, y_test)
 
                 # save classifier
                 if not os.path.exists('clfs'):
                     os.makedirs('clfs')
-                if not os.path.exists(f'clfs/{self.users[sid]["username"]}'):
-                    os.makedirs(f'clfs/{self.users[sid]["username"]}')
                 ml.save(f'clfs/{self.users[sid]["username"]}', self.clf[sid])
 
-                self.update_weights(sid=sid, accuracy=acc, weights_path=f'clfs/{self.users[sid]["username"]}')
+                # self.update_weights(sid=sid, accuracy=acc, weights_path=f'clfs/{self.users[sid]["username"]}')
 
-                if not self.last_uuid[sid]:
-                    self.last_uuid[sid] = []
-                if not self.last_acc[sid]:
-                    self.last_acc[sid] = []
-                self.last_uuid[sid].append(uuid)
-                self.last_acc[sid].append(acc)
-
-                results = (self.last_uuid[sid], self.last_acc[sid])
+                results = (uuid, acc)
                 return sid, results
             return sid, None
         else:
             raise Exception(f'User not logged in!')
 
     async def retrieve_prediction_results(self, sid, args):
-        if self.users[sid]:
+        if self.users.get(sid) is not None:
             uuid, data = args
+            data = np.array(data)
+            data = np.expand_dims(data, axis=0)
+
+            # load classifier if not already loaded
+            if self.clf.get(sid) is None:
+                self.clf[sid] = ml.load(f'clfs/{self.users[sid]["username"]}')
             p300 = self.clf[sid].predict(data)
+            p300 = p300[0]
+
             score = 1
             results = (uuid, p300, score)
             return sid, results
@@ -196,9 +196,9 @@ class P300Service:
         with engine.begin() as connection:
             user_exists = connection.execute(
                 text('''
-                    SELECT 
+                    SELECT
                         u.username
-                    FROM auth_user u 
+                    FROM auth_user u
                     WHERE u.username = :username
                 '''),
                 username=username
@@ -229,9 +229,9 @@ class P300Service:
         with engine.begin() as connection:
             stored_password = connection.execute(
                 text('''
-                    SELECT 
+                    SELECT
                         u.password
-                    FROM auth_user u 
+                    FROM auth_user u
                     WHERE u.username = :username
                 '''),
                 username=username
@@ -242,13 +242,13 @@ class P300Service:
                 if verified:
                     result = connection.execute(
                         text('''
-                            SELECT 
-                                u.username, 
-                                w.accuracy, 
-                                w.weights, 
-                                w.last_updated 
-                            FROM auth_user u 
-                            LEFT JOIN user_weights w 
+                            SELECT
+                                u.username,
+                                w.accuracy,
+                                w.weights,
+                                w.last_updated
+                            FROM auth_user u
+                            LEFT JOIN user_weights w
                                 ON w.user_id = u.id
                             WHERE u.username = :username
                         '''),
@@ -261,9 +261,9 @@ class P300Service:
                     connection.execute(
                         text('''
                             UPDATE auth_user
-                            SET 
+                            SET
                                 last_login = NOW()::date
-                            WHERE 
+                            WHERE
                                 username = :username
                         '''),
                         username=username
