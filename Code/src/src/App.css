@@ -8,8 +8,6 @@ body {
 	
 }
 
-
-
 #root {
   height: 100vh;
   width: 99vw;
@@ -17,9 +15,15 @@ body {
 }
 
 .instructionScreen{
-	background-color: white;
+	background-color: #52A0B4;
 	height: 100vh;
+	width: 100vw;
 	margin-top: -3vh;
+	padding-top: 10vh;
+}
+
+.leftMost {
+	margin-left: 25vw;
 }
 	  
 .redText {
@@ -33,9 +37,18 @@ body {
 }
 
 .mindTypeColorText {
-	color: #52A0B4;
-	font-weight: bold;
+	color: white;
+	margin-left: 25vw;
+	width: 48vw;
+	font-size: 4vmin;
+	font-family: "Helvetica Neue";
 	
+}
+
+.letterSwitchText {
+	width: 80vw;
+	margin-left: 10vw;
+	margin-top: -3vh;
 }
 
 .suggestion {
@@ -76,13 +89,16 @@ body {
 
 .displayInstruction{
 	height: 5vh;
-	width: 98vw;
+	margin-left: 25vw;
+	margin-bottom: 1vh;
+	width: 48vw;
 	background-color: #E6E5E5;
 }
 
 .displayWideInstruction {
-	width: 66vw;
+	width: 50vw;
   height: 5vh;
+ 
   background-color: #E6E5E5;
 }
 
@@ -99,6 +115,22 @@ body {
   font-weight: bold;
 }
 
+.entrySmall {
+	width: 7.75vw;
+	height: 8vh;
+	background-color: white;
+	color: #52A0B4;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+	margin-top: 0.3vh;
+	
+}
+
 .entry-extra-wide {
   width: 33vw;
   height: 12.5vh;
@@ -110,6 +142,22 @@ body {
   /* border: 2px solid white; */
   border: none;
   font-weight: bold;
+  
+}
+
+.entry-extra-wide-small {
+	width: 15.9vw;
+	height: 8vh;
+	color: #52A0B4;
+	background-color: white;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+  margin-top: 0.3vh;
 }
 
 .entry-wide {
@@ -122,7 +170,21 @@ body {
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
-  font-weight: bold;
+  
+}
+
+.entry-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
 }
 
 .userInput,
@@ -144,23 +206,56 @@ body {
   font-weight: bold;
 }
 
-
-
-.entryTwo {
-  width: 47vw;
-  margin-right: 1vw;
-  margin-left: 1vw;
-  margin-top: 1vh;
-  margin-bottom: 1vh;
-  height: 40vh;
+.optionSmall {
+	width: 9.4vw;
+	height: 8vh;
+	margin-top: 0.6vh;
+	margin-right: 0.4vw;
+	color: #52A0B4;
   background-color: white;
-  color: #52A0B4;
-  font-size: 8vmin;
+  font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
   font-weight: bold;
+}
+
+
+
+.entryTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 1vw;
+  margin-top: 0.75vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 10vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  font-family: 'Helvetica Neue';
+}
+
+.twoByTwo{
+	margin-left: 25vw;
+}
+
+.topLeft{
+	border-top-left-radius: 2vmin;
+}
+
+.topRight {
+	border-top-right-radius: 2vmin;
+}
+
+.bottomLeft {
+	border-bottom-left-radius: 2vmin;
+}
+
+.bottomRight {
+	border-bottom-right-radius: 2vmin;
 }
 
 
@@ -172,7 +267,6 @@ body {
 }
 
 .login, .sign-up, .back, .continueButton, .goToMindType {
-  background-color: #FF4500;
   border: none;
   color: white;
   height: 10vh;
@@ -186,13 +280,23 @@ body {
   display: inline-block;
   text-decoration: none;
   cursor: pointer;
+  border-radius: 2vmin;
+}
+
+.welcomeLogo {
+	margin-top: 15vh;
+}
+
+.login {
+	background-color: #52A0B4;
 }
 
 .login:hover {opacity: 1}
 
 
 .sign-up {
-  background-color: #00FF00;
+  background-color: #F28585;
+  margin-top: 2vh;
 }
 
 .goToMindType{
@@ -205,6 +309,7 @@ body {
 
 .back {
   background-color: #8b807a;
+  margin-top: 2vh;
 }
 
 .back:hover {opacity: 1}

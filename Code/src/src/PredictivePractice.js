@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Letters from './components/LetterComponent';
+import Letters from './LettersSmall';
 
 
 class PredictivePractice extends React.Component {
@@ -12,14 +12,14 @@ class PredictivePractice extends React.Component {
 	
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText ppText">Let's try to save some time with predictive test. Type "I am typing with my mind! 🎉"</h3>
+        <h3 className="mindTypeColorText">Let's try to save some time with predictive test. Type "I am typing with my mind! 🎉"</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
-		<button className="option">.</button>
-		<button onClick={this.handleNumClick} className="option">0</button>
-        <button onClick={this.handleEmojiClick} className="option">:)</button>
-		<button className="option">&crarr;</button>
-        <button className="option">&#8678;</button>
+		<button className="optionSmall leftMost bottomLeft">.</button>
+		<button onClick={this.handleNumClick} className="optionSmall">0</button>
+        <button onClick={this.handleEmojiClick} className="optionSmall">:)</button>
+		<button className="optionSmall">&crarr;</button>
+        <button className="optionSmall bottomRight">&#8678;</button>
 		
 		<button onClick={this.props.predictiveHandler}>Continue</button>
 		

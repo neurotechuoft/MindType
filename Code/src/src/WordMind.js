@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import Letters from './components/LetterComponent';
-import Numbers from './components/NumberComponent';
-import Emojis from './components/EmojiComponent';
+import Letters from './LettersSmallWM'
 
 class WordMind extends React.Component {
 	

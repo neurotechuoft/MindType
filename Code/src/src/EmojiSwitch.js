@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import Letters from './components/LetterComponent';
-import Numbers from './components/NumberComponent';
-import Emojis from './components/EmojiComponent';
+import Emojis from './EmojisSmall';
 
 class EmojiSwitch extends React.Component {
 	
@@ -13,11 +11,11 @@ class EmojiSwitch extends React.Component {
         <h3 className="mindTypeColorText">Nice! Select &123 to access numbers and symbols.</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Emojis />
-		<button className="option">.</button>
-		<button onClick={this.handleNumClick} className="option">0</button>
-        <button onClick={this.handleLetterClick} className="option">abc</button>
-		<button className="option">&crarr;</button>
-        <button className="option">&#8678;</button>
+		<button className="optionSmall leftMost bottomLeft">.</button>
+		<button onClick={this.handleNumClick} className="optionSmall">0</button>
+        <button onClick={this.handleLetterClick} className="optionSmall">abc</button>
+		<button className="optionSmall">&crarr;</button>
+        <button className="optionSmall bottomRight">&#8678;</button>
 		<button onClick={this.props.emojiSwitchHandler}>Continue</button>
 		
       </div>

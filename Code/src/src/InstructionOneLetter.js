@@ -12,7 +12,7 @@ class InstructionOneLetter extends React.Component {
 	
     return (
 	<div className="instructionScreen">
-      <div className="twoByTwo">
+      <div>
         <h3 className="mindTypeColorText">Try to type the letter 'b'</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<TwoByTwo />
