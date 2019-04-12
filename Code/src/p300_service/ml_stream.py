@@ -157,3 +157,10 @@ class MLStream(object):
         """Returns one set of prediction data if there are any, otherwise returns None"""
         if len(self.predictions) > 0:
             return self.predictions.pop(0)
+
+    def get_mode(self):
+        """ Returns true if in training mode, False if not """
+        return self.train
+
+    def set_mode(self, train_mode):
+        self.train = train_mode
