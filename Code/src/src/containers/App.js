@@ -28,9 +28,11 @@ let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
 let curCol = 0; // Keeping track of which array index you're on for random cols.
 
+let selectedKey = null;
+
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 500;
+const FLASHING_PAUSE = 1000;
 
 class App extends Component {
   constructor(props) {
@@ -70,6 +72,20 @@ class App extends Component {
     this.setState({predictions : predictions})
   }
 
+  resetKey(key) {
+    if (key != null) {
+      key.classList.add("entry");
+      key.classList.remove("selected");
+      key.classList.remove("chosen");
+    }
+  }
+
+  keyChosen(key) {
+    if (key != null) {
+      key.classList.add("chosen");
+    }
+  }
+
   writePhrase() {
     const {statement, interval, lettersFound, rowOrder, 
       colOrder, rowFound, colFound, displayText} = this.state;
@@ -77,10 +93,12 @@ class App extends Component {
       clearInterval(interval);
     } else {
       for (let j = 0; j < prev.length; j++) {
-        prev[j].classList.add("entry");
-        prev[j].classList.remove("selected");
-        prev[j].classList.remove("chosen");
+        this.resetKey(prev[j]);
       }
+      if (selectedKey != null) {
+        this.resetKey(selectedKey);
+      }
+      
       // making sure rows/cols don't flash if they've already been found.
       let rc;
       if (rowFound) rc = 2;
@@ -104,8 +122,10 @@ class App extends Component {
           row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
-              row[j].classList.add("chosen");
+              selectedKey = row[j];
+              // row[j].classList.add("chosen");
             }
+            // numColumSelected = j;
             const rowOrder = getRandomArray(5);
             curRow = 0;
             this.setState({rowFound : true, rowOrder});
@@ -128,7 +148,8 @@ class App extends Component {
           col[j].classList.add("selected");
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
-              col[j].classList.add("chosen");
+              selectedKey = col[j];
+              // col[j].classList.add("chosen");
             }
             const colOrder = getRandomArray(6);
             curCol = 0;
@@ -138,6 +159,8 @@ class App extends Component {
       }
       // If a letter has been found.
       if (rowFound && colFound) {
+        this.keyChosen(selectedKey);
+        // TODO: Reset numCol and numRow to -1
         [curRow, curCol] = [0, 0];
         const newDisplay = displayText + statement[lettersFound];
         this.setState({rowFound : false, colFound : false, 
