@@ -42,19 +42,27 @@ body {
 	font-weight: bold;
 }
 
+
 .mindTypeColorText {
 	color: white;
 	margin-left: 25vw;
 	width: 48vw;
-	font-size: 4vmin;
+	font-size: 5vmin;
 	font-family: "Helvetica Neue";
 
 }
 
-.letterSwitchText {
-	width: 60vw;
+
+
+.smallerText {
+	font-size: 4vmin;
+}
+
+.upText {
 	margin-top: -3vh;
 }
+
+
 
 .suggestion {
   width: 16.5vmin;
@@ -282,7 +290,6 @@ body {
   border: none;
   font-weight: bold;
 }
-
 
 
 .entryTwo {

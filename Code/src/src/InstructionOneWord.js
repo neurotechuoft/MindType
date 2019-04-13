@@ -11,7 +11,7 @@ class InstructionOneWord extends React.Component {
     return (
 	<div className="instructionScreen">
       <div>
-        <h3 className="mindTypeColorText">Great! Now try the world "cab"</h3>
+        <h3 className="mindTypeColorText">Great! Now try the word "cab"</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<TwoByTwo />
 		<button onClick={this.props.instructionOneWordHandler}>Continue</button>
