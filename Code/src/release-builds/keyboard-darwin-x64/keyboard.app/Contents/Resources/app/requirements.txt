@@ -1,0 +1,13 @@
+Cython==0.27.3
+marisa-trie==0.7.4
+numpy==1.14.0
+pandas==0.22.0
+PyQt5==5.10
+pyserial==3.4
+python-dateutil==2.6.1
+python-xlib==0.21
+pytz==2017.3
+PyUserInput==0.1.11
+sip==4.19.7
+six==1.11.0
+Yapsy==1.11.223
