@@ -4,18 +4,46 @@ class Numbers extends Component {
   render() {
     return (
       <div className="userInput">
-        <button className="entry-wide">0</button>
-        <button className="entry-wide">1</button>
-        <button className="entry-wide">2</button>
-        <button className="entry-wide">3</button>
-        <button className="entry-wide">4</button>
-        <br />
-        <button className="entry-wide">5</button>
-        <button className="entry-wide">6</button>
-        <button className="entry-wide">7</button>
-        <button className="entry-wide">8</button>
-        <button className="entry-wide">9</button>
-
+      <div>
+        <button className="entry">1</button>
+        <button className="entry">2</button>
+        <button className="entry">!</button>
+        <button className="entry">@</button>
+        <button className="entry">#</button>
+        <button className="entry">$</button>
+      </div>
+      <div>
+        <button className="entry">3</button>
+        <button className="entry">4</button>
+        <button className="entry">%</button>
+        <button className="entry">^</button>
+        <button className="entry">&amp;</button>
+        <button className="entry">~</button>
+        </div>
+      <div>
+        <button className="entry">5</button>
+        <button className="entry">6</button>
+        <button className="entry">+</button>
+        <button className="entry">-</button>
+        <button className="entry">=</button>
+        <button className="entry">*</button>
+      </div>
+      <div>
+        <button className="entry">7</button>
+        <button className="entry">8</button>
+        <button className="entry">:</button>
+        <button className="entry">;</button>
+        <button className="entry">'</button>
+        <button className="entry">"</button>
+      </div>
+      <div>
+        <button className="entry">9</button>
+        <button className="entry">0</button>
+        <button className="entry">(</button>
+        <button className="entry">)</button>
+        <button className="entry">/</button>
+        <button className="entry">\</button>
+      </div>
       </div>
     )
   }

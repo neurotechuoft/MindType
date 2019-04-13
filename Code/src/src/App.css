@@ -7,12 +7,12 @@ body {
 
 #root {
   height: 100vh;
-  width: 99vw;
+  width: 100vw;
 }
 
 .suggestion {
-  width: 33vw;
-  height: 12.5vh;
+  width: 20vh;
+  height: 10vh;
   background-color: $background;
   color: white;
   font-size: 2.5vmin;
@@ -22,16 +22,18 @@ body {
   border-style: solid;
   border-color: white;
 }
-
+w
 .suggestions {
-  margin-top: 1vh;
+  margin-top: 10vh;
 }
 
+/*
 .resume {
   width: 48vw;
   margin-left: 2vw;
   height: 5vh;
 }
+*/
 
 .display {
   width: 48vw;
@@ -39,39 +41,42 @@ body {
 }
 
 .entry {
-  width: 16.5vw;
-  height: 12.5vh;
+  margin: auto;
+  width: 10vh;
+  height: 10vh;
   background-color: $background;
   color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
-}
-
-.entry-extra-wide {
-  width: 33vw;
-  height: 12.5vh;
-  background-color: $background;
-  color: white;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
+  border: 1px solid white;
 }
 
 .entry-wide {
-  width: 19.8vw;
-  height: 12.5vh;
+  margin: auto;
+  width: 20vh;
+  height: 10vh;
   background-color: $background;
   color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
+  border: 1px solid white;
+}
+
+.entry-extra-wide {
+  margin: auto;
+  width: 20vh;
+  height: 10vh;
+  background-color: $background;
+  color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: 1px solid white;
 }
 
 .userInput,
