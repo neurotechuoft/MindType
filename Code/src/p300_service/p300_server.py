@@ -64,15 +64,15 @@ class P300Service:
                 username=self.users[sid]['username']
             ).fetchall()
             if user_id:
-                user_id_exists = connection.exceute(
+                user_id_exists = connection.execute(
                     text('''
                         SELECT
                             w.id
                         FROM user_weights w
                         WHERE w.user_id = :user_id
                     '''),
-                    user_id=user_id[0]
-                )
+                    user_id=user_id[0][0]
+                ).fetchall()
                 if user_id_exists:
                     connection.execute(
                         text('''
@@ -80,11 +80,11 @@ class P300Service:
                             SET
                                 accuracy = :accuracy,
                                 weights = :weights,
-                                last_update = NOW()::date
+                                last_updated = NOW()::TIMESTAMP
                             WHERE
                                 user_id = :user_id
                         '''),
-                        user_id=user_id[0],
+                        user_id=user_id[0][0],
                         accuracy=accuracy,
                         weights=weights_path
                     )
@@ -97,10 +97,10 @@ class P300Service:
                                 :user_id,
                                 :accuracy,
                                 :weights,
-                                NOW()::date
+                                NOW()::TIMESTAMP
                             )
                         '''),
-                        user_id=user_id[0],
+                        user_id=user_id[0][0],
                         accuracy=accuracy,
                         weights=weights_path
                     )
@@ -110,13 +110,10 @@ class P300Service:
     async def load_classifier(self, sid, args):
         if self.users.get(sid) is not None:
             try:
-                self.clf[sid] = ml.load(f'clfs/{self.users[sid]["username"]}')
+                self.clf[sid] = ml.load(self.users[sid]["weights"])
                 return sid, True
             except FileNotFoundError:
                 raise Exception(f'Cannot load classifier')
-
-            self.clf[sid] = None
-            return sid, False
         else:
             raise Exception(f'User not logged in!')
 
@@ -150,7 +147,7 @@ class P300Service:
                     os.makedirs('clfs')
                 ml.save(f'clfs/{self.users[sid]["username"]}', self.clf[sid])
 
-                # self.update_weights(sid=sid, accuracy=acc, weights_path=f'clfs/{self.users[sid]["username"]}')
+                self.update_weights(sid=sid, accuracy=acc, weights_path=f'clfs/{self.users[sid]["username"]}')
 
                 results = (uuid, acc)
                 return sid, results
@@ -212,7 +209,7 @@ class P300Service:
                             :username,
                             :password,
                             :email,
-                            NOW()::date
+                            NOW()::TIMESTAMP
                         )
                     '''),
                     username=username,
@@ -262,7 +259,7 @@ class P300Service:
                         text('''
                             UPDATE auth_user
                             SET
-                                last_login = NOW()::date
+                                last_login = NOW()::TIMESTAMP
                             WHERE
                                 username = :username
                         '''),
