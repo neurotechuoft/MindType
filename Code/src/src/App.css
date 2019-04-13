@@ -110,11 +110,63 @@ w
   color: #52A0B4;
   background-color: white;
   font-size: 4vmin;
-  /* font-weight: bold; */
   font-family: $font-stack;
-  /* border: 2px solid white; */
   border: none;
   font-weight: bold;
+  border-top: 0.5px solid #3da8c4;
+  border-bottom:none;
+  border-right:none;
+  border-left: 0.5px solid #3da8c4; 
+}
+
+.entry.bottom {
+  border-bottom:0.5px solid #3da8c4;
+}
+
+.entry.right {
+  border-right:0.5px solid #3da8c4;
+}
+
+.selected {
+  width: 16.5vw;
+  height: 12.5vh;
+  color: white;
+  background-color: #3da8c4;
+  font-size: 4vmin;
+  font-family: $font-stack;
+  border-top: 0.5px solid white;
+  border-bottom:none;
+  border-right:none;
+  border-left: 0.5px solid white; 
+}
+
+.selected.bottom {
+  border-bottom:0.5px solid white;
+}
+
+.selected.right {
+  border-right:0.5px solid white;
+}
+
+.chosen {
+  width: 16.5vw;
+  height: 12.5vh;
+  color: red;
+  font-weight: bold;
+  font-size: 4vmin;
+  border-top: 0.5px solid white;
+  border-bottom:none;
+  border-right:none;
+  border-left: 0.5px solid white; 
+  font-family: $font-stack;
+}
+
+.chosen.bottom {
+  border-bottom:0.5px solid white;
+}
+
+.chosen.right {
+  border-right:0.5px solid white;
 }
 
 .entrySmall {
@@ -130,7 +182,11 @@ w
 	font-weight: bold;
 	margin-right: 0.4vw;
 	margin-top: 0.3vh;
+}
 
+.extra-wide {
+  width: 33vw;
+  height: 12.5vh;
 }
 
 .entry-extra-wide {
@@ -144,7 +200,6 @@ w
   /* border: 2px solid white; */
   border: none;
   font-weight: bold;
-
 }
 
 .entry-extra-wide-small {
@@ -204,7 +259,7 @@ w
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
+  border: 0.5px solid #3da8c4;
   font-weight: bold;
 }
 
@@ -333,3 +388,4 @@ w
 .ppText{
 	font-size: 2.5vh;
 }
+ 
