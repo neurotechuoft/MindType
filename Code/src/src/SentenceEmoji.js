@@ -8,7 +8,7 @@ class SentenceEmoji extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText sentenceEmojiText">Time to combine it all! Type "I am typing with my mind! 🎉"</h3>
+        <h3 className="mindTypeColorText smallerText sentenceEmojiText">Time to combine it all! <br />Try: "I am typing with my mind! 🎉"</h3>
 		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />

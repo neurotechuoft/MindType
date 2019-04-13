@@ -13,7 +13,8 @@ class InstructionOneLetter extends React.Component {
     return (
 	<div className="instructionScreen">
 	<div className="upperTextDiv">
-	<h3 className="mindTypeColorText">Try to type the letter 'b'</h3></div>
+	<h3 className="mindTypeColorText">Let's type a letter.<br />
+	Try: 'b'</h3></div>
       <div className="keysContainer">
         
 		<input type="text" className="displayInstruction" readOnly></input>

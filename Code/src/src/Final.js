@@ -9,7 +9,7 @@ class Final extends React.Component {
 	  
     return (
       <div>
-        <h3>Congratulations! You're now ready to use MindType!</h3>
+        <h3 className="final">Congratulations! You're now ready to use MindType!</h3>
 		
 		<button className="goToMindType" onClick={this.props.finalHandler}>Go to MindType</button>
 		
