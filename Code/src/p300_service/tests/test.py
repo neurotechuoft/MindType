@@ -32,11 +32,11 @@ email = "e@mail"
 # socket_client.emit("predict", (uuid, timestamp), print_results)
 # socket_client.wait_for_callbacks(seconds=1)
 
-# socket_client.emit("login", (user, password), print_results)
-# socket_client.wait_for_callbacks(seconds=1)
-
-socket_client.emit("train", (uuid, timestamp, p300), print_results)
+socket_client.emit("login", (user, password), print_results)
 socket_client.wait_for_callbacks(seconds=1)
+
+# socket_client.emit("train", (uuid, timestamp, p300), print_results)
+# socket_client.wait_for_callbacks(seconds=1)
 
 # socket_client.emit("register", (user, password, email), print_results)
 # socket_client.wait_for_callbacks(seconds=1)

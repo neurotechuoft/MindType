@@ -30,8 +30,7 @@ class P300Client(object):
         uuid, timestamp, p300 = args
         acc = random.random()
         acc = random.choice([acc, None])
-        results = (uuid, acc)
-        return sid, results
+        return sid, acc
 
     async def predict_handler(self, sid, args):
         uuid, timestamp = args
