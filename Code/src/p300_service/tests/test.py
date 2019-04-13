@@ -24,7 +24,6 @@ socket_client = SocketIO('localhost', 8002)
 socket_client.connect()
 
 uuid = random.randint(0, 1e10)
-timestamp = 256590
 p300 = 1
 user = "karl"
 password = "cui"
@@ -42,7 +41,7 @@ for i in range(30):
 
     uuid = random.randint(0, 1e10)
     p300 = random.choice([0, 1])
-    socket_client.emit("train", (uuid, timestamp + i*.5, p300), print_results)
+    socket_client.emit("train", (uuid, time.time(), p300), print_results)
     socket_client.wait_for_callbacks(seconds=.5)
 
     time.sleep(.5)
