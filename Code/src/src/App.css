@@ -1,26 +1,68 @@
+{
 $background:  #3da8c4;
 $font-stack: Tahoma, Arial, Helvetica, sans-serif;
+}
 
 body {
-  overflow: hidden;
+	overflow-x: hidden;
+
 }
 
 #root {
   height: 100vh;
-  width: 100vw;
+  width: 99vw;
+
+}
+
+.instructionScreen{
+	background-color: #52A0B4;
+	height: 100vh;
+	width: 100vw;
+	margin-top: -3vh;
+	padding-top: 10vh;
+}
+
+.leftMost {
+	margin-left: 25vw;
+}
+
+.redText {
+	color: red;
+	font-weight: bold;
+}
+
+.blueText {
+	color: blue;
+	font-weight: bold;
+}
+
+.mindTypeColorText {
+	color: white;
+	margin-left: 25vw;
+	width: 48vw;
+	font-size: 4vmin;
+	font-family: "Helvetica Neue";
+
+}
+
+.letterSwitchText {
+	width: 80vw;
+	margin-left: 10vw;
+	margin-top: -3vh;
 }
 
 .suggestion {
-  width: 20vh;
-  height: 10vh;
-  background-color: $background;
-  color: white;
+  width: 33vw;
+  height: 12.5vh;
+  color: #52A0B4;
+  background-color: white;
   font-size: 2.5vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   border-width: 2px 2px 2px 0px;
   border-style: solid;
   border-color: white;
+  font-weight: bold;
 }
 w
 .suggestions {
@@ -38,60 +80,256 @@ w
 .display {
   width: 48vw;
   height: 5vh;
+  background-color: #E6E5E5;
+}
+
+.displayWide {
+  width: 66vw;
+  height: 5vh;
+  background-color: #E6E5E5;
+}
+
+.displayInstruction{
+	height: 5vh;
+	margin-left: 25vw;
+	margin-bottom: 1vh;
+	width: 48vw;
+	background-color: #E6E5E5;
+}
+
+.displayWideInstruction {
+	width: 50vw;
+  height: 5vh;
+
+  background-color: #E6E5E5;
 }
 
 .entry {
-  margin: auto;
-  width: 10vh;
-  height: 10vh;
-  background-color: $background;
-  color: white;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: 1px solid white;
-}
-
-.entry-wide {
-  margin: auto;
-  width: 20vh;
-  height: 10vh;
-  background-color: $background;
-  color: white;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: 1px solid white;
-}
-
-.entry-extra-wide {
-  margin: auto;
-  width: 20vh;
-  height: 10vh;
-  background-color: $background;
-  color: white;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: 1px solid white;
-}
-
-.userInput,
-.options {
-  margin-top: 1vh;
-}
-
-.option {
-  width: 19.8vw;
+  width: 16.5vw;
   height: 12.5vh;
-  background-color: $background;
-  color: white;
+  color: #52A0B4;
+  background-color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
+  font-weight: bold;
+}
+
+.entrySmall {
+	width: 7.75vw;
+	height: 8vh;
+	background-color: white;
+	color: #52A0B4;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+	margin-top: 0.3vh;
+
+}
+
+.entry-extra-wide {
+  width: 33vw;
+  height: 12.5vh;
+  color: #52A0B4;
+  background-color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  font-weight: bold;
+
+}
+
+.entry-extra-wide-small {
+	width: 15.9vw;
+	height: 8vh;
+	color: #52A0B4;
+	background-color: white;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}
+
+.entry-wide {
+  width: 19.8vw;
+  height: 12.5vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+
+}
+
+.entry-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}
+
+.userInput,
+.options {
+  margin-top: 1vh;
+  font-weight: bold;
+}
+
+.option {
+  width: 19.8vw;
+  height: 12.5vh;
+  color: #52A0B4;
+  background-color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  font-weight: bold;
+}
+
+.optionSmall {
+	width: 9.4vw;
+	height: 8vh;
+	margin-top: 0.6vh;
+	margin-right: 0.4vw;
+	color: #52A0B4;
+  background-color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  font-weight: bold;
+}
+
+
+
+.entryTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 1vw;
+  margin-top: 0.75vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 10vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  font-family: 'Helvetica Neue';
+}
+
+.twoByTwo{
+	margin-left: 25vw;
+}
+
+.topLeft{
+	border-top-left-radius: 2vmin;
+}
+
+.topRight {
+	border-top-right-radius: 2vmin;
+}
+
+.bottomLeft {
+	border-bottom-left-radius: 2vmin;
+}
+
+.bottomRight {
+	border-bottom-right-radius: 2vmin;
+}
+
+
+.login, .sign-up, .back, .continueButton, .goToMindType {
+  border: none;
+  color: white;
+  height: 10vh;
+  width: 30vw;
+  text-align: center;
+  font-size: 16px;
+  margin-left: 35vw;
+  margin-top: 5vh;
+  opacity: 0.6;
+  transition: 0.3s;
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 2vmin;
+}
+
+  .continueButton{
+	background-color: blue;
+	margin-bottom: 5vh;
+	margin-left: 0vw;
+
+}
+
+.welcomeLogo {
+	margin-top: 15vh;
+}
+
+.login {
+	background-color: #52A0B4;
+}
+
+.login:hover {opacity: 1}
+
+
+.sign-up {
+  background-color: #F28585;
+  margin-top: 2vh;
+}
+
+.goToMindType{
+	background-color: orange;
+}
+
+.goToMindType:hover {opacity: 1}
+
+.sign-up:hover {opacity: 1}
+
+.back {
+  background-color: #8b807a;
+  margin-top: 2vh;
+}
+
+.back:hover {opacity: 1}
+
+.continueButton:hover {opacity: 1}
+
+.email-input, .password-input, .name-user, .welcomeLogo, .logoMindType {margin-left: 35vw; width: 30vw;}
+
+
+.heading{
+	font-weight: bold;
+	font-size: 5vh;
+}
+
+.text{
+	font-size: 3vh;
+}
+
+.ppText{
+	font-size: 2.5vh;
 }
