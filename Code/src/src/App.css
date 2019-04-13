@@ -4,8 +4,8 @@ $font-stack: Tahoma, Arial, Helvetica, sans-serif;
 }
 
 body {
-	overflow-x: hidden;
-	
+  overflow-x: hidden;
+  background: #3da8c4;
 }
 
 #root {
@@ -103,8 +103,8 @@ body {
 }
 
 .chosen {
-  width: 16.5vw;
-  height: 12.5vh;
+  width: 10vh;
+  height: 10vh;
   color: #ffffff;
   background-color: red;
   font-size: 4vmin;
@@ -114,8 +114,8 @@ body {
 }
 
 .selected {
-  width: 16.5vw;
-  height: 12.5vh;
+  width: 10vh;
+  height: 10vh;
   color: white;
   background-color: #3da8c4;
   font-size: 4vmin;
@@ -124,8 +124,8 @@ body {
 }
 
 .entry {
-  width: 16.5vw;
-  height: 12.5vh;
+  width: 10vh;
+  height: 10vh;
   color: #3da8c4;
   background-color: white;
   font-size: 4vmin;
@@ -152,8 +152,8 @@ body {
 }
 
 .entry-extra-wide {
-  width: 33vw;
-  height: 12.5vh;
+  width: 20vh;
+  height: 10vh;
   color: #52A0B4;
   background-color: white;
   font-size: 4vmin;
