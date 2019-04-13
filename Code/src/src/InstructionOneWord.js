@@ -10,8 +10,10 @@ class InstructionOneWord extends React.Component {
 	
     return (
 	<div className="instructionScreen">
-      <div>
+		<div className="upperTextDiv">
         <h3 className="mindTypeColorText">Great! Now try the word "cab"</h3>
+		</div>
+		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<TwoByTwo />
 		<button onClick={this.props.instructionOneWordHandler}>Continue</button>

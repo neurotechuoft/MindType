@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './mindTypeLogo.png';
+import logo from './mindtype_logo.png';
 import io from "socket.io-client";
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.

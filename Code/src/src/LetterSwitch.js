@@ -8,7 +8,9 @@ class LetterSwitch extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText upText">Let's practice switching between keyboards. Select :) to access the emojis</h3>
+		<div className="upperTextDiv">
+        <h3 className="mindTypeColorText smallerText upText">Let's practice switching between keyboards. Select :) to access the emojis</h3></div>
+		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
 		<button className="optionSmall leftMost bottomLeft">.</button>
@@ -17,7 +19,7 @@ class LetterSwitch extends React.Component {
 		<button className="optionSmall">&crarr;</button>
         <button className="optionSmall bottomRight">&#8678;</button>
 		<button onClick={this.props.letterSwitchHandler}>Continue</button>
-		
+		</div>
       </div>
     )
   }
