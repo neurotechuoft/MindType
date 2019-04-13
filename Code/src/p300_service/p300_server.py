@@ -296,4 +296,4 @@ class P300Service:
 if __name__ == '__main__':
     service = P300Service()
     service.initialize_handlers()
-    service.app.run(host='localhost', port=8001)
+    service.app.run(host='0.0.0.0', port=8001)
