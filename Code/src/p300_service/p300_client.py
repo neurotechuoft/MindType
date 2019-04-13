@@ -54,8 +54,10 @@ class P300Client(object):
         for stream in ['eeg', 'marker', 'ml']:
             self._start_stream(stream)
 
-        while len(streams['eeg'].data) == 0:
-            self.time_diff = time.time() - self.streams['eeg'].data[-1][-1]
+        while len(self.streams['eeg'].data) == 0:
+            time.sleep(0.1)
+
+        self.time_diff = time.time() - self.streams['eeg'].data[-1][-1]
 
     def change_mode(self, train_mode=False):
         """ train_mode=True for training mode
