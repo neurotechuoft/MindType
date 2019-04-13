@@ -27,8 +27,12 @@ const cols = [col1, col2, col3, col4, col5, col6];
 let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
 let curCol = 0; // Keeping track of which array index you're on for random cols.
+let sRows = [row1, row2, row3, row4, row5];
+let sCols = [col1, col2, col3, col4, col5, col6];
 
 let selectedKey = null;
+let ci = 0;
+let ri = 0; 
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
@@ -86,6 +90,13 @@ class App extends Component {
     }
   }
 
+  shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    } 
+  }
+  
   writePhrase() {
     const {statement, interval, lettersFound, rowOrder, 
       colOrder, rowFound, colFound, displayText} = this.state;
@@ -99,19 +110,20 @@ class App extends Component {
         this.resetKey(selectedKey);
       }
       
-      // making sure rows/cols don't flash if they've already been found.
+      // Making sure rows/cols don't flash if they've already been found.
       let rc;
-      if (rowFound) rc = 2;
-      else if (colFound) rc = 1;
+      if (ri == 5) rc = 2;
+      else if (ci == 6) rc = 1;
       else rc = Math.floor((Math.random() * 2) + 1);
       
+      // Rows
       if (rc === 1) {
-        const row = rows[rowOrder[curRow]];
+        const row = sRows[ri];
+        ri++;
         prev = row;
         curRow = curRow + 1;
 
         // Handling Spaces 
-
         if (statement[lettersFound] === ' ' && row === rows[4]) {
           const rowOrder = getRandomArray(5);
           curRow = 0;
@@ -131,13 +143,16 @@ class App extends Component {
             this.setState({rowFound : true, rowOrder});
           }
         }
-      } else {
-        const col = cols[colOrder[curCol]];
+      } 
+      // Columns
+      else {
+        const col = sCols[ci];
+        ci++;
         prev = col;
         curCol = curCol + 1;
         
         // Handling Spaces
-        if (statement[lettersFound] === ' ' && col === cols[0]) {
+        if (statement[lettersFound] === ' ' && col === cols[3]) {
           const colOrder = getRandomArray(6);
           curCol = 0;
           this.setState({colFound : true, colOrder});
@@ -157,8 +172,13 @@ class App extends Component {
           }
         }
       }
+
       // If a letter has been found.
-      if (rowFound && colFound) {
+      if (rowFound && colFound && ri == 5 && ci == 6) {
+        ci = 0;
+        ri = 0;
+        this.shuffle(sRows);
+        this.shuffle(sCols);
         this.keyChosen(selectedKey);
         // TODO: Reset numCol and numRow to -1
         [curRow, curCol] = [0, 0];
@@ -169,6 +189,7 @@ class App extends Component {
         robot_socket.emit('typing', statement[lettersFound]);
         // Emitting an event to the socket to recieve word predictions.
         nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
+
       }
     }
   }
