@@ -27,6 +27,8 @@ class P300Client(object):
         self.login_results = None
         self.logout_results = None
 
+        self.time_diff = 0  # difference between unix and muse time
+
         self.sio = socketio.AsyncServer(async_mode='sanic')
         self.app = Sanic()
         self.sio.attach(self.app)
@@ -51,6 +53,11 @@ class P300Client(object):
     def start_streams(self):
         for stream in ['eeg', 'marker', 'ml']:
             self._start_stream(stream)
+
+        while len(self.streams['eeg'].data) == 0:
+            time.sleep(0.1)
+
+        self.time_diff = time.time() - self.streams['eeg'].data[-1][-1]
 
     def change_mode(self, train_mode=False):
         """ train_mode=True for training mode
@@ -212,6 +219,7 @@ class P300Client(object):
             time.sleep(.2)
 
         uuid, timestamp, p300 = args
+        timestamp -= self.time_diff
         package = [
             str(timestamp),
             str(p300),      # target
@@ -232,6 +240,7 @@ class P300Client(object):
             time.sleep(.2)
 
         uuid, timestamp = args
+        timestamp -= self.time_diff
         package = [
             str(timestamp),
             str(0),         # target
