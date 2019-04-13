@@ -255,8 +255,8 @@ if __name__ == '__main__':
     p300_client.start_streams()
 
     # connect to p300 server
-    # p300_client.connect('35.222.93.233', 8001)
-    p300_client.connect('localhost', 8001)
+    p300_client.connect('35.222.93.233', 8001)
+    # p300_client.connect('localhost', 8001)
 
     # run client as server as well (to allow API for front end)
     p300_client.initialize_handlers()
