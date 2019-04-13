@@ -50,10 +50,9 @@ class MarkerStream(base_stream.BaseStream):
         This function recognizes samples that are in an array with the format:
             [
                 [0]: timestamp: float - point in time (in seconds) at which the sample is published,
-                [1]: event: int - identifier for the marker, i.e. a number that is mapped to a certain letter,
-                [2]: target: int - boolean (0 or 1) that is used in training to mark the sample as a target value,
-                [3]: num_events: int - number of events that are published in the epoch,
-                [4]: epoch_id: uuid - unique identifier for a specific epoch
+                [1]: target: int - boolean (0 or 1) that is used in training to mark the sample as a target value,
+                [2]: num_events: int - number of events that are published in the epoch,
+                [3]: epoch_id: uuid - unique identifier for a specific epoch
             ]
 
         Args:
@@ -66,17 +65,16 @@ class MarkerStream(base_stream.BaseStream):
 
             # sample parameters
             timestamp = sample[0]
-            event = sample[1]
-            target = sample[2]
-            num_events = sample[3]
-            epoch_id = sample[4]
+            target = sample[1]
+            num_events = sample[2]
+            epoch_id = sample[3]
 
             # create epoch entry if not previously recorded
             if epoch_id not in self.event_count_dict:
                 self.event_count_dict[epoch_id] = 0
 
             # update marker data
-            marker_sample = [event, target, timestamp]
+            marker_sample = [target, timestamp]
             self._update(marker_sample)
 
             # append count of epoch

@@ -5,13 +5,13 @@ $font-stack: Tahoma, Arial, Helvetica, sans-serif;
 
 body {
 	overflow-x: hidden;
-	
+
 }
 
 #root {
   height: 100vh;
   width: 99vw;
-  
+
 }
 
 .instructionScreen{
@@ -25,7 +25,7 @@ body {
 .leftMost {
 	margin-left: 25vw;
 }
-	  
+
 .redText {
 	color: red;
 	font-weight: bold;
@@ -42,7 +42,7 @@ body {
 	width: 48vw;
 	font-size: 4vmin;
 	font-family: "Helvetica Neue";
-	
+
 }
 
 .letterSwitchText {
@@ -64,16 +64,18 @@ body {
   border-color: white;
   font-weight: bold;
 }
-
+w
 .suggestions {
-  margin-top: 1vh;
+  margin-top: 10vh;
 }
 
+/*
 .resume {
   width: 48vw;
   margin-left: 2vw;
   height: 5vh;
 }
+*/
 
 .display {
   width: 48vw;
@@ -98,7 +100,7 @@ body {
 .displayWideInstruction {
 	width: 50vw;
   height: 5vh;
- 
+
   background-color: #E6E5E5;
 }
 
@@ -128,7 +130,7 @@ body {
 	font-weight: bold;
 	margin-right: 0.4vw;
 	margin-top: 0.3vh;
-	
+
 }
 
 .entry-extra-wide {
@@ -142,7 +144,7 @@ body {
   /* border: 2px solid white; */
   border: none;
   font-weight: bold;
-  
+
 }
 
 .entry-extra-wide-small {
@@ -170,7 +172,7 @@ body {
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
-  
+
 }
 
 .entry-wide-small {
@@ -280,7 +282,7 @@ body {
 	background-color: blue;
 	margin-bottom: 5vh;
 	margin-left: 0vw;
-	
+
 }
 
 .welcomeLogo {
