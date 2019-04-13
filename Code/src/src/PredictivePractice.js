@@ -12,7 +12,7 @@ class PredictivePractice extends React.Component {
 	
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText">Let's try to save some time with predictive test. Type "I am typing with my mind! 🎉"</h3>
+        <h3 className="mindTypeColorText smallerText upText">Let's try to save some time with predictive test. Type "I am typing with my mind! 🎉"</h3>
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
 		<button className="optionSmall leftMost bottomLeft">.</button>
