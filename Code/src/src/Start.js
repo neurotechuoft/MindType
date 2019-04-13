@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import SignUp from './SignUp';
 import Login from './Login';
-import logo from './mindTypeWelcome.png'
+import logo from './welcome.png'
 
 class Start extends React.Component {
   constructor(props) {
