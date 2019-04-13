@@ -24,28 +24,28 @@ socket_client = SocketIO('localhost', 8002)
 socket_client.connect()
 
 uuid = random.randint(0, 1e10)
-timestamp = 85725
+timestamp = 256590
 p300 = 1
 user = "karl"
 password = "cui"
 email = "e@mail"
 
-socket_client.emit("predict", (uuid, timestamp), on_retrieve_prediction_results)
-socket_client.wait_for_callbacks(seconds=1)
-
-# socket_client.emit("login", (user, password), print_results)
+# socket_client.emit("predict", (uuid, timestamp), on_retrieve_prediction_results)
 # socket_client.wait_for_callbacks(seconds=1)
 
-# for i in range(30):
-#     if i % 10 == 0:
-#         print("iter", i)
-#
-#     uuid = random.randint(0, 1e10)
-#     p300 = random.choice([0, 1])
-#     socket_client.emit("train", (uuid, timestamp + i*.5, p300), print_results)
-#     socket_client.wait_for_callbacks(seconds=.5)
-#
-#     time.sleep(.5)
+socket_client.emit("login", (user, password), print_results)
+socket_client.wait_for_callbacks(seconds=1)
+
+for i in range(30):
+    if i % 10 == 0:
+        print("iter", i)
+
+    uuid = random.randint(0, 1e10)
+    p300 = random.choice([0, 1])
+    socket_client.emit("train", (uuid, timestamp + i*.5, p300), print_results)
+    socket_client.wait_for_callbacks(seconds=.5)
+
+    time.sleep(.5)
 
 # socket_client.emit("register", (user, password, email), print_results)
 # socket_client.wait_for_callbacks(seconds=1)
