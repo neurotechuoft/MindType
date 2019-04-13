@@ -93,6 +93,7 @@ class App extends Component {
         curRow = curRow + 1;
 
         // Handling Spaces 
+
         if (statement[lettersFound] === ' ' && row === rows[4]) {
           const rowOrder = getRandomArray(5);
           curRow = 0;
@@ -193,18 +194,20 @@ class App extends Component {
     const predictions = this.state.predictions.map(prediction => <button className="suggestion"> { prediction } </button>)
 
     return (
-      <div>
-        <input type="text" className="display" value={this.state.displayText} readOnly></input>
-        <div className="suggestions">
-          { predictions }
-        </div>
-        {element}
-        <div className="options">
-          <button className="option">.</button>
-          {button2}
-          {button3}
-          <button className="option">&crarr;</button>
-          <button className="option">&#8678;</button>
+      <div class="keyboard-container">
+        <div>
+          <input type="text" className="display" value={this.state.displayText} readOnly></input>
+          <div className="suggestions">
+            { predictions }
+          </div>
+          {element}
+          <div className="options">
+            <button className="option">.</button>
+            {button2}
+            {button3}
+            <button className="option">&crarr;</button>
+            <button className="option">&#8678;</button>
+          </div>
         </div>
       </div>
     )

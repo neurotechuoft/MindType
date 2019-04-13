@@ -11,7 +11,13 @@ body {
 #root {
   height: 100vh;
   width: 99vw;
-
+}
+.keyboard-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10vmin;
 }
 
 .instructionScreen{
@@ -52,8 +58,8 @@ body {
 }
 
 .suggestion {
-  width: 33vw;
-  height: 12.5vh;
+  width: 16.5vmin;
+  height: 8.25vmin;
   color: #52A0B4;
   background-color: white;
   font-size: 2.5vmin;
@@ -105,8 +111,8 @@ w
 }
 
 .entry {
-  width: 16.5vw;
-  height: 12.5vh;
+  width: 8.25vmin;
+  height: 8.25vmin;
   color: #52A0B4;
   background-color: white;
   font-size: 4vmin;
@@ -128,8 +134,8 @@ w
 }
 
 .selected {
-  width: 16.5vw;
-  height: 12.5vh;
+  width: 8.25vmin;
+  height: 8.25vmin;
   color: white;
   background-color: #3da8c4;
   font-size: 4vmin;
@@ -149,8 +155,8 @@ w
 }
 
 .chosen {
-  width: 16.5vw;
-  height: 12.5vh;
+  width: 8.25vmin;
+  height: 8.25vmin;
   color: red;
   font-weight: bold;
   font-size: 4vmin;
@@ -185,8 +191,8 @@ w
 }
 
 .extra-wide {
-  width: 33vw;
-  height: 12.5vh;
+  width: 16.5vmin;
+  height: 8.25vmin;
 }
 
 .entry-extra-wide {
@@ -251,8 +257,8 @@ w
 }
 
 .option {
-  width: 19.8vw;
-  height: 12.5vh;
+  width: 9.9vmin;
+  height: 8.25vmin;
   color: #52A0B4;
   background-color: white;
   font-size: 4vmin;
