@@ -187,7 +187,7 @@ class App extends Component {
 
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
-    const statement = "what would you like to type";
+    const statement = "😂🌈💩";
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
     this.setState({interval, statement});
   }
