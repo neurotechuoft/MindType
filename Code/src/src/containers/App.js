@@ -15,7 +15,7 @@ const row4 = document.getElementsByClassName('row4');
 const row5 = document.getElementsByClassName('row5');
 const rows = [row1, row2, row3, row4, row5];
 
-// Getting Columns
+// Getting columns
 const col1 = document.getElementsByClassName('col1');
 const col2 = document.getElementsByClassName('col2');
 const col3 = document.getElementsByClassName('col3');
@@ -24,12 +24,19 @@ const col5 = document.getElementsByClassName('col5');
 const col6 = document.getElementsByClassName('col6');
 const cols = [col1, col2, col3, col4, col5, col6];
 
+// Keeping track of rows
 let prev = rows[0];
-let curRow = 0; // Keeping track of which array index you're on for random rows.
-let curCol = 0; // Keeping track of which array index you're on for random cols.
 
+// Selected letter
 let selectedKey = null;
 
+// Shuffled rows & cols
+let row_index = 0;
+let col_index = 0; 
+let shuffle_rows = [row1, row2, row3, row4, row5];
+let shuffle_cols = [col1, col2, col3, col4, col5, col6];
+
+// Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = 1000;
@@ -86,89 +93,94 @@ class App extends Component {
     }
   }
 
+  // Shuffling rows & columns
+  shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    } 
+  }
+  
   writePhrase() {
-    const {statement, interval, lettersFound, rowOrder, 
-      colOrder, rowFound, colFound, displayText} = this.state;
+    const {statement, interval, lettersFound, rowFound, colFound, displayText} = this.state;
+    
     if (lettersFound === statement.length) {
       clearInterval(interval);
     } else {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
       }
+      // Reset selected key
       if (selectedKey != null) {
         this.resetKey(selectedKey);
       }
-      
-      // making sure rows/cols don't flash if they've already been found.
+
+      // Row & column selector
       let rc;
-      if (rowFound) rc = 2;
-      else if (colFound) rc = 1;
-      else rc = Math.floor((Math.random() * 2) + 1);
-      
+
+      if (!(row_index == 5 && col_index == 6)) {
+        if (row_index == 5) rc = 2;
+        else if (col_index == 6) rc = 1;
+        else rc = Math.floor((Math.random() * 2) + 1);
+      }
+
+      // Rows
       if (rc === 1) {
-        const row = rows[rowOrder[curRow]];
+        const row = shuffle_rows[row_index++];
         prev = row;
-        curRow = curRow + 1;
 
-        // Handling Spaces 
-
-        if (statement[lettersFound] === ' ' && row === rows[4]) {
-          const rowOrder = getRandomArray(5);
-          curRow = 0;
-          this.setState({rowFound : true, rowOrder});
-        }
         for (let j = 0; j < row.length; j++) {
           row[j].classList.remove("entry");
           row[j].classList.add("selected");
-          if (row[j].innerHTML === statement[lettersFound]) {
+          
+          if (row[j].innerHTML === statement[lettersFound] || (row[j].innerHTML === "____" && statement[lettersFound] === " ")) {
             if (colFound) {
               selectedKey = row[j];
-              // row[j].classList.add("chosen");
             }
-            // numColumSelected = j;
-            const rowOrder = getRandomArray(5);
-            curRow = 0;
-            this.setState({rowFound : true, rowOrder});
+            // Set row found 
+            this.setState({rowFound : true})
           }
         }
-      } else {
-        const col = cols[colOrder[curCol]];
+      } 
+      // Columns
+      else {
+        const col = shuffle_cols[col_index++];
         prev = col;
-        curCol = curCol + 1;
-        
-        // Handling Spaces
-        if (statement[lettersFound] === ' ' && col === cols[0]) {
-          const colOrder = getRandomArray(6);
-          curCol = 0;
-          this.setState({colFound : true, colOrder});
-        }
 
         for (let j = 0; j < col.length; j++) {
           col[j].classList.remove("entry");
           col[j].classList.add("selected");
-          if (col[j].innerHTML === statement[lettersFound]) {
+          
+          // Found letter in column
+          if (col[j].innerHTML === statement[lettersFound] || (col[j].innerHTML === "____" && statement[lettersFound] === " ")) {
             if (rowFound) {
               selectedKey = col[j];
-              // col[j].classList.add("chosen");
             }
-            const colOrder = getRandomArray(6);
-            curCol = 0;
-            this.setState({colFound : true, colOrder});
+            // Set column found 
+            this.setState({colFound : true})
           }
         }
       }
-      // If a letter has been found.
-      if (rowFound && colFound) {
+
+      // After all 5 rows and all 6 columns have been flashed, determine letter 
+      if (row_index == 5 && col_index == 6) {
+        // Reset indices
+        row_index = 0;
+        col_index = 0;
+        this.shuffle(shuffle_rows);
+        this.shuffle(shuffle_cols);
+        
         this.keyChosen(selectedKey);
-        // TODO: Reset numCol and numRow to -1
-        [curRow, curCol] = [0, 0];
+
         const newDisplay = displayText + statement[lettersFound];
         this.setState({rowFound : false, colFound : false, 
         displayText : newDisplay, lettersFound : lettersFound + 1});
+        
         // Emitting an event to the socket to type letter.
         robot_socket.emit('typing', statement[lettersFound]);
         // Emitting an event to the socket to recieve word predictions.
         nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
+
       }
     }
   }
@@ -176,10 +188,8 @@ class App extends Component {
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
     const statement = "what would you like to type";
-    const rowOrder = getRandomArray(5);
-    const colOrder = getRandomArray(6); 
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-    this.setState({interval, statement, rowOrder, colOrder});
+    this.setState({interval, statement});
   }
 
   /*
