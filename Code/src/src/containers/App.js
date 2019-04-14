@@ -6,6 +6,8 @@ import Letters from '../components/LetterComponent';
 import Numbers from '../components/NumberComponent';
 import Emojis from '../components/EmojiComponent';
 
+const uuid_v1 = require("uuid/v1");
+
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
 const row2 = document.getElementsByClassName('row2');
@@ -26,8 +28,10 @@ const cols = [col1, col2, col3, col4, col5, col6];
 // Keeping track of rows
 let prev = rows[0];
 
-// Selected letter
+// Select letter
 let selectedKey = null;
+let uuid_key_dict = {};
+let uuid_accuracies = {};
 
 // Shuffled rows & cols
 let row_index = 0;
@@ -37,8 +41,9 @@ let shuffle_cols = [col1, col2, col3, col4, col5, col6];
 
 // Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
+const client_socket = io('http://localhost:8002'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 1000;
+const FLASHING_PAUSE = 500;
 
 class App extends Component {
   constructor(props) {
@@ -84,10 +89,65 @@ class App extends Component {
     }
   }
 
+  chooseKey() {
+    let bestRow;
+    let bestRowScore = -1;
+    let bestCol;
+    let bestColScore = -1;
+    for (var uuid in uuid_key_dict) {
+
+      if (uuid_accuracies[uuid] != null) { // TODO: GHETTO! REMOVE!
+        if (uuid_key_dict[uuid]['keytype'] == 'row') {
+          if (uuid_accuracies[uuid]['score'] > bestRowScore) {
+            bestRowScore = uuid_accuracies[uuid]['score']
+            bestRow = uuid_key_dict[uuid]['keys'];
+          }
+        }
+        else if (uuid_key_dict[uuid]['keytype'] == 'column') {
+          if (uuid_accuracies[uuid]['score'] > bestColScore) {
+            bestColScore = uuid_accuracies[uuid]['score']
+            bestCol = uuid_key_dict[uuid]['keys'];
+          }
+        }
+      }
+    }
+    console.log(bestRow);
+    console.log(bestCol);
+    for (var r in bestRow) {
+      for (var c in bestCol) {
+        if (bestRow[r].innerHTML === bestCol[c].innerHTML) {
+          console.log("Returning key: ", bestCol[c]);
+          return bestCol[c];
+        }
+      }
+    }
+    return null;
+  }
+
   keyChosen(key) {
     if (key != null) {
       key.classList.add("chosen");
     }
+  }
+
+  sendFlashEvent(group, keytype) {
+    let uuid = uuid_v1();
+    let timestamp = Date.now() / 1000.0;
+
+    client_socket.emit("predict", [uuid, timestamp], this.saveP300Accs);
+    uuid_key_dict[uuid] = {
+      'keys': group,
+      'keytype': keytype
+    };
+  }
+
+  saveP300Accs(sid, response) {
+    let resp_json = JSON.parse(response)
+    let accs = {
+      'p300': resp_json['p300'],
+      'score': resp_json['score']
+    }
+    uuid_accuracies[resp_json['uuid']] = accs;
   }
 
   // Shuffling rows & columns
@@ -130,15 +190,16 @@ class App extends Component {
           row[j].classList.remove("entry");
           row[j].classList.add("selected");
           
-          if (row[j].innerHTML === statement[lettersFound] || (row[j].innerHTML === "____" && statement[lettersFound] === " ")) {
-            if (colFound) {
-              selectedKey = row[j];
-            }
-            // Set row found 
-            this.setState({rowFound : true})
-          }
+          // if (row[j].innerHTML === statement[lettersFound] || (row[j].innerHTML === "____" && statement[lettersFound] === " ")) {
+          //   if (colFound) {
+          //     selectedKey = row[j];
+          //   }
+          //   // Set row found 
+          //   this.setState({rowFound : true})
+          // }
         }
-      } 
+        this.sendFlashEvent(row, 'row');
+      }
       // Columns
       else {
         const col = shuffle_cols[col_index++];
@@ -148,36 +209,40 @@ class App extends Component {
           col[j].classList.remove("entry");
           col[j].classList.add("selected");
           
-          // Found letter in column
-          if (col[j].innerHTML === statement[lettersFound] || (col[j].innerHTML === "____" && statement[lettersFound] === " ")) {
-            if (rowFound) {
-              selectedKey = col[j];
-            }
-            // Set column found 
-            this.setState({colFound : true})
-          }
+          // // Found letter in column
+          // if (col[j].innerHTML === statement[lettersFound] || (col[j].innerHTML === "____" && statement[lettersFound] === " ")) {
+          //   if (rowFound) {
+          //     selectedKey = col[j];
+          //   }
+          //   // Set column found 
+          //   this.setState({colFound : true})
+          // }
         }
+        this.sendFlashEvent(col, 'column');
       }
 
       // After all 5 rows and all 6 columns have been flashed, determine letter 
       if (row_index == 5 && col_index == 6) {
+
+        selectedKey = this.chooseKey();
+        console.log("Selected key: ", selectedKey);
+        if (selectedKey != null) {
+          this.keyChosen(selectedKey);
+
+          const newDisplay = displayText + selectedKey.innerHTML;
+          this.setState({rowFound : false, colFound : false, 
+          displayText : newDisplay});
+
+          // Emitting an event to the socket to type letter.
+          robot_socket.emit('typing', selectedKey.innerHTML);
+          // Emitting an event to the socket to recieve word predictions.
+          nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
+        }
         // Reset indices
         row_index = 0;
         col_index = 0;
         this.shuffle(shuffle_rows);
         this.shuffle(shuffle_cols);
-        
-        this.keyChosen(selectedKey);
-
-        const newDisplay = displayText + statement[lettersFound];
-        this.setState({rowFound : false, colFound : false, 
-        displayText : newDisplay, lettersFound : lettersFound + 1});
-        
-        // Emitting an event to the socket to type letter.
-        robot_socket.emit('typing', statement[lettersFound]);
-        // Emitting an event to the socket to recieve word predictions.
-        nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
-
       }
     }
   }
