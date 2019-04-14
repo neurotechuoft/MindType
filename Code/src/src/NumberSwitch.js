@@ -8,7 +8,9 @@ class NumberSwitch extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText">Now you can select 'abc' to return to the letter keyboard.</h3>
+		<div className="upperTextDiv">
+        <h3 className="mindTypeColorText smallerText">Now you can select 'abc' to return to the letter keyboard.</h3></div>
+		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Numbers />
 		<button className="optionSmall bottomLeft leftMost">.</button>
@@ -17,7 +19,7 @@ class NumberSwitch extends React.Component {
 		<button className="optionSmall">&crarr;</button>
         <button className="optionSmall bottomRight">&#8678;</button>
 		<button onClick={this.props.numberSwitchHandler}>Continue</button>
-		
+		</div>
       </div>
     )
   }

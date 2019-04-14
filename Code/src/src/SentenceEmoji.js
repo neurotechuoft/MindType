@@ -8,7 +8,8 @@ class SentenceEmoji extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText upText">Time to combine it all! Type "I am typing with my mind! 🎉"</h3>
+        <h3 className="mindTypeColorText smallerText sentenceEmojiText">Time to combine it all! Type "I am typing with my mind! 🎉"</h3>
+		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />
 		<button className="optionSmall leftMost bottomLeft">.</button>
@@ -17,7 +18,7 @@ class SentenceEmoji extends React.Component {
 		<button className="optionSmall">&crarr;</button>
         <button className="optionSmall bottomRight">&#8678;</button>
 		<button onClick={this.props.sentenceEmojiHandler}>Continue</button>
-		
+		</div>
       </div>
     )
   }

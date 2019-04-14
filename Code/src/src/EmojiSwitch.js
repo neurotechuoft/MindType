@@ -8,7 +8,9 @@ class EmojiSwitch extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText upText">Nice! Select &123 to access numbers and symbols.</h3>
+	  <div className="upperTextDiv">
+        <h3 className="mindTypeColorText smallerText upText">Nice! Select &123 to access numbers and symbols.</h3></div>
+		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Emojis />
 		<button className="optionSmall leftMost bottomLeft">.</button>
@@ -17,7 +19,7 @@ class EmojiSwitch extends React.Component {
 		<button className="optionSmall">&crarr;</button>
         <button className="optionSmall bottomRight">&#8678;</button>
 		<button onClick={this.props.emojiSwitchHandler}>Continue</button>
-		
+		</div>
       </div>
     )
   }
