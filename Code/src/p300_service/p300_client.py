@@ -4,6 +4,7 @@ from socketIO_client import SocketIO
 from sanic import Sanic
 import threading
 import time
+import json
 
 from eeg_stream import EEGStream
 from marker_stream import MarkerStream
@@ -203,14 +204,19 @@ class P300Client(object):
         self.sio.on("logout", self.logout_handler)
 
     async def register_handler(self, sid, args):
-        username, password, email = args
+        args = json.loads(args)
+        username = args['username']
+        password = args['password']
+        email = args['email']
         return self.register(username, password, email)
 
     async def login_handler(self, sid, args):
-        username, password = args
+        args = json.loads(args)
+        username = args['username']
+        password = args['password']
         return self.login(username, password)
 
-    async def logout_handler(self, sid, args):
+    async def logout_handler(self, sid):
         return self.logout()
 
     async def train_handler(self, sid, args):
@@ -218,7 +224,11 @@ class P300Client(object):
             self.change_mode(train_mode=True)
             time.sleep(.2)
 
-        uuid, timestamp, p300 = args
+        args = json.loads(args)
+        uuid = args['uuid']
+        timestamp = args['timestamp']
+        p300 = args['p300']
+
         timestamp -= self.time_diff
         package = [
             str(timestamp),
@@ -239,7 +249,10 @@ class P300Client(object):
             self.change_mode(train_mode=False)
             time.sleep(.2)
 
-        uuid, timestamp = args
+        args = json.loads(args)
+        uuid = args['uuid']
+        timestamp = args['timestamp']
+
         timestamp -= self.time_diff
         package = [
             str(timestamp),
@@ -253,8 +266,9 @@ class P300Client(object):
         while len(self.pred_results) == 0:
             time.sleep(.1)
         pred = self.pred_results.pop(0)
-        return sid, pred
-
+        uuid, p300, score = pred
+        results = {'uuid': uuid, 'p300': p300, 'score': score}
+        return sid, results
 
 
 if __name__ == '__main__':

@@ -19,27 +19,41 @@ class P300Client(object):
         self.sio.on("register", self.register_handler)
 
     async def login_handler(self, sid, args):
-        return sid, random.choice([True, False])
+        args = json.loads(args)
+        username = args['username']
+        password = args['password']
 
-    async def logout_handler(self, sid, args):
-        return sid, random.choice([True, False])
+        return sid, json.dumps({'success': random.choice([True, False]) })
+
+    async def logout_handler(self, sid):
+        return sid, json.dumps({'success': random.choice([True, False]) })
 
     async def register_handler(self, sid, args):
-        return sid, random.choice([True, False])
+        args = json.loads(args)
+        username = args['username']
+        password = args['password']
+        email = args['email']
+
+        return sid, json.dumps({'success': random.choice([True, False]) })
 
     async def train_handler(self, sid, args):
-        uuid, timestamp, p300 = args
+        args = json.loads(args)
+        uuid = args['uuid']
+        timestamp = args['timestamp']
+        p300 = args['p300']
+
         acc = random.random()
         acc = random.choice([acc, None])
-        return sid, acc
+        return sid, json.dumps({'accuracy': acc})
 
     async def predict_handler(self, sid, args):
-        print(args)
-        uuid, timestamp = args
+        args = json.loads(args)
+        uuid = args['uuid']
+        timestamp = args['timestamp']
+
         p300 = random.choice([True, False])
         score = random.random()
         results = {'uuid': uuid, 'p300': p300, 'score': score}
-        print(sid)
         return sid, json.dumps(results)
 
 

@@ -1,6 +1,7 @@
 from socketIO_client import SocketIO
 import random
 import time
+import json
 
 def on_retrieve_prediction_results(*args):
     print(args)
@@ -19,7 +20,7 @@ def print_results(*args):
     print(args)
 
 # p300 server running on localhost:8001
-socket_client = SocketIO('localhost', 8001)
+socket_client = SocketIO('localhost', 8002)
 socket_client.connect()
 
 uuid = random.randint(0, 1e10)
@@ -29,17 +30,21 @@ user = "karl"
 password = "cui"
 email = "e@mail"
 
-# socket_client.emit("predict", (uuid, timestamp), print_results)
-# socket_client.wait_for_callbacks(seconds=1)
-
-socket_client.emit("login", (user, password), print_results)
+args = json.dumps({'uuid': uuid, 'timestamp': timestamp})
+socket_client.emit("predict", args, print_results)
 socket_client.wait_for_callbacks(seconds=1)
 
-# socket_client.emit("train", (uuid, timestamp, p300), print_results)
-# socket_client.wait_for_callbacks(seconds=1)
+args = json.dumps({'username': user, 'password': password})
+socket_client.emit("login", args, print_results)
+socket_client.wait_for_callbacks(seconds=1)
 
-# socket_client.emit("register", (user, password, email), print_results)
-# socket_client.wait_for_callbacks(seconds=1)
+args = json.dumps({'uuid': uuid, 'timestamp': timestamp, 'p300': p300})
+socket_client.emit("train", args, print_results)
+socket_client.wait_for_callbacks(seconds=1)
 
-# socket_client.emit("logout", None, print_results)
-# socket_client.wait_for_callbacks(seconds=1)
+args = json.dumps({'username': user, 'password': password, 'email': email})
+socket_client.emit("register", args, print_results)
+socket_client.wait_for_callbacks(seconds=1)
+
+socket_client.emit("logout", print_results)
+socket_client.wait_for_callbacks(seconds=1)
