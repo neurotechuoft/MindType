@@ -26,8 +26,6 @@ const cols = [col1, col2, col3, col4, col5, col6];
 
 // Keeping track of rows
 let prev = rows[0];
-let curRow = 0; // Keeping track of which array index you're on for random rows.
-let curCol = 0; // Keeping track of which array index you're on for random cols.
 
 // Selected letter
 let selectedKey = null;
@@ -41,7 +39,7 @@ let shuffle_cols = [col1, col2, col3, col4, col5, col6];
 // Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 1000;
+const FLASHING_PAUSE = 300;
 
 class App extends Component {
   constructor(props) {
@@ -135,7 +133,7 @@ class App extends Component {
           row[j].classList.remove("entry");
           row[j].classList.add("selected");
           
-          if (row[j].innerHTML === statement[lettersFound]) {
+          if (row[j].innerHTML === statement[lettersFound] || (row[j].innerHTML === "____" && statement[lettersFound] === " ")) {
             if (colFound) {
               selectedKey = row[j];
             }
@@ -154,7 +152,7 @@ class App extends Component {
           col[j].classList.add("selected");
           
           // Found letter in column
-          if (col[j].innerHTML === statement[lettersFound]) {
+          if (col[j].innerHTML === statement[lettersFound] || (col[j].innerHTML === "____" && statement[lettersFound] === " ")) {
             if (rowFound) {
               selectedKey = col[j];
             }
@@ -171,8 +169,8 @@ class App extends Component {
         col_index = 0;
         this.shuffle(shuffle_rows);
         this.shuffle(shuffle_cols);
-        // Check this
-        selectedKey.classList.add("chosen");
+        
+        this.keyChosen(selectedKey);
 
         const newDisplay = displayText + statement[lettersFound];
         this.setState({rowFound : false, colFound : false, 
