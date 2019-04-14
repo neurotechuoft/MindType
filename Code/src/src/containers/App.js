@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import io from "socket.io-client";
 import '../App.css';
-import { getRandomArray } from '../helpers/shuffle';
 
 import Letters from '../components/LetterComponent';
 import Numbers from '../components/NumberComponent';
@@ -60,7 +59,7 @@ class App extends Component {
     this.handleEmojiClick = this.handleEmojiClick.bind(this);
     this.handleLetterClick = this.handleLetterClick.bind(this);
     this.handlePredictions = this.handlePredictions.bind(this);
-    this.writePhrase    = this.writePhrase.bind(this);
+    this.writePhrase = this.writePhrase.bind(this);
   }
 
   handleNumClick() {
