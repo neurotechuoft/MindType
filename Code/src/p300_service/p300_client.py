@@ -4,6 +4,7 @@ from socketIO_client import SocketIO
 from sanic import Sanic
 import threading
 import time
+import json
 
 from eeg_stream import EEGStream
 from marker_stream import MarkerStream
