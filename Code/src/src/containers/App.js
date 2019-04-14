@@ -49,8 +49,6 @@ class App extends Component {
       displayText: '', 
       interval : null,
       lettersFound : 0,
-      rowOrder : null,
-      colOrder : null,
       rowFound : false,
       colFound : false,
       predictions: ['', '', '']
