@@ -269,6 +269,35 @@ body {
 	margin-top: 0.3vh;
 }
 
+.selectedSmall {
+	width: 7.75vw;
+	height: 8vh;
+	color: white;
+	background-color: #52A0B4;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+	margin-top: 0.3vh;
+}
+
+.chosenSmall {
+	width: 7.75vw;
+	height: 8vh;
+	color: red;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+	margin-top: 0.3vh;
+}
+
 .extra-wide {
   width: 16.5vmin;
   height: 8.25vmin;
@@ -328,6 +357,35 @@ body {
   margin-right: 0.4vw;
   margin-top: 0.3vh;
 }
+
+.selected-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  color: white;
+  background-color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}
+
+.selected-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  color: red;
+  font-weight: bold;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}
+
 
 .userInput,
 .options {

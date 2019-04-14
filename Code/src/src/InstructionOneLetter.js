@@ -4,15 +4,26 @@ import io from "socket.io-client";
 import './App.css';
 import { getRandomArray } from './helpers/shuffle';
 
+import Letters from './components/LetterComponent';
+import Numbers from './components/NumberComponent';
+import Emojis from './components/EmojiComponent';
+
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
 const row2 = document.getElementsByClassName('row2');
-const rows = [row1, row2];
+const row3 = document.getElementsByClassName('row3');
+const row4 = document.getElementsByClassName('row4');
+const row5 = document.getElementsByClassName('row5');
+const rows = [row1, row2, row3, row4, row5];
 
 // Getting Columns
 const col1 = document.getElementsByClassName('col1');
 const col2 = document.getElementsByClassName('col2');
-const cols = [col1, col2];
+const col3 = document.getElementsByClassName('col3');
+const col4 = document.getElementsByClassName('col4');
+const col5 = document.getElementsByClassName('col5');
+const col6 = document.getElementsByClassName('col6');
+const cols = [col1, col2, col3, col4, col5, col6];
 
 let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
@@ -38,13 +49,32 @@ class InstructionOneLetter extends React.Component {
       rowOrder : null,
       colOrder : null,
       rowFound : false,
-      colFound : false
+      colFound : false,
+      predictions: ['', '', '']
     };
-	this.writePhrase    = this.writePhrase.bind(this);
-	
-
+    this.handleNumClick = this.handleNumClick.bind(this);
+    this.handleEmojiClick = this.handleEmojiClick.bind(this);
+    this.handleLetterClick = this.handleLetterClick.bind(this);
+    this.handlePredictions = this.handlePredictions.bind(this);
+    this.writePhrase    = this.writePhrase.bind(this);
   }
-  
+
+  handleNumClick() {
+    this.setState({ display: 'numbers' });
+  }
+
+  handleEmojiClick() {
+    this.setState({ display: 'emojis' })
+  }
+
+  handleLetterClick() {
+    this.setState({ display: 'letters' });
+  }
+
+  handlePredictions(...predictions) {
+    this.setState({predictions : predictions})
+  }
+
   resetKey(key) {
     if (key != null) {
       key.classList.add("entryTwo");
@@ -58,7 +88,6 @@ class InstructionOneLetter extends React.Component {
       key.classList.add("chosenTwo");
     }
   }
-  
 
   writePhrase() {
     const {statement, interval, lettersFound, rowOrder, 
@@ -86,8 +115,8 @@ class InstructionOneLetter extends React.Component {
 
         // Handling Spaces 
 
-        if (statement[lettersFound] === ' ' && row === rows[1]) {
-          const rowOrder = getRandomArray(2);
+        if (statement[lettersFound] === ' ' && row === rows[4]) {
+          const rowOrder = getRandomArray(5);
           curRow = 0;
           this.setState({rowFound : true, rowOrder});
         }
@@ -100,7 +129,7 @@ class InstructionOneLetter extends React.Component {
               // row[j].classList.add("chosen");
             }
             // numColumSelected = j;
-            const rowOrder = getRandomArray(2);
+            const rowOrder = getRandomArray(5);
             curRow = 0;
             this.setState({rowFound : true, rowOrder});
           }
@@ -110,6 +139,12 @@ class InstructionOneLetter extends React.Component {
         prev = col;
         curCol = curCol + 1;
         
+        // Handling Spaces
+        if (statement[lettersFound] === ' ' && col === cols[0]) {
+          const colOrder = getRandomArray(6);
+          curCol = 0;
+          this.setState({colFound : true, colOrder});
+        }
 
         for (let j = 0; j < col.length; j++) {
           col[j].classList.remove("entryTwo");
@@ -119,7 +154,7 @@ class InstructionOneLetter extends React.Component {
               selectedKey = col[j];
               // col[j].classList.add("chosen");
             }
-            const colOrder = getRandomArray(2);
+            const colOrder = getRandomArray(6);
             curCol = 0;
             this.setState({colFound : true, colOrder});
           }
@@ -144,12 +179,11 @@ class InstructionOneLetter extends React.Component {
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
     const statement = "what would you like to type";
-    const rowOrder = getRandomArray(2);
-    const colOrder = getRandomArray(2); 
+    const rowOrder = getRandomArray(5);
+    const colOrder = getRandomArray(6); 
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
     this.setState({interval, statement, rowOrder, colOrder});
   }
-	
 
 	
   render(){
