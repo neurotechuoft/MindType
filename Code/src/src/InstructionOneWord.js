@@ -11,7 +11,7 @@ class InstructionOneWord extends React.Component {
     return (
 	<div className="instructionScreen">
 		<div className="upperTextDiv">
-        <h3 className="mindTypeColorText">Great! Now try the word "cab"</h3>
+        <h3 className="mindTypeColorText oneWord">Great! How about a word?<br />Try: "cab"</h3>
 		</div>
 		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>

@@ -8,7 +8,7 @@ class WordMind extends React.Component {
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText">Here's the full set of letters. Let's try to type the word "mind"</h3>
+        <h3 className="mindTypeColorText smallerText">Let's try to type a word with the full set of letters.<br />Try: "mind"</h3>
 		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Letters />

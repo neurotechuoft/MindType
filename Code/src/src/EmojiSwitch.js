@@ -9,7 +9,7 @@ class EmojiSwitch extends React.Component {
     return (
       <div className="instructionScreen">
 	  <div className="upperTextDiv">
-        <h3 className="mindTypeColorText smallerText upText">Nice! Select &123 to access numbers and symbols.</h3></div>
+        <h3 className="mindTypeColorText smallerText upText">Nice! Select to access numbers and symbols.<br /> Try: &123 </h3></div>
 		<div className="keysContainer">
 		<input type="text" className="displayInstruction" readOnly></input>
 		<Emojis />
