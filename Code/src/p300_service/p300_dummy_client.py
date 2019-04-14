@@ -1,6 +1,7 @@
 import socketio
 from sanic import Sanic
 import random
+import json
 
 class P300Client(object):
 
@@ -33,15 +34,17 @@ class P300Client(object):
         return sid, acc
 
     async def predict_handler(self, sid, args):
+        print(args)
         uuid, timestamp = args
         p300 = random.choice([True, False])
-        score = 1
-        results = (uuid, p300, score)
-        return sid, results
+        score = random.random()
+        results = {'uuid': uuid, 'p300': p300, 'score': score}
+        print(sid)
+        return sid, json.dumps(results)
 
 
 
 if __name__ == '__main__':
     p300_client = P300Client()
     p300_client.initialize_handlers()
-    p300_client.app.run(host='localhost', port=8001)
+    p300_client.app.run(host='localhost', port=8002)
