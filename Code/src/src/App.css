@@ -139,6 +139,55 @@ body {
   background-color: #E6E5E5;
 }
 
+
+.entryTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.selectedTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  color: white;
+  background-color: #52A0B4;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.chosenTwo{
+	width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  color: red;
+  font-weight: bold;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
 .entry {
   width: 8.25vmin;
   height: 8.25vmin;
@@ -161,6 +210,7 @@ body {
 .entry.right {
   border-right:0.5px solid #3da8c4;
 }
+
 
 .selected {
   width: 8.25vmin;
@@ -314,21 +364,6 @@ body {
 }
 
 
-.entryTwo {
-  width: 24vw;
-  height: 24vh;
-  margin-right: 0.8vw;
-  margin-top: 0.75vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 12vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
-  Helvetica, Arial, "Lucida Grande", sans-serif;
-}
 
 .twoByTwo{
 	margin-left: 25vw;
