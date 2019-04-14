@@ -15,7 +15,7 @@ const row4 = document.getElementsByClassName('row4');
 const row5 = document.getElementsByClassName('row5');
 const rows = [row1, row2, row3, row4, row5];
 
-// Getting Columns
+// Getting columns
 const col1 = document.getElementsByClassName('col1');
 const col2 = document.getElementsByClassName('col2');
 const col3 = document.getElementsByClassName('col3');
@@ -24,19 +24,24 @@ const col5 = document.getElementsByClassName('col5');
 const col6 = document.getElementsByClassName('col6');
 const cols = [col1, col2, col3, col4, col5, col6];
 
+// Keeping track of rows
 let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
 let curCol = 0; // Keeping track of which array index you're on for random cols.
-let sRows = [row1, row2, row3, row4, row5];
-let sCols = [col1, col2, col3, col4, col5, col6];
 
+// Selected letter
 let selectedKey = null;
-let ci = 0;
-let ri = 0; 
 
+// Shuffled rows & cols
+let row_index = 0;
+let col_index = 0; 
+let shuffle_rows = [row1, row2, row3, row4, row5];
+let shuffle_cols = [col1, col2, col3, col4, col5, col6];
+
+// Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 1000;
+const FLASHING_PAUSE = 300;
 
 class App extends Component {
   constructor(props) {
@@ -90,6 +95,7 @@ class App extends Component {
     }
   }
 
+  // Shuffling rows & columns
   shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -100,6 +106,7 @@ class App extends Component {
   writePhrase() {
     const {statement, interval, lettersFound, rowOrder, 
       colOrder, rowFound, colFound, displayText} = this.state;
+    
     if (lettersFound === statement.length) {
       clearInterval(interval);
     } else {
@@ -110,86 +117,77 @@ class App extends Component {
         this.resetKey(selectedKey);
       }
       
-      // Making sure rows/cols don't flash if they've already been found.
+      // Row & column selector
       let rc;
-      if (ri == 5) rc = 2;
-      else if (ci == 6) rc = 1;
+
+      // If a letter has been found
+      if (row_index == 5 && col_index == 6) {
+        // Reset indices
+        row_index = 0;
+        col_index = 0;
+        this.shuffle(shuffle_rows);
+        this.shuffle(shuffle_cols);
+        this.keyChosen(selectedKey);
+
+        // TODO: Reset numCol and numRow to -1
+
+        // [curRow, curCol] = [0, 0];
+        const newDisplay = displayText + statement[lettersFound];
+        this.setState({rowFound : false, colFound : false, 
+        displayText : newDisplay, lettersFound : lettersFound + 1});
+        
+        // Emitting an event to the socket to type letter.
+        robot_socket.emit('typing', statement[lettersFound]);
+        // Emitting an event to the socket to recieve word predictions.
+        nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
+
+      } else if (row_index == 5) rc = 2;
+      else if (col_index == 6) rc = 1;
       else rc = Math.floor((Math.random() * 2) + 1);
       
       // Rows
       if (rc === 1) {
-        const row = sRows[ri];
-        ri++;
+        const row = shuffle_rows[row_index++];
         prev = row;
-        curRow = curRow + 1;
+        // curRow = curRow + 1;
 
-        // Handling Spaces 
-        if (statement[lettersFound] === ' ' && row === rows[4]) {
-          const rowOrder = getRandomArray(5);
-          curRow = 0;
-          this.setState({rowFound : true, rowOrder});
-        }
         for (let j = 0; j < row.length; j++) {
           row[j].classList.remove("entry");
           row[j].classList.add("selected");
+          
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
               // row[j].classList.add("chosen");
             }
             // numColumSelected = j;
-            const rowOrder = getRandomArray(5);
-            curRow = 0;
-            this.setState({rowFound : true, rowOrder});
+            // const rowOrder = getRandomArray(5);
+            // curRow = 0;
+            // this.setState({rowFound : true, rowOrder});
           }
         }
       } 
       // Columns
       else {
-        const col = sCols[ci];
-        ci++;
+        const col = shuffle_cols[col_index++];
         prev = col;
-        curCol = curCol + 1;
-        
-        // Handling Spaces
-        if (statement[lettersFound] === ' ' && col === cols[3]) {
-          const colOrder = getRandomArray(6);
-          curCol = 0;
-          this.setState({colFound : true, colOrder});
-        }
+        // curCol = curCol + 1;
 
         for (let j = 0; j < col.length; j++) {
           col[j].classList.remove("entry");
           col[j].classList.add("selected");
+          
+          // Found letter
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
               // col[j].classList.add("chosen");
             }
-            const colOrder = getRandomArray(6);
-            curCol = 0;
-            this.setState({colFound : true, colOrder});
+            // const colOrder = getRandomArray(6);
+            // curCol = 0;
+            // this.setState({colFound : true, colOrder});
           }
         }
-      }
-
-      // If a letter has been found.
-      if (rowFound && colFound && ri == 5 && ci == 6) {
-        ci = 0;
-        ri = 0;
-        this.shuffle(sRows);
-        this.shuffle(sCols);
-        this.keyChosen(selectedKey);
-        // TODO: Reset numCol and numRow to -1
-        [curRow, curCol] = [0, 0];
-        const newDisplay = displayText + statement[lettersFound];
-        this.setState({rowFound : false, colFound : false, 
-        displayText : newDisplay, lettersFound : lettersFound + 1});
-        // Emitting an event to the socket to type letter.
-        robot_socket.emit('typing', statement[lettersFound]);
-        // Emitting an event to the socket to recieve word predictions.
-        nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
-
       }
     }
   }
