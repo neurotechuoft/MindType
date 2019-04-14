@@ -30,7 +30,6 @@ let shuffle_cols = [col1, col2];
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = 1000;
-const INSTRUCTION_DELAY = 3000;
 
 class InstructionOneLetter extends React.Component {
 	
