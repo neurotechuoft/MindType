@@ -220,8 +220,6 @@ class App extends Component {
       button3 = <button onClick={this.handleLetterClick} className="option">abc</button>
     }
 	
-	
-
     // Displaying word predictions
     const predictions = this.state.predictions.map(prediction => <button className="suggestion"> { prediction } </button>)
 
