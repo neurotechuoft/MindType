@@ -184,7 +184,8 @@ class App extends Component {
 
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
-    const statement = "(1!2$3)";
+    // const statement = "(1!2$3)";
+    const statement = "best brunch in toronto";
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
     this.setState({interval, statement});
   }
