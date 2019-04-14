@@ -41,7 +41,7 @@ let shuffle_cols = [col1, col2, col3, col4, col5, col6];
 // Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 300;
+const FLASHING_PAUSE = 1000;
 
 class App extends Component {
   constructor(props) {
@@ -104,8 +104,7 @@ class App extends Component {
   }
   
   writePhrase() {
-    const {statement, interval, lettersFound, rowOrder, 
-      colOrder, rowFound, colFound, displayText} = this.state;
+    const {statement, interval, lettersFound, rowFound, colFound, displayText} = this.state;
     
     if (lettersFound === statement.length) {
       clearInterval(interval);
@@ -113,25 +112,68 @@ class App extends Component {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
       }
+      // Reset selected key
       if (selectedKey != null) {
         this.resetKey(selectedKey);
       }
-      
+
       // Row & column selector
       let rc;
 
-      // If a letter has been found
+      if (!(row_index == 5 && col_index == 6)) {
+        if (row_index == 5) rc = 2;
+        else if (col_index == 6) rc = 1;
+        else rc = Math.floor((Math.random() * 2) + 1);
+      }
+
+      // Rows
+      if (rc === 1) {
+        const row = shuffle_rows[row_index++];
+        prev = row;
+
+        for (let j = 0; j < row.length; j++) {
+          row[j].classList.remove("entry");
+          row[j].classList.add("selected");
+          
+          if (row[j].innerHTML === statement[lettersFound]) {
+            if (colFound) {
+              selectedKey = row[j];
+            }
+            // Set row found 
+            this.setState({rowFound : true})
+          }
+        }
+      } 
+      // Columns
+      else {
+        const col = shuffle_cols[col_index++];
+        prev = col;
+
+        for (let j = 0; j < col.length; j++) {
+          col[j].classList.remove("entry");
+          col[j].classList.add("selected");
+          
+          // Found letter in column
+          if (col[j].innerHTML === statement[lettersFound]) {
+            if (rowFound) {
+              selectedKey = col[j];
+            }
+            // Set column found 
+            this.setState({colFound : true})
+          }
+        }
+      }
+
+      // After all 5 rows and all 6 columns have been flashed, determine letter 
       if (row_index == 5 && col_index == 6) {
         // Reset indices
         row_index = 0;
         col_index = 0;
         this.shuffle(shuffle_rows);
         this.shuffle(shuffle_cols);
-        this.keyChosen(selectedKey);
+        // Check this
+        selectedKey.classList.add("chosen");
 
-        // TODO: Reset numCol and numRow to -1
-
-        // [curRow, curCol] = [0, 0];
         const newDisplay = displayText + statement[lettersFound];
         this.setState({rowFound : false, colFound : false, 
         displayText : newDisplay, lettersFound : lettersFound + 1});
@@ -141,53 +183,6 @@ class App extends Component {
         // Emitting an event to the socket to recieve word predictions.
         nlp_socket.emit("autocomplete", newDisplay, this.handlePredictions);
 
-      } else if (row_index == 5) rc = 2;
-      else if (col_index == 6) rc = 1;
-      else rc = Math.floor((Math.random() * 2) + 1);
-      
-      // Rows
-      if (rc === 1) {
-        const row = shuffle_rows[row_index++];
-        prev = row;
-        // curRow = curRow + 1;
-
-        for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entry");
-          row[j].classList.add("selected");
-          
-          if (row[j].innerHTML === statement[lettersFound]) {
-            if (colFound) {
-              selectedKey = row[j];
-              // row[j].classList.add("chosen");
-            }
-            // numColumSelected = j;
-            // const rowOrder = getRandomArray(5);
-            // curRow = 0;
-            // this.setState({rowFound : true, rowOrder});
-          }
-        }
-      } 
-      // Columns
-      else {
-        const col = shuffle_cols[col_index++];
-        prev = col;
-        // curCol = curCol + 1;
-
-        for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entry");
-          col[j].classList.add("selected");
-          
-          // Found letter
-          if (col[j].innerHTML === statement[lettersFound]) {
-            if (rowFound) {
-              selectedKey = col[j];
-              // col[j].classList.add("chosen");
-            }
-            // const colOrder = getRandomArray(6);
-            // curCol = 0;
-            // this.setState({colFound : true, colOrder});
-          }
-        }
       }
     }
   }
@@ -195,10 +190,8 @@ class App extends Component {
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
     const statement = "what would you like to type";
-    const rowOrder = getRandomArray(5);
-    const colOrder = getRandomArray(6); 
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-    this.setState({interval, statement, rowOrder, colOrder});
+    this.setState({interval, statement});
   }
 
   /*
