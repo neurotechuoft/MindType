@@ -113,8 +113,8 @@ class InstructionOneWord extends React.Component {
         prev = row;
 
         for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entry");
-          row[j].classList.add("selected");
+          row[j].classList.remove("entryTwo");
+          row[j].classList.add("selectedTwo");
           
           if (row[j].innerHTML === statement[lettersFound] || (row[j].innerHTML === "____" && statement[lettersFound] === " ")) {
             if (colFound) {
@@ -131,8 +131,8 @@ class InstructionOneWord extends React.Component {
         prev = col;
 
         for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entry");
-          col[j].classList.add("selected");
+          col[j].classList.remove("entryTwo");
+          col[j].classList.add("selectedTwo");
           
           // Found letter in column
           if (col[j].innerHTML === statement[lettersFound] || (col[j].innerHTML === "____" && statement[lettersFound] === " ")) {
