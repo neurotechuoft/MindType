@@ -22,7 +22,7 @@ body {
 
 .instructionScreen{
 	background-color: #52A0B4;
-	height: 100vh;
+	height: 93vh;
 	width: 100vw;
 	margin-top: -3vh;
 	padding-top: 10vh;
@@ -42,20 +42,43 @@ body {
 	font-weight: bold;
 }
 
+
 .mindTypeColorText {
 	color: white;
 	margin-left: 25vw;
+	margin-top: 1.5vh;
 	width: 48vw;
-	font-size: 4vmin;
-	font-family: "Helvetica Neue";
+	font-size: 5vmin;
+	font-weight: lighter;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
 
 }
 
-.letterSwitchText {
-	width: 80vw;
-	margin-left: 10vw;
-	margin-top: -3vh;
+.oneLetter {
+	margin-top: 4vh;
 }
+
+.oneWord {
+	margin-top: -1.25vh;
+}
+
+.smallerText {
+	font-size: 3.6vmin;
+}
+
+.upText {
+	margin-top: 0.8vh;
+}
+
+.sentenceEmojiText {
+	margin-top: 0.75vh;
+}
+
+.smallestText{
+	font-size: 3.3vmin;
+}
+
 
 .suggestion {
   width: 16.5vmin;
@@ -97,10 +120,16 @@ body {
 
 .displayInstruction{
 	height: 5vh;
+	margin-top: 5vh;
 	margin-left: 25vw;
 	margin-bottom: 1vh;
 	width: 48vw;
 	background-color: #E6E5E5;
+}
+
+.keysContainer {
+	position: fixed;
+	top: 20vh;
 }
 
 .displayWideInstruction {
@@ -108,6 +137,55 @@ body {
   height: 5vh;
 
   background-color: #E6E5E5;
+}
+
+
+.entryTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.selectedTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  color: white;
+  background-color: #52A0B4;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.chosenTwo{
+	width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  color: red;
+  font-weight: bold;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 .entry {
@@ -132,6 +210,7 @@ body {
 .entry.right {
   border-right:0.5px solid #3da8c4;
 }
+
 
 .selected {
   width: 8.25vmin;
@@ -180,6 +259,35 @@ body {
 	height: 8vh;
 	background-color: white;
 	color: #52A0B4;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+	margin-top: 0.3vh;
+}
+
+.selectedSmall {
+	width: 7.75vw;
+	height: 8vh;
+	color: white;
+	background-color: #52A0B4;
+	font-size: 3vmin;
+  /* font-weight: bold; */
+	font-family: $font-stack;
+  /* border: 2px solid white; */
+	border: none;
+	font-weight: bold;
+	margin-right: 0.4vw;
+	margin-top: 0.3vh;
+}
+
+.chosenSmall {
+	width: 7.75vw;
+	height: 8vh;
+	color: red;
 	font-size: 3vmin;
   /* font-weight: bold; */
 	font-family: $font-stack;
@@ -250,6 +358,35 @@ body {
   margin-top: 0.3vh;
 }
 
+.selected-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  color: white;
+  background-color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}
+
+.selected-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  color: red;
+  font-weight: bold;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}
+
+
 .userInput,
 .options {
   margin-top: 1vh;
@@ -286,21 +423,6 @@ body {
 
 
 
-.entryTwo {
-  width: 24vw;
-  height: 24vh;
-  margin-right: 0.8vw;
-  margin-top: 0.75vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 10vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
-  font-family: 'Helvetica Neue';
-}
-
 .twoByTwo{
 	margin-left: 25vw;
 }
@@ -325,7 +447,7 @@ body {
 .login, .sign-up, .back, .continueButton, .goToMindType {
   border: none;
   color: white;
-  height: 10vh;
+  height: 8vh;
   width: 30vw;
   text-align: center;
   font-size: 16px;
@@ -364,6 +486,7 @@ body {
 
 .goToMindType{
 	background-color: orange;
+	
 }
 
 .goToMindType:hover {opacity: 1}
@@ -393,5 +516,9 @@ body {
 
 .ppText{
 	font-size: 2.5vh;
+}
+
+.final {
+	margin-left: 5vw;
 }
  
