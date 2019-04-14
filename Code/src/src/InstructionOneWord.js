@@ -89,6 +89,7 @@ class InstructionOneWord extends React.Component {
     
     if (lettersFound === statement.length) {
       clearInterval(interval);
+      setTimeout(this.props.instructionOneWordHandler, 3000);
     } else {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
@@ -183,7 +184,6 @@ class InstructionOneWord extends React.Component {
 		<div className="keysContainer">
 		  <input type="text" className="displayInstruction" value={this.state.displayText} readOnly></input>
 		  <TwoByTwo />
-		  <button onClick={this.props.instructionOneWordHandler}>Continue</button>
 		</div>
 	</div>
     )
