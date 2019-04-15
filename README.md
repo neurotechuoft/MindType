@@ -3,19 +3,30 @@ A mind-controlled keyboard using imagined sign language.
 
 Communication, especially via keyboard, is very difficult, if not impossible, for people with various neuromuscular degenerative diseases and muscular dystrophy. Because of this, EEG spellers based on the [P300](https://en.wikipedia.org/wiki/P300_(neuroscience)) [oddball paradigm](https://en.wikipedia.org/wiki/Oddball_paradigm) have been made and researched upon for many years. Current EEG spellers are quite slow (~50 bits/min, or 6 letters/min with NLP optimizations) [1] [2]. It becomes impossible for a person with such conditions to enjoy a conversation with their loved ones due to the low bit rate.
 
-MindType seeks to improve the bit rate of mind-controlled keyboards. It also uses a grid system, like [traditional P300 spellers](http://iopscience.iop.org/1741-2552/13/6/066018/downloadHRFigure/figure/jneaa47eff2). However, each row and column will have a numerical id (1-6), which is mapped to a hand gesture. A letter is selected by imagining the appropriate gesture for each hand (left controls rows, right controls columns). This ensures that it takes 1 operation to choose each letter (current systems take at least 3 operations per gesture from our initial research). Additionally, the use of NLP algorithms would boost the bit rate by attempting to predict the word the user wants to enter. This allows for many cases where the user wouldn't have to type the full word.
+MindType seeks to improve the bit rate of mind-controlled keyboards. It also uses a grid system, like [traditional P300 spellers](http://iopscience.iop.org/1741-2552/13/6/066018/downloadHRFigure/figure/jneaa47eff2). We have included several other features along with this, such as an emoji keyboard, for more expressive typing in the modern world. Additionally, the use of NLP algorithms would boost the bit rate by attempting to predict the word the user wants to enter. This allows for many cases where the user wouldn't have to type the full word.
 
 [1] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3679217/
 
 [2] https://www.ncbi.nlm.nih.gov/pubmed/12853169
 
 
-#### Development status: Work In Progress
+## Overview
 
+![](Design/FlowChart.png)
+<!-- #### Development status: Work In Progress -->
+
+### P300 Client and Server
+
+This is a client-side application. Running the P300 client starts up 3 streams, all of which function in real time:
+1. __EEG stream__, which connects to the Muse headband and streams EEG data through an LSL outlet.
+2. __Marker stream__, a stream of timestamps coming from the front end. These markers represent requests for either training or prediction for the classifier, based on the EEG data at the timestamp.
+3. __ML stream__, which takes the relevant pieces of EEG data from the EEG stream based on the timestamps from the Marker stream and does some basic preprocessing.
+
+The P300 client then sends machine learning jobs to the P300 Server, which trains classifiers and predicts based on the data sent. The result is sent back to the client, and then to front end. For more detailed documentation on how the interactions between client and server work, check the `README.md` in the `p300_service` folder.
 
 ## Hardware necessary:
-OpenBCI Cyton. (The keyboard works with Muse as well, but you would need to use P300 instead of motor imagery)
-
+<!-- OpenBCI Cyton. (The keyboard works with Muse as well, but you would need to use P300 instead of motor imagery) -->
+Muse, a BLED112 dongle if on Mac.
 
 ## Setup
 1. Clone the project
@@ -29,18 +40,27 @@ Setup:
 2. `npm install -g concurrently`
 3. `npm install -g wait-on`
 
-To run dev Electron build: 
+To run dev Electron build:
 
 `npm run electron-dev`
 
 
-## Usage:
-To use MindType:
+### Backend:
+
+To start the MuseLSL stream, follow the instructions for [BlueMuse](https://github.com/kowalej/BlueMuse)
+
+To run the P300 client:
+1. Go into `./Codr/src/p300_service`
+2. Install the `requirements.txt` with pip
+3. Run `python p300_client.py`
+
+This will create a P300 client, start the streams, and connect to the P300 server which we have running on GCP.
+<!-- To use MindType:
 ```
     ./MindType.sh
 ```
 
-To toggle different features, you can change the feature flags in "./Code/src/feature_flags.py"
+To toggle different features, you can change the feature flags in "./Code/src/feature_flags.py" -->
 
 
 
@@ -58,16 +78,15 @@ isn't fully ready, use feature toggling to turn it off
 
 
 
-## Algorithm approaches
-(See Plan section below for more details)
-### Phase 1: P300 keyboard
+## P300 keyboard: Algorithm approach
 We tried to use linear discriminant analysis (LDA) and quadratic discriminant analysis (QDA) to classify P300 from the Muse. We obtained samples between 0.1--0.75s after the stimulus, and passed it to the classifier as a single vector. Unfortunately, we obtained poor results. Upon further investigation, we noticed that time synchronization issues may have decreased the ability of the classifiers to operate properly. To combat this, we plan to use a shallow covolutional neural network to allow for signals to shift in time without affecting classification accuracy.
 
 - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3175727/
     - "Comparison of Classification Methods for P300 Brain-Computer Interface on Disabled Subjects"
 - http://alexandre.barachant.org/blog/2017/02/05/P300-with-muse.html
     - Thanks to Alexandre Barachant for his P300 script on Muse! Unfortunately it was on Muse 2016, so we made a Muse 2014 version of it
-### Phase 2: Binary motor classification
+
+<!-- ### Phase 2: Binary motor classification
 - http://iopscience.iop.org/article/10.1088/1741-2560/10/4/046003/pdf
     - "Quadcopter control in three-dimensional space using a noninvasive motor imagery-based brain–computer interface"
 ### Phase 3: Multiclass motor classification
@@ -88,17 +107,17 @@ In the future, we plan to obtain data using the OpenBCI WiFi Shield to increase 
 - https://github.com/neurotechuoft/Data-Repository/
     - [6]: **NeurotechUofT: 9-class motor imagery data collection**
         - See "./eeg/motor-imagery/2018-03-17" for raw data
-        - See "./eeg/motor-imagery/notes/2018-03-17.md" for experiment setup
-        
-## Multithreaded architecture (MTA)
+        - See "./eeg/motor-imagery/notes/2018-03-17.md" for experiment setup -->
+
+<!-- ## Multithreaded architecture (MTA)
 The whole program has two basic functions: collect data from the board, and process it somehow. If this were to be done in a single-threaded application, if one iteration of processing were to take too long, it would block the program from receiving data from the board. Due to this, the program uses a multithreaded architecture, with one thread responsible for collecting data and one thread responsible for processing it.
 
 The MTA uses a variant of the publish-subscribe design pattern. A messaging queue is implemented in the Controller class. Controllable classes **can be controlled** by receiving messages in their Controller, and handing the message however appropriate. A master Controller is responsible for receiving instructions from the user and passing them along to each Controllable.
 
 A BioSignal is a Controllable that can also **update** itself with the latest data sample from the board, and **process** data somehow. During each update cycle, it also calls its **control()** method. The updating and processing will occur on separate threads instantiated in the **main()** function. (Look at the Tagger class for an example of a BioSignal).
 
-**main.py** initates the program, which is controlled from the GUI. It first sets up the OpenBCI board, makes the GUI, and then sets up a thread for processing. The GUI then handles playing / pausing the board by instantiating a thread to run **stream()** from openbci_v3. This function streams biosignals from the OpenBCI board, and calls each BioSignals's **update()** function). Processing of BioSignals is handled in **process_thread** (which runs **run_processor()**) by asynchronously calling each BioSignal's process function.
+**main.py** initates the program, which is controlled from the GUI. It first sets up the OpenBCI board, makes the GUI, and then sets up a thread for processing. The GUI then handles playing / pausing the board by instantiating a thread to run **stream()** from openbci_v3. This function streams biosignals from the OpenBCI board, and calls each BioSignals's **update()** function). Processing of BioSignals is handled in **process_thread** (which runs **run_processor()**) by asynchronously calling each BioSignal's process function. -->
 
 
-## Plan
-![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan")
+<!-- ## Plan
+![Plan](Meetings/resources/2017-07-17.png?raw=true "Plan") -->
