@@ -190,7 +190,7 @@ constructor(props) {
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallestText predictiveText">Let's try to save some time with predictive test. <br />Try: "I am typing with my mind! 🎉"</h3>
 		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
+		<input type="text" className="display" readOnly></input>
 		<Letters />
 		<button className="optionSmall leftMost bottomLeft">.</button>
 		<button onClick={this.handleNumClick} className="optionSmall">0</button>

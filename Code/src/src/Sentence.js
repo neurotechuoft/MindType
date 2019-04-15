@@ -6,7 +6,7 @@ import io from "socket.io-client";
 import './App.css';
 import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
-import { getNextInstrPause, getFlashingPause } from './helpers/intervals';
+import { getNextInstrPause, getFlashingPause, startNextInstrPause } from './helpers/intervals';
 import { sendTrainingFlashEvent } from './helpers/P300Communication';
 
 
@@ -129,11 +129,11 @@ class Sentence extends React.Component {
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
-              sendTrainingFlashEvent(client_socket, true);
+              sendTrainingFlashEvent(client_socket, 1);
               // row[j].classList.add("chosen");
             }
             else {
-              sendTrainingFlashEvent(client_socket, false);
+              sendTrainingFlashEvent(client_socket, 0);
             }
             // numColumSelected = j;
             const rowOrder = getRandomArray(5);
@@ -159,11 +159,11 @@ class Sentence extends React.Component {
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
-              sendTrainingFlashEvent(client_socket, true);
+              sendTrainingFlashEvent(client_socket, 1);
               // col[j].classList.add("chosen");
             }
             else {
-              sendTrainingFlashEvent(client_socket, false);
+              sendTrainingFlashEvent(client_socket, 0);
             }
             const colOrder = getRandomArray(6);
             curCol = 0;
@@ -189,23 +189,26 @@ class Sentence extends React.Component {
 
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
-    const statement = "what would you like to type";
+    const statement = "i am typing with my mind";
     const rowOrder = getRandomArray(5);
     const colOrder = getRandomArray(6); 
-    const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-    this.setState({interval, statement, rowOrder, colOrder});
+    setTimeout(
+      function() {
+        const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
+        this.setState({interval, statement, rowOrder, colOrder});
+      }
+      .bind(this),
+      startNextInstrPause()
+    );
+    
   }
-	
-
-	
-
 	
   render(){
     return (
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallerText">How about a whole sentence?<br/>Try: "I am typing with my mind."</h3>
         <div className="keysContainer">
-          <input type="text" className="displayInstruction" readOnly></input>
+          <input type="text" className="display" readOnly></input>
           <Letters />
           <Options />
         </div>

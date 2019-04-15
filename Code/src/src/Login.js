@@ -44,8 +44,8 @@ class Login extends React.Component {
         <input type="password" value={this.state.passwordValue} className="password-input" placeholder="Password"></input><br />
         <br />
         <button className="login" onClick={this.handleLoginClick}>Login</button>
-		<br />
-		<button className="back" onClick={this.props.goBack}>Go Back</button>
+		    <br />
+		    <button className="back" onClick={this.props.goBack}>Go Back</button>
       </div>
     )
   }

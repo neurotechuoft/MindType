@@ -4,7 +4,7 @@ import './App.css';
 import './EntrySizes.css';
 
 import TwoByTwo from './TwoByTwo';
-import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
+import { getFlashingPause, getNextInstrPause, startNextInstrPause } from './helpers/intervals';
 
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
@@ -173,8 +173,15 @@ class InstructionOneWord extends React.Component {
       
   componentDidMount() {
     const statement = "cab";
-    const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-    this.setState({interval, statement});
+    setTimeout(
+      function() {
+        const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
+        this.setState({interval, statement});
+      }
+      .bind(this),
+      startNextInstrPause()
+    );
+    
   }
 
   render(){
@@ -184,7 +191,7 @@ class InstructionOneWord extends React.Component {
       <h3 className="mindTypeColorText oneWord">Great! How about a word?<br />Try: "cab"</h3>
 		</div>
 		<div className="keysContainer">
-		  <input type="text" className="displayInstruction" value={this.state.displayText} readOnly></input>
+		  <input type="text" className="display" value={this.state.displayText} readOnly></input>
 		  <TwoByTwo />
 		</div>
 	</div>

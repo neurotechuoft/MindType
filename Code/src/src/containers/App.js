@@ -277,21 +277,21 @@ class App extends Component {
     let element;
     let button2;
     let button3;
-    let options = <OptionsSmall />;
+    let optionsSmall = <OptionsSmall />;
     if (this.state.display === 'letters') {
       element = <Letters />;
-      button3 = <button className="switch2 entry switch bottomLeft notSelected" onClick={this.handleNumClick} className="option">&1</button>
-      button2 = <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleEmojiClick} className="option">:)</button>
+      button2 = <button className="switch1 entry switch topLeft bottomLeft notSelected" onClick={this.handleEmojiClick}>:)</button>
+      button3 = <button className="switch2 entry switch notSelected" onClick={this.handleNumClick}>&1</button>
     } else if (this.state.display === 'numbers') {
       element = <Numbers />;
-      button3 = <button className="switch2 entry switch bottomLeft notSelected" onClick={this.handleLetterClick} className="option">abc</button>
-      button2 = <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleEmojiClick} className="option">:)</button>
+      button2 = <button className="switch1 entry switch topLeft bottomLeft notSelected" onClick={this.handleEmojiClick}>:)</button>
+      button3 = <button className="switch2 entry switch notSelected" onClick={this.handleLetterClick}>abc</button>
     } else {
       element = <Emojis />;
-      button2 = <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleNumClick} className="option">&1</button>
-      button3 = <button className="switch2 entry switch bottomLeft notSelected" onClick={this.handleLetterClick} className="option">abc</button>
+      button2 = <button className="switch1 entry switch topLeft bottomLeft notSelected" onClick={this.handleNumClick}>&1</button>
+      button3 = <button className="switch2 entry switch notSelected" onClick={this.handleLetterClick} >abc</button>
     }
-	
+
     // Displaying word predictions
     const predictions = this.state.predictions.map(prediction => <button className="suggestion"> { prediction } </button>)
 
@@ -306,9 +306,8 @@ class App extends Component {
           <div className="options">
             {button2}
             {button3}
-            {options}
+            {optionsSmall}
           </div>
-          
         </div>
       </div>
     )

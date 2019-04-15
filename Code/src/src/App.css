@@ -12,12 +12,13 @@ body {
   height: 100vh;
   width: 99vw;
 }
+
 .keyboard-container {
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 10vmin;
+  padding-top: 5vmin;
   /* background-color: #52A0B4; */
 }
 
@@ -115,20 +116,20 @@ body {
   background-color: #E6E5E5;
 }
 
+.display {
+  width: 51vmin;
+  height: 8.25vmin;
+  background-color: #E6E5E5;
+  border: none;
+  border-radius: 1vmin;
+  margin-top: 5vmin;
+  margin-bottom: 2vmin;
+}
+
 .displayWide {
   width: 66vw;
   height: 5vh;
   background-color: #E6E5E5;
-}
-
-.displayInstruction{
-	height: 5vh;
-	margin-top: 5vh;
-	margin-bottom: 1vh;
-	width: 48vw;
-  background-color: #E6E5E5;
-  border: none;
-  border-radius: 1vmin;
 }
 
 .keysContainer {
@@ -185,12 +186,21 @@ body {
 	background-color: white;
 }
 
-.selected.bottom {
-  border-bottom:0.5px solid white;
+/* Not using bottom, right, left, top right now */
+.bottom {
+  border-bottom:0px solid white !important;
 }
 
-.selected.right {
-  border-right:0.5px solid white;
+.right {
+  border-right:0px solid white !important;
+}
+
+.left {
+  border-left:0px solid white !important;
+}
+
+.top {
+  border-top:0px solid white !important;
 }
 
 .chosen {
@@ -199,13 +209,13 @@ body {
   font-weight: bold;
 }
 
-.chosen.bottom {
+/* .chosen.bottom {
   border-bottom:0.5px solid white;
-}
-
+} */
+/* 
 .chosen.right {
   border-right:0.5px solid white;
-}
+} */
 
 .selectedSmall {
 	width: 7.75vw;
@@ -383,7 +393,13 @@ body {
 
 .continueButton:hover {opacity: 1}
 
-.email-input, .password-input, .name-user, .welcomeLogo, .logoMindType {margin-left: 35vw; width: 30vw;}
+.email-input, .password-input, .name-user, .welcomeLogo {margin-left: 35vw; width: 30vw;}
+
+.logoMindType {
+  margin-left: 35vw;
+  margin-top: 8vh;
+  width: 30vw;
+}
 
 
 .heading{

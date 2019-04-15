@@ -49,8 +49,8 @@ class SignUp extends React.Component {
         <input type="password" className="password-input" placeholder="Password" value={this.passwordValue}></input><br />
         <br />
         <button className="sign-up" onClick={this.handleSignUpClick}>Sign Up</button>
-		<br />
-		<button className="back" onClick={this.props.goBack}>Go Back</button>
+		    <br />
+		    <button className="back" onClick={this.props.goBack}>Go Back</button>
       </div>
     )
   }

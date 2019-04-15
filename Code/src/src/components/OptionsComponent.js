@@ -12,12 +12,12 @@ class Options extends Component {
   render() {
     return (
         <div>
-            <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleEmojiClick}>:)</button>
+            <button className="switch1 entry switch topLeft bottomLeft notSelected" onClick={this.handleEmojiClick}>:)</button>
             <button className="switch2 entry switch notSelected" onClick={this.handleNumClick}>&1</button>
             <button className="entry notSelected ">.</button>
             <button className="entry notSelected">,</button>
             <button className="entry notSelected">?</button>
-            <button className="entry notSelected bottomRight">&crarr;</button>
+            <button className="entry notSelected topRight bottomRight">&crarr;</button>
         </div>
     )
   }
