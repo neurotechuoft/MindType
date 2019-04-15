@@ -53,13 +53,12 @@ class P300Client(object):
         uuid = args['uuid']
         timestamp = args['timestamp']
 
-        print("Predict: ", args)
-
         p300 = random.choice([True, False])
         score = random.random()
+
+        print("Predict: ", args, "score: ", score)
         results = {'uuid': uuid, 'p300': p300, 'score': score}
         return sid, json.dumps(results)
-
 
 
 if __name__ == '__main__':

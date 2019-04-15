@@ -108,7 +108,8 @@ class WordMind extends React.Component {
           statement: statements[newStatementNum],
           lettersFound: 0,
           rowFound: false,
-          colFound: false
+          colFound: false,
+          displayText: ""
         });
         // setTimeout(this.writePhrase, startNextInstrPause());
       }
@@ -221,7 +222,7 @@ class WordMind extends React.Component {
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallerText">Let's try to type a word with the full set of letters.<br />Try: 
         { this.state.statement }</h3>
-        <input type="text" className="display" readOnly></input>
+        <input type="text" className="display" value={this.state.displayText} readOnly></input>
         <Letters />
       </div>
     )
