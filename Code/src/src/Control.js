@@ -49,7 +49,15 @@ class Control extends React.Component {
 	}
 	
 	instructionOneWordHandler(){
-		this.setState({screenDisplay: 'letterSwitch'});
+		this.setState({screenDisplay: 'wordMind'}); 
+	}
+
+	wordMindHandler(){
+		this.setState({screenDisplay: 'sentence'});
+	}
+
+	sentenceHandler(){
+		this.setState({screenDisplay: 'final'}); // TODO: REVERT TO LETTERSWITCH
 	}
 	
 	letterSwitchHandler(){
@@ -61,14 +69,6 @@ class Control extends React.Component {
 	}
 	
 	numberSwitchHandler(){
-		this.setState({screenDisplay: 'wordMind'});
-	}
-	
-	wordMindHandler(){
-		this.setState({screenDisplay: 'sentence'});
-	}
-	
-	sentenceHandler(){
 		this.setState({screenDisplay: 'sentenceEmoji'});
 	}
 	

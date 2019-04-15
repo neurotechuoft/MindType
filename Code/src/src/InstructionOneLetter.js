@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import io from "socket.io-client";
 import './App.css';
+import './EntrySizes.css';
 
 import TwoByTwo from './TwoByTwo';
+import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
 
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
@@ -29,7 +31,7 @@ let shuffle_cols = [col1, col2];
 // Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 1000;
+const FLASHING_PAUSE = getFlashingPause();
 
 class InstructionOneLetter extends React.Component {
 	
@@ -89,7 +91,7 @@ class InstructionOneLetter extends React.Component {
     
     if (lettersFound === statement.length) {
       clearInterval(interval);
-      setTimeout(this.props.instructionOneLetterHandler, 3000);
+      setTimeout(this.props.instructionOneLetterHandler, getNextInstrPause());
     } else {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);

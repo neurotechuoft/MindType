@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import Letters from './LettersSmallWM'
+import Letters from './components/LetterComponent'
 
 import io from "socket.io-client";
 import './App.css';
+import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
+import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
 
 
 // Getting rows
@@ -31,7 +33,7 @@ let selectedKey = null;
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 1000;
+const FLASHING_PAUSE = getFlashingPause;
 
 class WordMind extends React.Component {
 	
@@ -74,15 +76,15 @@ class WordMind extends React.Component {
 
   resetKey(key) {
     if (key != null) {
-      key.classList.add("entrySmall");
-      key.classList.remove("selectedSmall");
-      key.classList.remove("chosenSmall");
+      key.classList.remove("selected");
+      key.classList.remove("chosen");
+      key.classList.add("notSelected");
     }
   }
 
   keyChosen(key) {
     if (key != null) {
-      key.classList.add("chosenSmall");
+      key.classList.add("chosen");
     }
   }
 
@@ -91,6 +93,7 @@ class WordMind extends React.Component {
       colOrder, rowFound, colFound, displayText} = this.state;
     if (lettersFound === statement.length) {
       clearInterval(interval);
+      setTimeout(this.props.wordMindHandler, getNextInstrPause());
     } else {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
@@ -98,7 +101,7 @@ class WordMind extends React.Component {
       if (selectedKey != null) {
         this.resetKey(selectedKey);
       }
-      
+
       // making sure rows/cols don't flash if they've already been found.
       let rc;
       if (rowFound) rc = 2;
@@ -110,7 +113,7 @@ class WordMind extends React.Component {
         prev = row;
         curRow = curRow + 1;
 
-        // Handling Spaces 
+        // Handling Spaces
 
         if (statement[lettersFound] === ' ' && row === rows[4]) {
           const rowOrder = getRandomArray(5);
@@ -118,8 +121,8 @@ class WordMind extends React.Component {
           this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entrySmall");
-          row[j].classList.add("selectedSmall");
+          row[j].classList.remove("notSelected");
+          row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
@@ -144,8 +147,8 @@ class WordMind extends React.Component {
         }
 
         for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entrySmall");
-          col[j].classList.add("selectedSmall");
+          col[j].classList.remove("notSelected");
+          col[j].classList.add("selected");
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
@@ -175,24 +178,19 @@ class WordMind extends React.Component {
 
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
-    const statement = "what would you like to type";
+    const statement = "mind";
     const rowOrder = getRandomArray(5);
     const colOrder = getRandomArray(6); 
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
     this.setState({interval, statement, rowOrder, colOrder});
   }
 	
-
-	
   render(){
     return (
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallerText">Let's try to type a word with the full set of letters.<br />Try: "mind"</h3>
-		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
-		<Letters />
-		<button onClick={this.props.wordMindHandler}>Continue</button>
-		</div>
+        <input type="text" className="displayInstruction" readOnly></input>
+        <Letters />
       </div>
     )
   }
