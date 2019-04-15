@@ -79,7 +79,7 @@ isn't fully ready, use feature toggling to turn it off
 
 
 ## P300 keyboard: Algorithm approach
-We tried to use linear discriminant analysis (LDA) and quadratic discriminant analysis (QDA) to classify P300 from the Muse. We obtained samples between 0.1--0.75s after the stimulus, and passed it to the classifier as a single vector. Unfortunately, we obtained poor results. Upon further investigation, we noticed that time synchronization issues may have decreased the ability of the classifiers to operate properly. To combat this, we plan to use a shallow covolutional neural network to allow for signals to shift in time without affecting classification accuracy.
+We used a linear discriminant analysis (LDA) and vectorizer pipeline, as well as a ERP Covariances and MDM pipeline (from Alexandre Barachant's notebook), to classify P300 from the Muse. We obtained samples between 0.1--0.75s after the stimulus, and passed it to the classifier as a single vector. We achieved similar results (accuracy of roughly 60-70%) from both of these classifiers, possibly due to some noise in the data.
 
 - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3175727/
     - "Comparison of Classification Methods for P300 Brain-Computer Interface on Disabled Subjects"
