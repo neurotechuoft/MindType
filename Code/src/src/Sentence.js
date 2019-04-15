@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import Letters from './LettersSmall';
+import Letters from './components/LetterComponent';
+import Options from './components/OptionsComponent';
 
 import io from "socket.io-client";
 import './App.css';
+import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
+import { getNextInstrPause, getFlashingPause } from './helpers/intervals';
 
 
 // Getting rows
@@ -31,7 +34,7 @@ let selectedKey = null;
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 1000;
+const FLASHING_PAUSE = getFlashingPause();
 
 class Sentence extends React.Component {
 	
@@ -91,6 +94,7 @@ class Sentence extends React.Component {
       colOrder, rowFound, colFound, displayText} = this.state;
     if (lettersFound === statement.length) {
       clearInterval(interval);
+      setTimeout(this.props.sentenceHandler, getNextInstrPause());
     } else {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
@@ -190,16 +194,11 @@ class Sentence extends React.Component {
     return (
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallerText">How about a whole sentence?<br/>Try: "I am typing with my mind."</h3>
-		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
-		<Letters />
-		<button className="optionSmall leftMost bottomLeft">.</button>
-		<button onClick={this.handleNumClick} className="optionSmall">0</button>
-        <button onClick={this.handleEmojiClick} className="optionSmall">:)</button>
-		<button className="optionSmall">&crarr;</button>
-        <button className="optionSmall bottomRight">&#8678;</button>
-		<button onClick={this.props.sentenceHandler}>Continue</button>
-		</div>
+        <div className="keysContainer">
+          <input type="text" className="displayInstruction" readOnly></input>
+          <Letters />
+          <Options />
+        </div>
       </div>
     )
   }

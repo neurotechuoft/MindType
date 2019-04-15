@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Numbers from './NumbersSmall';
 import io from "socket.io-client";
 import './App.css';
+import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
 
 

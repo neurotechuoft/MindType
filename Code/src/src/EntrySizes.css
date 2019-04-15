@@ -1,0 +1,85 @@
+.entryTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  margin-top: 0.75vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.entry {
+  width: 8.25vmin;
+  height: 8.25vmin;
+  /* color: #52A0B4;
+  background-color: white; */
+  font-size: 4vmin;
+  font-family: $font-stack;
+  border: none;
+  margin-right: 0.3vmin;
+	margin-top: 0.3vmin;
+}
+
+.entry-extra-wide-small {
+  width: 16.75vmin;
+  margin-right: 0.35vmin;
+}
+
+.extra-wide {
+  width: 16.75vmin;
+  margin-right: 0.35vmin;
+}
+
+.entry.bottom {
+  border-bottom:0.5px solid #3da8c4;
+}
+
+.entry.right {
+  border-right:0.5px solid #3da8c4;
+}
+
+.entry-extra-wide {
+  width: 33vw;
+  height: 12.5vh;
+  color: #52A0B4;
+  background-color: white;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  font-weight: bold;
+}
+
+.entry-wide {
+  width: 19.8vw;
+  height: 12.5vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+
+}
+
+.entry-wide-small {
+	width: 9.4vw;
+  height: 8vh;
+  background-color: white;
+  color: #52A0B4;
+  font-size: 4vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+  margin-right: 0.4vw;
+  margin-top: 0.3vh;
+}

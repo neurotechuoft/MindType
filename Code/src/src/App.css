@@ -18,6 +18,7 @@ body {
   align-items: center;
   justify-content: center;
   padding-top: 10vmin;
+  background-color: #52A0B4;
 }
 
 .instructionScreen{
@@ -25,7 +26,12 @@ body {
 	height: 93vh;
 	width: 100vw;
 	margin-top: -3vh;
-	padding-top: 10vh;
+  padding-top: 10vh;
+  padding-left: 25vw;
+  /* height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center; */
 }
 
 .leftMost {
@@ -45,7 +51,6 @@ body {
 
 .mindTypeColorText {
 	color: white;
-	margin-left: 25vw;
 	margin-top: 1.5vh;
 	width: 48vw;
 	font-size: 5vmin;
@@ -119,10 +124,11 @@ body {
 .displayInstruction{
 	height: 5vh;
 	margin-top: 5vh;
-	margin-left: 25vw;
 	margin-bottom: 1vh;
 	width: 48vw;
-	background-color: #E6E5E5;
+  background-color: #E6E5E5;
+  border: none;
+  border-radius: 1vmin;
 }
 
 .keysContainer {
@@ -137,23 +143,6 @@ body {
   background-color: #E6E5E5;
 }
 
-
-.entryTwo {
-  width: 24vw;
-  height: 24vh;
-  margin-right: 0.8vw;
-  margin-top: 0.75vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 12vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
-  Helvetica, Arial, "Lucida Grande", sans-serif;
-}
-
 .selectedTwo {
   width: 24vw;
   height: 24vh;
@@ -166,7 +155,7 @@ body {
   font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
   Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
@@ -186,41 +175,14 @@ body {
   Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
-.entry {
-  width: 8.25vmin;
-  height: 8.25vmin;
-  color: #52A0B4;
-  background-color: white;
-  font-size: 4vmin;
-  font-family: $font-stack;
-  border: none;
-  font-weight: bold;
-  border-top: 0.5px solid #3da8c4;
-  border-bottom:none;
-  border-right:none;
-  border-left: 0.5px solid #3da8c4; 
-}
-
-.entry.bottom {
-  border-bottom:0.5px solid #3da8c4;
-}
-
-.entry.right {
-  border-right:0.5px solid #3da8c4;
-}
-
-
 .selected {
-  width: 8.25vmin;
-  height: 8.25vmin;
   color: white;
   background-color: #3da8c4;
-  font-size: 4vmin;
-  font-family: $font-stack;
-  border-top: 0.5px solid white;
-  border-bottom:none;
-  border-right:none;
-  border-left: 0.5px solid white; 
+}
+
+.notSelected {
+	color: #52A0B4;
+	background-color: white;
 }
 
 .selected.bottom {
@@ -232,16 +194,9 @@ body {
 }
 
 .chosen {
-  width: 8.25vmin;
-  height: 8.25vmin;
   color: red;
+  background-color: white;
   font-weight: bold;
-  font-size: 4vmin;
-  border-top: 0.5px solid white;
-  border-bottom:none;
-  border-right:none;
-  border-left: 0.5px solid white; 
-  font-family: $font-stack;
 }
 
 .chosen.bottom {
@@ -250,21 +205,6 @@ body {
 
 .chosen.right {
   border-right:0.5px solid white;
-}
-
-.entrySmall {
-	width: 7.75vw;
-	height: 8vh;
-	background-color: white;
-	color: #52A0B4;
-	font-size: 3vmin;
-  /* font-weight: bold; */
-	font-family: $font-stack;
-  /* border: 2px solid white; */
-	border: none;
-	font-weight: bold;
-	margin-right: 0.4vw;
-	margin-top: 0.3vh;
 }
 
 .selectedSmall {
@@ -283,77 +223,17 @@ body {
 }
 
 .chosenSmall {
-	width: 7.75vw;
-	height: 8vh;
+	/* width: 7.75vw;
+	height: 8vh; */
 	color: red;
-	font-size: 3vmin;
+	/* font-size: 3vmin; */
   /* font-weight: bold; */
-	font-family: $font-stack;
+	/* font-family: $font-stack; */
   /* border: 2px solid white; */
-	border: none;
+	/* border: none; */
 	font-weight: bold;
-	margin-right: 0.4vw;
-	margin-top: 0.3vh;
-}
-
-.extra-wide {
-  width: 16.5vmin;
-  height: 8.25vmin;
-}
-
-.entry-extra-wide {
-  width: 33vw;
-  height: 12.5vh;
-  color: #52A0B4;
-  background-color: white;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
-  font-weight: bold;
-}
-
-.entry-extra-wide-small {
-	width: 15.9vw;
-	height: 8vh;
-	color: #52A0B4;
-	background-color: white;
-	font-size: 3vmin;
-  /* font-weight: bold; */
-	font-family: $font-stack;
-  /* border: 2px solid white; */
-	border: none;
-	font-weight: bold;
-	margin-right: 0.4vw;
-  margin-top: 0.3vh;
-}
-
-.entry-wide {
-  width: 19.8vw;
-  height: 12.5vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
-
-}
-
-.entry-wide-small {
-	width: 9.4vw;
-  height: 8vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 4vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
-  margin-right: 0.4vw;
-  margin-top: 0.3vh;
+	/* margin-right: 0.4vw; */
+	/* margin-top: 0.3vh; */
 }
 
 .selected-wide-small {
@@ -419,10 +299,13 @@ body {
   font-weight: bold;
 }
 
-
+.switch {
+  /* font-size: 3vmin !important; */
+  background-color: #d5faff;
+}
 
 .twoByTwo{
-	margin-left: 25vw;
+	/* margin-left: 25vw; */
 }
 
 .topLeft{
@@ -520,3 +403,12 @@ body {
 	margin-left: 5vw;
 }
  
+.delete-img {
+  width: 3.5vmin;
+  height: auto;
+}
+
+.shift-img {
+  width: 2.5vmin;
+  height: auto;
+}

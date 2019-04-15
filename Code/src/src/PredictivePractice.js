@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import Letters from './LettersSmall';
+import Letters from './components/LetterComponent';
 import io from "socket.io-client";
 import './App.css';
+import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
 
 

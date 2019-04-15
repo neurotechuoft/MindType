@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import io from "socket.io-client";
 import '../App.css';
+import '../EntrySizes.css';
 
 import Letters from '../components/LetterComponent';
 import Numbers from '../components/NumberComponent';
@@ -83,7 +84,7 @@ class App extends Component {
 
   resetKey(key) {
     if (key != null) {
-      key.classList.add("entry");
+      key.classList.add("notSelected");
       key.classList.remove("selected");
       key.classList.remove("chosen");
     }
@@ -187,7 +188,7 @@ class App extends Component {
         prev = row;
 
         for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entry");
+          row[j].classList.remove("notSelected");
           row[j].classList.add("selected");
           
           // if (row[j].innerHTML === statement[lettersFound] || (row[j].innerHTML === "____" && statement[lettersFound] === " ")) {
@@ -206,7 +207,7 @@ class App extends Component {
         prev = col;
 
         for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entry");
+          col[j].classList.remove("notSelected");
           col[j].classList.add("selected");
           
           // // Found letter in column
