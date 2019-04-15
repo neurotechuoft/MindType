@@ -42,6 +42,8 @@ class P300Client(object):
         timestamp = args['timestamp']
         p300 = args['p300']
 
+        print("Train: ", args)
+
         acc = random.random()
         acc = random.choice([acc, None])
         return sid, json.dumps({'accuracy': acc})
@@ -50,6 +52,8 @@ class P300Client(object):
         args = json.loads(args)
         uuid = args['uuid']
         timestamp = args['timestamp']
+
+        print("Predict: ", args)
 
         p300 = random.choice([True, False])
         score = random.random()

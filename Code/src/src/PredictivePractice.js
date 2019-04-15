@@ -30,7 +30,7 @@ let curCol = 0; // Keeping track of which array index you're on for random cols.
 let selectedKey = null;
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
-const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
+const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = 1000;
 
 class PredictivePractice extends React.Component {

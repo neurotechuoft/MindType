@@ -6,6 +6,7 @@ import './App.css';
 import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
 import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
+import { sendTrainingFlashEvent } from './helpers/P300Communication';
 
 
 // Getting rows
@@ -32,8 +33,9 @@ let curCol = 0; // Keeping track of which array index you're on for random cols.
 let selectedKey = null;
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
-const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = getFlashingPause;
+const client_socket = io('http://localhost:8002'); // Socket to connect to P300Client.
+const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
+const FLASHING_PAUSE = getFlashingPause();
 
 class WordMind extends React.Component {
 	
@@ -126,7 +128,10 @@ class WordMind extends React.Component {
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
-              // row[j].classList.add("chosen");
+              sendTrainingFlashEvent(client_socket, true);
+            }
+            else {
+              sendTrainingFlashEvent(client_socket, false);
             }
             // numColumSelected = j;
             const rowOrder = getRandomArray(5);
@@ -152,7 +157,10 @@ class WordMind extends React.Component {
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
-              // col[j].classList.add("chosen");
+              sendTrainingFlashEvent(client_socket, true);
+            }
+            else {
+              sendTrainingFlashEvent(client_socket, false);
             }
             const colOrder = getRandomArray(6);
             curCol = 0;

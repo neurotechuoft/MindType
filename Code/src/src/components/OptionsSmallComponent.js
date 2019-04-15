@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import delete_btn from './../assets/delete.png';
 import shift_btn from './../assets/shift.png';
 
-class Options extends Component {
+class OptionsSmall extends Component {
 
   constructor(props) {
     super(props);
@@ -11,16 +11,14 @@ class Options extends Component {
 
   render() {
     return (
-        <div>
-            <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleEmojiClick}>:)</button>
-            <button className="switch2 entry switch notSelected" onClick={this.handleNumClick}>&1</button>
+      <span>
             <button className="entry notSelected ">.</button>
             <button className="entry notSelected">,</button>
             <button className="entry notSelected">?</button>
             <button className="entry notSelected bottomRight">&crarr;</button>
-        </div>
+      </span>
     )
   }
 }
 
-export default Options;
+export default OptionsSmall;
