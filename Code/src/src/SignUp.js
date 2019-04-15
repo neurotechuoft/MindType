@@ -3,7 +3,8 @@ import logo from './mindtype_logo.png';
 import io from "socket.io-client";
 
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
-const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
+const client_socket = io('http://localhost:8002'); // Socket to connect to P300Client.
+const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
 
 class SignUp extends React.Component {
 	
@@ -19,7 +20,12 @@ class SignUp extends React.Component {
   }
 	
   handleSignUpClick(){
-	 //robot_socket.emit("register", (this,state.nameValue, this.state.emailValue, this.state.passwordValue, this.state.nameValue), this.checkSignUp);
+    let signup = {
+      'username': this.state.emailValue,
+      'password': this.state.passwordValue,
+      'email': this.state.emailValue
+    };
+	 client_socket.emit("register", JSON.stringify(signup), this.checkSignUp);
 	 this.props.signUpHandler();
   }
   

@@ -6,6 +6,8 @@ import '../EntrySizes.css';
 import Letters from '../components/LetterComponent';
 import Numbers from '../components/NumberComponent';
 import Emojis from '../components/EmojiComponent';
+import Options from '../components/OptionsComponent';
+import OptionsSmall from '../components/OptionsSmallComponent';
 
 const uuid_v1 = require("uuid/v1");
 
@@ -42,7 +44,7 @@ let shuffle_cols = [col1, col2, col3, col4, col5, col6];
 
 // Sockets
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
-const client_socket = io('http://localhost:8002'); // Socket to connect to NLP Service.
+const client_socket = io('http://localhost:8002'); // Socket to connect to P300Client.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = 500;
 
@@ -135,7 +137,12 @@ class App extends Component {
     let uuid = uuid_v1();
     let timestamp = Date.now() / 1000.0;
 
-    client_socket.emit("predict", [uuid, timestamp], this.saveP300Accs);
+    let json = {
+      'uuid': uuid,
+      'timestamp': timestamp
+    }
+
+    client_socket.emit("predict", JSON.stringify(json), this.saveP300Accs);
     uuid_key_dict[uuid] = {
       'keys': group,
       'keytype': keytype
@@ -270,18 +277,19 @@ class App extends Component {
     let element;
     let button2;
     let button3;
+    let options = <OptionsSmall />;
     if (this.state.display === 'letters') {
       element = <Letters />;
-      button2 = <button onClick={this.handleNumClick} className="option">0</button>
-      button3 = <button onClick={this.handleEmojiClick} className="option">:)</button>
+      button3 = <button className="switch2 entry switch bottomLeft notSelected" onClick={this.handleNumClick} className="option">&1</button>
+      button2 = <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleEmojiClick} className="option">:)</button>
     } else if (this.state.display === 'numbers') {
       element = <Numbers />;
-      button2 = <button onClick={this.handleLetterClick} className="option">abc</button>
-      button3 = <button onClick={this.handleEmojiClick} className="option">:)</button>
+      button3 = <button className="switch2 entry switch bottomLeft notSelected" onClick={this.handleLetterClick} className="option">abc</button>
+      button2 = <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleEmojiClick} className="option">:)</button>
     } else {
       element = <Emojis />;
-      button2 = <button onClick={this.handleNumClick} className="option">0</button>
-      button3 = <button onClick={this.handleLetterClick} className="option">abc</button>
+      button2 = <button className="switch1 entry switch bottomLeft notSelected" onClick={this.handleNumClick} className="option">&1</button>
+      button3 = <button className="switch2 entry switch bottomLeft notSelected" onClick={this.handleLetterClick} className="option">abc</button>
     }
 	
     // Displaying word predictions
@@ -296,12 +304,11 @@ class App extends Component {
           </div>
           {element}
           <div className="options">
-            <button className="option">.</button>
             {button2}
             {button3}
-            <button className="option">&crarr;</button>
-            <button className="option">&#8678;</button>
+            {options}
           </div>
+          
         </div>
       </div>
     )
