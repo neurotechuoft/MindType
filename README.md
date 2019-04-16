@@ -1,9 +1,32 @@
-# MindType
-A mind-controlled keyboard using imagined sign language.
+# Neurostack + MindType
 
+Writing neurotech apps can be really fun. It can also be quite daunting. A huge reason for that has been because it's super-hard to write your own ML algorithm, figure out how it'll communicate in real-time, and deploy it to the cloud. So with Neurostack, we decided to do that for you!
+
+Neurostack is an open-source cloud EEG service that you can use to rapidly prototype your own neurotech application. The Neurostack client (P300Client) accepts a stream of MuseLSL data, and forwards it to the appropriate service. The service then analyzes the EEG and returns a stream of target vs non-target epochs. So far, Neurostack has the following services:
+
+- P300Service: provide samples of target and non-target data once, and P300Service will find P300 brain waves for that person
+- NLP+EmojiService: provide a word / phrase, and receive word and emoji predictions
+
+![](Neurostack.png)
+
+## How to use
+1. Start a MuseLSL stream
+2. Connect to P300Client via SocketIO on your front-end
+3. Send training markers (where p300 is either 0 or 1 - boolean)
+```
+emit("train", (uuid, timestamp, p300), callback_function)
+```
+4. Ask for a prediction, and get your results! Returns `sid, (uuid, p300, score)`
+```
+emit("predict", (uuid, timestamp), callback_function)
+```
+For more information, look at the README in: `Code/src/p300_service`.
+## MindType: A Neurostack application
 Communication, especially via keyboard, is very difficult, if not impossible, for people with various neuromuscular degenerative diseases and muscular dystrophy. Because of this, EEG spellers based on the [P300](https://en.wikipedia.org/wiki/P300_(neuroscience)) [oddball paradigm](https://en.wikipedia.org/wiki/Oddball_paradigm) have been made and researched upon for many years. Current EEG spellers are quite slow (~50 bits/min, or 6 letters/min with NLP optimizations) [1] [2]. It becomes impossible for a person with such conditions to enjoy a conversation with their loved ones due to the low bit rate.
 
 MindType seeks to improve the bit rate of mind-controlled keyboards. It also uses a grid system, like [traditional P300 spellers](http://iopscience.iop.org/1741-2552/13/6/066018/downloadHRFigure/figure/jneaa47eff2). We have included several other features along with this, such as an emoji keyboard, for more expressive typing in the modern world. Additionally, the use of NLP algorithms would boost the bit rate by attempting to predict the word the user wants to enter. This allows for many cases where the user wouldn't have to type the full word.
+
+We are currently wrapping up integration for MindType, so stay tuned for the beta release! Note that MindType currently only runs on Mac or Linux.
 
 [1] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3679217/
 
@@ -28,10 +51,10 @@ The P300 client then sends machine learning jobs to the P300 Server, which train
 <!-- OpenBCI Cyton. (The keyboard works with Muse as well, but you would need to use P300 instead of motor imagery) -->
 Muse, a BLED112 dongle if on Mac.
 
-## Setup
+<!-- ## Setup
 1. Clone the project
 2. Go into './Code/src'
-3. Run setup.sh
+3. Run setup.sh -->
 
 ## Dev Setup
 ### Front End:
@@ -85,6 +108,14 @@ We used a linear discriminant analysis (LDA) and vectorizer pipeline, as well as
     - "Comparison of Classification Methods for P300 Brain-Computer Interface on Disabled Subjects"
 - http://alexandre.barachant.org/blog/2017/02/05/P300-with-muse.html
     - Thanks to Alexandre Barachant for his P300 script on Muse! Unfortunately it was on Muse 2016, so we made a Muse 2014 version of it
+
+
+## Design Decisions
+The Neurostack is designed with the microservice pattern. This offers two advantages. First of all, this allows us to incrementally upgrade services as we improve our machine learning capabilities. Most importantly, this lets neurotech enthusiasts (including us!) to mix and match different services for custom needs, or even create new Neurostack services out of existing ones. This would be especially useful for multimodal analysis.
+
+ We decided to opt for MuseLSL over MuseJs as the connector to Muse as it allowed for superior Bluetooth reliability and time-syncing. The Python-based Neurostack client facilitates communication between the Neurostack cloud and a front-end of your choice using SocketIO. This gives developers freedom of stack, while guaranteeing reliable streaming. Each service comes with its own database to store users and their training metadata used to predict neurological phenomena for that person.
+
+ Current concerns include security and privacy. We plan on encrypting all data in transit, and using UUIDs to identify users instead of accounts. This would allow for anonymous analysis of EEG data.
 
 <!-- ### Phase 2: Binary motor classification
 - http://iopscience.iop.org/article/10.1088/1741-2560/10/4/046003/pdf
