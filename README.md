@@ -7,7 +7,7 @@ Neurostack is an open-source cloud EEG service that you can use to rapidly proto
 - P300Service: provide samples of target and non-target data once, and P300Service will find P300 brain waves for that person
 - NLP+EmojiService: provide a word / phrase, and receive word and emoji predictions
 
-![](Neurostack.png)
+![](./Neurostack.png)
 
 ## How to use
 1. Start a MuseLSL stream
