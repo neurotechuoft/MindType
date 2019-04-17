@@ -208,7 +208,7 @@ class Sentence extends React.Component {
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallerText">How about a whole sentence?<br/>Try: "I am typing with my mind."</h3>
         <div className="keysContainer">
-          <input type="text" className="display" readOnly></input>
+          <input type="text" className="display" value={this.state.displayText} readOnly></input>
           <Letters />
           <Options />
         </div>

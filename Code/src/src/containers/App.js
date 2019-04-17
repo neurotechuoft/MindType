@@ -8,6 +8,7 @@ import Numbers from '../components/NumberComponent';
 import Emojis from '../components/EmojiComponent';
 import Options from '../components/OptionsComponent';
 import OptionsSmall from '../components/OptionsSmallComponent';
+import { getFlashingPause } from '../helpers/intervals';
 
 const uuid_v1 = require("uuid/v1");
 
@@ -46,7 +47,7 @@ let shuffle_cols = [col1, col2, col3, col4, col5, col6];
 const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP Service.
 const client_socket = io('http://localhost:8002'); // Socket to connect to P300Client.
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
-const FLASHING_PAUSE = 500;
+const FLASHING_PAUSE = getFlashingPause();
 
 class App extends Component {
   constructor(props) {
@@ -114,11 +115,14 @@ class App extends Component {
         }
       }
     }
+
     console.log(bestRow);
     console.log(bestCol);
     for (var r in bestRow) {
       for (var c in bestCol) {
-        if (bestRow[r].innerHTML === bestCol[c].innerHTML) {
+        if (bestRow[r].innerHTML === bestCol[c].innerHTML && !isNaN(r)) {
+          console.log("Rownum: ", r);
+          console.log("Colnum: ", c);
           console.log("Returning key: ", bestCol[c]);
           return bestCol[c];
         }
@@ -164,6 +168,21 @@ class App extends Component {
       const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
     } 
+  }
+
+  getKeyText(selectedKey) {
+    if (selectedKey.innerHTML === "____") {
+      return " ";
+    }
+    else if (
+      selectedKey.innerHTML.search("delete") != -1 ||
+      selectedKey.innerHTML.search("return") != -1 ||
+      selectedKey.innerHTML.search("shift") != -1 ||
+      selectedKey.innerHTML.search("smile") != -1
+    ) { // TODO: IMPLEMENT
+      return "";
+    }
+    else return selectedKey.innerHTML;
   }
   
   writePhrase() {
@@ -237,7 +256,7 @@ class App extends Component {
         if (selectedKey != null) {
           this.keyChosen(selectedKey);
 
-          const newDisplay = displayText + selectedKey.innerHTML;
+          const newDisplay = displayText + this.getKeyText(selectedKey);;
           this.setState({rowFound : false, colFound : false, 
           displayText : newDisplay});
 
@@ -251,6 +270,8 @@ class App extends Component {
         col_index = 0;
         this.shuffle(shuffle_rows);
         this.shuffle(shuffle_cols);
+        uuid_key_dict = {};
+        uuid_accuracies = {};
       }
     }
   }

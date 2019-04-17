@@ -1,5 +1,5 @@
 export function getFlashingPause() {
-    return 500;
+    return 50;
 }
 
 export function getNextInstrPause() {
