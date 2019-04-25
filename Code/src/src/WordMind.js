@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import './App.css';
 import './EntrySizes.css';
 import { getRandomArray } from './helpers/shuffle';
-import { getFlashingPause, getNextInstrPause } from './helpers/intervals';
+import { getFlashingPause, getNextInstrPause, startNextInstrPause } from './helpers/intervals';
 import { sendTrainingFlashEvent } from './helpers/P300Communication';
 
 
@@ -37,12 +37,15 @@ const client_socket = io('http://localhost:8002'); // Socket to connect to P300C
 const robot_socket = io('http://localhost:8003'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = getFlashingPause();
 
+const statements = ["mind", "type", "cloud"];
+
 class WordMind extends React.Component {
 	
 	constructor(props) {
     super(props);
     this.state = { 
       statement: '',
+      statementNum: 0,
       display: 'letters', 
       displayText: '', 
       interval : null,
@@ -91,11 +94,24 @@ class WordMind extends React.Component {
   }
 
   writePhrase() {
-    const {statement, interval, lettersFound, rowOrder, 
+    const {statement, statementNum, interval, lettersFound, rowOrder, 
       colOrder, rowFound, colFound, displayText} = this.state;
     if (lettersFound === statement.length) {
-      clearInterval(interval);
-      setTimeout(this.props.wordMindHandler, getNextInstrPause());
+      if (statementNum + 1 >= statements.length) {
+        clearInterval(interval);
+        setTimeout(this.props.wordMindHandler, getNextInstrPause());
+      }
+      else {
+        let newStatementNum = statementNum + 1;
+        this.setState({
+          statementNum: newStatementNum,
+          statement: statements[newStatementNum],
+          lettersFound: 0,
+          rowFound: false,
+          colFound: false
+        });
+        // setTimeout(this.writePhrase, startNextInstrPause());
+      }
     } else {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
@@ -128,10 +144,10 @@ class WordMind extends React.Component {
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
-              sendTrainingFlashEvent(client_socket, true);
+              sendTrainingFlashEvent(client_socket, 1);
             }
             else {
-              sendTrainingFlashEvent(client_socket, false);
+              sendTrainingFlashEvent(client_socket, 0);
             }
             // numColumSelected = j;
             const rowOrder = getRandomArray(5);
@@ -157,10 +173,10 @@ class WordMind extends React.Component {
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
-              sendTrainingFlashEvent(client_socket, true);
+              sendTrainingFlashEvent(client_socket, 1);
             }
             else {
-              sendTrainingFlashEvent(client_socket, false);
+              sendTrainingFlashEvent(client_socket, 0);
             }
             const colOrder = getRandomArray(6);
             curCol = 0;
@@ -186,18 +202,26 @@ class WordMind extends React.Component {
 
   componentDidMount() {
     // const statement = prompt("What would you like to type?");
-    const statement = "mind";
+    const statement = statements[this.state.statementNum];
+    this.setState({statement});
     const rowOrder = getRandomArray(5);
     const colOrder = getRandomArray(6); 
-    const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
-    this.setState({interval, statement, rowOrder, colOrder});
+    setTimeout(
+      function() {
+        const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
+        this.setState({interval, statement, rowOrder, colOrder});
+      }
+      .bind(this),
+      startNextInstrPause()
+    );
   }
 	
   render(){
     return (
       <div className="instructionScreen">
-        <h3 className="mindTypeColorText smallerText">Let's try to type a word with the full set of letters.<br />Try: "mind"</h3>
-        <input type="text" className="displayInstruction" readOnly></input>
+        <h3 className="mindTypeColorText smallerText">Let's try to type a word with the full set of letters.<br />Try: 
+        { this.state.statement }</h3>
+        <input type="text" className="display" readOnly></input>
         <Letters />
       </div>
     )

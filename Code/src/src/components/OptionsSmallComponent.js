@@ -15,7 +15,7 @@ class OptionsSmall extends Component {
             <button className="entry notSelected ">.</button>
             <button className="entry notSelected">,</button>
             <button className="entry notSelected">?</button>
-            <button className="entry notSelected bottomRight">&crarr;</button>
+            <button className="entry notSelected topRight bottomRight">&crarr;</button>
       </span>
     )
   }

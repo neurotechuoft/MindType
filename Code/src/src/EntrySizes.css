@@ -36,13 +36,13 @@
   margin-right: 0.35vmin;
 }
 
-.entry.bottom {
+/* .entry.bottom {
   border-bottom:0.5px solid #3da8c4;
-}
+} */
 
-.entry.right {
+/* .entry.right {
   border-right:0.5px solid #3da8c4;
-}
+} */
 
 .entry-extra-wide {
   width: 33vw;

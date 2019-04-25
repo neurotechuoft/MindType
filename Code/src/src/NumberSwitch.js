@@ -190,7 +190,7 @@ class NumberSwitch extends React.Component {
 		<div className="upperTextDiv">
         <h3 className="mindTypeColorText smallerText">Let's return to the letter keyboard.<br />Try: 'abc'</h3></div>
 		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
+		<input type="text" className="display" readOnly></input>
 		<Numbers />
 		<button className="optionSmall bottomLeft leftMost">.</button>
 		<button onClick={this.handleLetterClick} className="optionSmall">abc</button>

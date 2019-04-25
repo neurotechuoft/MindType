@@ -189,7 +189,7 @@ constructor(props) {
       <div className="instructionScreen">
         <h3 className="mindTypeColorText smallerText sentenceEmojiText">Time to combine it all! <br />Try: "I am typing with my mind! 🎉"</h3>
 		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
+		<input type="text" className="display" readOnly></input>
 		<Letters />
 		<button className="optionSmall leftMost bottomLeft">.</button>
 		<button onClick={this.handleNumClick} className="optionSmall">0</button>

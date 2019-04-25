@@ -189,7 +189,7 @@ class LetterSwitch extends React.Component {
 		<div className="upperTextDiv">
         <h3 className="mindTypeColorText smallerText upText">Let's practice switching to the emoji keyboard.<br />Try: :)</h3></div>
 		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
+		<input type="text" className="display" readOnly></input>
 		<Letters />
 		<button className="optionSmall leftMost bottomLeft">.</button>
 		<button onClick={this.handleNumClick} className="optionSmall">0</button>
