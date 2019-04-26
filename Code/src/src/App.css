@@ -5,7 +5,6 @@ $font-stack: Tahoma, Arial, Helvetica, sans-serif;
 
 body {
 	overflow-x: hidden;
-
 }
 
 #root {
@@ -28,24 +27,24 @@ body {
 	padding-top: 10vh;
 }
 
-.leftMost {
+.leftMost, .twoByTwo, .mindTypeColorText {
 	margin-left: 25vw;
+}
+
+.redText, .blueText, .heading {
+	font-weight: bold;
 }
 
 .redText {
 	color: red;
-	font-weight: bold;
 }
 
 .blueText {
 	color: blue;
-	font-weight: bold;
 }
-
 
 .mindTypeColorText {
 	color: white;
-	margin-left: 25vw;
 	margin-top: 1.5vh;
 	width: 48vw;
 	font-size: 5vmin;
@@ -106,25 +105,27 @@ body {
 }
 */
 
-.display {
-  width: 48vw;
+.display, .displayWide, .displayInstruction, .displayWideInstruction{
   height: 5vh;
   background-color: #E6E5E5;
+}
+
+.display, .displayInstruction {
+  width: 48vw;
+}
+
+.displayWideInstruction {
+	width: 50vw;
 }
 
 .displayWide {
   width: 66vw;
-  height: 5vh;
-  background-color: #E6E5E5;
 }
 
 .displayInstruction{
-	height: 5vh;
 	margin-top: 5vh;
 	margin-left: 25vw;
 	margin-bottom: 1vh;
-	width: 48vw;
-	background-color: #E6E5E5;
 }
 
 .keysContainer {
@@ -132,15 +133,8 @@ body {
 	top: 20vh;
 }
 
-.displayWideInstruction {
-	width: 50vw;
-  height: 5vh;
 
-  background-color: #E6E5E5;
-}
-
-
-.entryTwo {
+.entryTwo, .selectedTwo, .chosenTwo {
   width: 24vw;
   height: 24vh;
   margin-right: 0.8vw;
@@ -157,38 +151,16 @@ body {
 }
 
 .selectedTwo {
-  width: 24vw;
-  height: 24vh;
-  margin-right: 0.8vw;
-  margin-top: 0.75vh;
   color: white;
   background-color: #52A0B4;
-  font-size: 12vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
-  Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
 .chosenTwo{
-	width: 24vw;
-  height: 24vh;
-  margin-right: 0.8vw;
-  margin-top: 0.75vh;
   color: red;
-  font-weight: bold;
-  font-size: 12vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
-  Helvetica, Arial, "Lucida Grande", sans-serif;
+  
 }
 
-.entry {
+.entry, .selected, .chosen {
   width: 8.25vmin;
   height: 8.25vmin;
   color: #52A0B4;
@@ -211,17 +183,10 @@ body {
   border-right:0.5px solid #3da8c4;
 }
 
-
 .selected {
-  width: 8.25vmin;
-  height: 8.25vmin;
   color: white;
   background-color: #3da8c4;
-  font-size: 4vmin;
-  font-family: $font-stack;
   border-top: 0.5px solid white;
-  border-bottom:none;
-  border-right:none;
   border-left: 0.5px solid white; 
 }
 
@@ -234,16 +199,10 @@ body {
 }
 
 .chosen {
-  width: 8.25vmin;
-  height: 8.25vmin;
   color: red;
-  font-weight: bold;
-  font-size: 4vmin;
   border-top: 0.5px solid white;
-  border-bottom:none;
-  border-right:none;
   border-left: 0.5px solid white; 
-  font-family: $font-stack;
+
 }
 
 .chosen.bottom {
@@ -254,7 +213,7 @@ body {
   border-right:0.5px solid white;
 }
 
-.entrySmall {
+.entrySmall, .selectedSmall, .chosenSmall {
 	width: 7.75vw;
 	height: 8vh;
 	background-color: white;
@@ -270,32 +229,13 @@ body {
 }
 
 .selectedSmall {
-	width: 7.75vw;
-	height: 8vh;
 	color: white;
 	background-color: #52A0B4;
-	font-size: 3vmin;
-  /* font-weight: bold; */
-	font-family: $font-stack;
-  /* border: 2px solid white; */
-	border: none;
-	font-weight: bold;
-	margin-right: 0.4vw;
-	margin-top: 0.3vh;
+	
 }
 
 .chosenSmall {
-	width: 7.75vw;
-	height: 8vh;
 	color: red;
-	font-size: 3vmin;
-  /* font-weight: bold; */
-	font-family: $font-stack;
-  /* border: 2px solid white; */
-	border: none;
-	font-weight: bold;
-	margin-right: 0.4vw;
-	margin-top: 0.3vh;
 }
 
 .extra-wide {
@@ -303,7 +243,7 @@ body {
   height: 8.25vmin;
 }
 
-.entry-extra-wide {
+.entry-extra-wide, .entry-extra-wide-small, .entry-wide, .entry-wide-small, .selected-wide-small {
   width: 33vw;
   height: 12.5vh;
   color: #52A0B4;
@@ -319,73 +259,46 @@ body {
 .entry-extra-wide-small {
 	width: 15.9vw;
 	height: 8vh;
-	color: #52A0B4;
-	background-color: white;
 	font-size: 3vmin;
   /* font-weight: bold; */
-	font-family: $font-stack;
   /* border: 2px solid white; */
-	border: none;
-	font-weight: bold;
 	margin-right: 0.4vw;
   margin-top: 0.3vh;
 }
 
 .entry-wide {
   width: 19.8vw;
-  height: 12.5vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
-
 }
 
 .entry-wide-small {
 	width: 9.4vw;
   height: 8vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
   margin-right: 0.4vw;
   margin-top: 0.3vh;
 }
 
-.selected-wide-small {
+.selected-wide-small, .selected-wide-small {
 	width: 9.4vw;
   height: 8vh;
   color: white;
   background-color: #52A0B4;
-  font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: $font-stack;
   /* border: 2px solid white; */
-  border: none;
   margin-right: 0.4vw;
   margin-top: 0.3vh;
 }
 
 .selected-wide-small {
-	width: 9.4vw;
-  height: 8vh;
   color: red;
   font-weight: bold;
-  font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
-  margin-right: 0.4vw;
-  margin-top: 0.3vh;
-}
 
+  /* border: 2px solid white; */
+}
 
 .userInput,
 .options {
@@ -393,7 +306,7 @@ body {
   font-weight: bold;
 }
 
-.option {
+.option, .optionSmall {
   width: 9.9vmin;
   height: 8.25vmin;
   color: #52A0B4;
@@ -411,21 +324,11 @@ body {
 	height: 8vh;
 	margin-top: 0.6vh;
 	margin-right: 0.4vw;
-	color: #52A0B4;
-  background-color: white;
-  font-size: 4vmin;
   /* font-weight: bold; */
-  font-family: $font-stack;
   /* border: 2px solid white; */
   border: none;
-  font-weight: bold;
 }
 
-
-
-.twoByTwo{
-	margin-left: 25vw;
-}
 
 .topLeft{
 	border-top-left-radius: 2vmin;
@@ -506,7 +409,6 @@ body {
 
 
 .heading{
-	font-weight: bold;
 	font-size: 5vh;
 }
 
