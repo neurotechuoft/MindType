@@ -134,37 +134,10 @@ body {
 }
 
 
-.entryTwo, .selectedTwo, .chosenTwo {
-  width: 24vw;
-  height: 24vh;
-  margin-right: 0.8vw;
-  margin-top: 0.75vh;
-  background-color: white;
-  color: #52A0B4;
-  font-size: 12vmin;
-  /* font-weight: bold; */
-  font-family: $font-stack;
-  /* border: 2px solid white; */
-  border: none;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
-  Helvetica, Arial, "Lucida Grande", sans-serif;
-}
-
-.selectedTwo {
-  color: white;
-  background-color: #52A0B4;
-}
-
-.chosenTwo{
-  color: red;
-  
-}
 
 .entry, .selected, .chosen {
   width: 8.25vmin;
   height: 8.25vmin;
-  color: #52A0B4;
-  background-color: white;
   font-size: 4vmin;
   font-family: $font-stack;
   border: none;
@@ -173,6 +146,11 @@ body {
   border-bottom:none;
   border-right:none;
   border-left: 0.5px solid #3da8c4; 
+}
+
+.entry {
+  color: #52A0B4;
+  background-color: white;
 }
 
 .entry.bottom {
@@ -185,17 +163,9 @@ body {
 
 .selected {
   color: white;
-  background-color: #3da8c4;
+  background-color: #52A0B4;
   border-top: 0.5px solid white;
   border-left: 0.5px solid white; 
-}
-
-.selected.bottom {
-  border-bottom:0.5px solid white;
-}
-
-.selected.right {
-  border-right:0.5px solid white;
 }
 
 .chosen {
@@ -205,19 +175,31 @@ body {
 
 }
 
-.chosen.bottom {
+.selected.bottom, .chosen.bottom {
   border-bottom:0.5px solid white;
 }
 
-.chosen.right {
+.selected.right, .chosen.right {
   border-right:0.5px solid white;
 }
 
-.entrySmall, .selectedSmall, .chosenSmall {
+
+.entryTwo {
+  width: 24vw;
+  height: 24vh;
+  margin-right: 0.8vw;
+  font-size: 12vmin;
+  /* font-weight: bold; */
+  font-family: $font-stack;
+  /* border: 2px solid white; */
+  border: none;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.entrySmall{
 	width: 7.75vw;
 	height: 8vh;
-	background-color: white;
-	color: #52A0B4;
 	font-size: 3vmin;
   /* font-weight: bold; */
 	font-family: $font-stack;
@@ -228,26 +210,15 @@ body {
 	margin-top: 0.3vh;
 }
 
-.selectedSmall {
-	color: white;
-	background-color: #52A0B4;
-	
-}
-
-.chosenSmall {
-	color: red;
-}
 
 .extra-wide {
   width: 16.5vmin;
   height: 8.25vmin;
 }
 
-.entry-extra-wide, .entry-extra-wide-small, .entry-wide, .entry-wide-small, .selected-wide-small {
+.entry-extra-wide, .entry-extra-wide-small, .entry-wide, .entry-wide-small{
   width: 33vw;
   height: 12.5vh;
-  color: #52A0B4;
-  background-color: white;
   font-size: 4vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
@@ -279,25 +250,6 @@ body {
   /* border: 2px solid white; */
   margin-right: 0.4vw;
   margin-top: 0.3vh;
-}
-
-.selected-wide-small, .selected-wide-small {
-	width: 9.4vw;
-  height: 8vh;
-  color: white;
-  background-color: #52A0B4;
-  /* font-weight: bold; */
-  /* border: 2px solid white; */
-  margin-right: 0.4vw;
-  margin-top: 0.3vh;
-}
-
-.selected-wide-small {
-  color: red;
-  font-weight: bold;
-  /* font-weight: bold; */
-
-  /* border: 2px solid white; */
 }
 
 .userInput,

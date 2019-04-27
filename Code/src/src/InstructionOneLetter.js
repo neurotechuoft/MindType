@@ -77,15 +77,15 @@ class InstructionOneLetter extends React.Component {
 
   resetKey(key) {
     if (key != null) {
-      key.classList.add("entryTwo");
-      key.classList.remove("selectedTwo");
-      key.classList.remove("chosenTwo");
+      key.classList.add("entry");
+      key.classList.remove("selected");
+      key.classList.remove("chosen");
     }
   }
 
   keyChosen(key) {
     if (key != null) {
-      key.classList.add("chosenTwo");
+      key.classList.add("chosen");
     }
   }
 
@@ -121,8 +121,8 @@ class InstructionOneLetter extends React.Component {
           this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entryTwo");
-          row[j].classList.add("selectedTwo");
+          row[j].classList.remove("entry");
+          row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
@@ -147,8 +147,8 @@ class InstructionOneLetter extends React.Component {
         }
 
         for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entryTwo");
-          col[j].classList.add("selectedTwo");
+          col[j].classList.remove("entry");
+          col[j].classList.add("selected");
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];

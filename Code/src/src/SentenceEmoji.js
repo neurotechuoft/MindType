@@ -74,15 +74,15 @@ constructor(props) {
 
   resetKey(key) {
     if (key != null) {
-      key.classList.add("entrySmall");
-      key.classList.remove("selectedSmall");
-      key.classList.remove("chosenSmall");
+      key.classList.add("entry");
+      key.classList.remove("selected");
+      key.classList.remove("chosen");
     }
   }
 
   keyChosen(key) {
     if (key != null) {
-      key.classList.add("chosenSmall");
+      key.classList.add("chosen");
     }
   }
 
@@ -118,8 +118,8 @@ constructor(props) {
           this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entrySmall");
-          row[j].classList.add("selectedSmall");
+          row[j].classList.remove("entry");
+          row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
@@ -144,8 +144,8 @@ constructor(props) {
         }
 
         for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entrySmall");
-          col[j].classList.add("selectedSmall");
+          col[j].classList.remove("entry");
+          col[j].classList.add("selected");
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];

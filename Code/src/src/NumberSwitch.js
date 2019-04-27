@@ -73,15 +73,15 @@ class NumberSwitch extends React.Component {
 
   resetKey(key) {
     if (key != null) {
-      key.classList.add("entry-wide-small");
-      key.classList.remove("selected-wide-small");
-      key.classList.remove("chosen-wide-small");
+      key.classList.add("entry");
+      key.classList.remove("selected");
+      key.classList.remove("chosen");
     }
   }
 
   keyChosen(key) {
     if (key != null) {
-      key.classList.add("chosen-wide-small");
+      key.classList.add("chosen");
     }
   }
 
@@ -117,8 +117,8 @@ class NumberSwitch extends React.Component {
           this.setState({rowFound : true, rowOrder});
         }
         for (let j = 0; j < row.length; j++) {
-          row[j].classList.remove("entry-wide-small");
-          row[j].classList.add("selected-wide-small");
+          row[j].classList.remove("entry");
+          row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
@@ -143,8 +143,8 @@ class NumberSwitch extends React.Component {
         }
 
         for (let j = 0; j < col.length; j++) {
-          col[j].classList.remove("entry-wide-small");
-          col[j].classList.add("selected-wide-small");
+          col[j].classList.remove("entry");
+          col[j].classList.add("selected");
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
