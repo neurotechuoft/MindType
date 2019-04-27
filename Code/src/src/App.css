@@ -12,11 +12,11 @@ body {
   width: 99vw;
 }
 .keyboard-container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 10vmin;
+  background-color: #3da8c4;;
 }
 
 .instructionScreen{
@@ -42,6 +42,7 @@ body {
 .blueText {
 	color: blue;
 }
+
 
 .mindTypeColorText {
 	color: white;
@@ -94,7 +95,7 @@ body {
 }
 
 .suggestions {
-  margin-top: 10vh;
+  margin-top: 2.5vh;
 }
 
 /*
@@ -110,7 +111,11 @@ body {
   background-color: #E6E5E5;
 }
 
-.display, .displayInstruction {
+.display {
+	width: 48.8vmin;
+}	
+
+.displayInstruction {
   width: 48vw;
 }
 
@@ -188,6 +193,7 @@ body {
   width: 24vw;
   height: 24vh;
   margin-right: 0.8vw;
+  margin-top: 0.8vh;
   font-size: 12vmin;
   /* font-weight: bold; */
   font-family: $font-stack;
@@ -342,6 +348,10 @@ body {
 .goToMindType{
 	background-color: orange;
 	
+}
+
+.cyanText {
+	background-color: #D5FAFF;
 }
 
 .goToMindType:hover {opacity: 1}

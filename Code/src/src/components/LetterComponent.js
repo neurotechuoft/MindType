@@ -10,12 +10,12 @@ class Letters extends Component {
   render() {
     return (
       <div className="userInput">
-            <button className="entry row1 col1">a</button>
+            <button className="entry row1 col1 topLeft">a</button>
             <button className="entry row1 col2">b</button>
             <button className="entry row1 col3">c</button>
             <button className="entry row1 col4">d</button>
             <button className="entry row1 col5">e</button>
-            <button className="entry right row1 col6">f</button>
+            <button className="entry right row1 col6 topRight">f</button>
             <br />
             <button className="entry row2 col1">g</button>
             <button className="entry row2 col2">h</button>
@@ -38,11 +38,11 @@ class Letters extends Component {
             <button className="entry row4 col5">w</button>
             <button className="entry right row4 col6">x</button>
             <br />
-            <button className="entry bottom row5 col1">y</button>
+            <button className="entry bottom row5 col1 bottomLeft">y</button>
             <button className="entry bottom row5 col2">z</button>
             <button className="entry bottom extra-wide row5 col3">____</button>
             <button className="entry bottom row5 col5">&#8682;</button>
-            <button className="entry right bottom row5 col6">&#9003;</button>
+            <button className="entry right bottom row5 col6 bottomRight">&#9003;</button>
       </div>
     )
   }

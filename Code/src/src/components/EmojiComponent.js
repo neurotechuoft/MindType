@@ -5,12 +5,12 @@ class Emojis extends Component {
     return (
       <div className="userInput">
         <div>
-          <button className="entry"><span role="img" aria-label="Emoji">😊</span></button>
+          <button className="entry topLeft"><span role="img" aria-label="Emoji">😊</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">😂</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">😉</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">😍</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">😘</span></button>
-          <button className="entry"><span role="img" aria-label="Emoji">😋</span></button>
+          <button className="entry topRight"><span role="img" aria-label="Emoji">😋</span></button>
         </div>
         <div>
           <button className="entry"><span role="img" aria-label="Emoji">😠</span></button>
@@ -37,12 +37,12 @@ class Emojis extends Component {
           <button className="entry"><span role="img" aria-label="Emoji">🙏</span></button>
         </div>
         <div>
-          <button className="entry"><span role="img" aria-label="Emoji">⭐</span></button>
+          <button className="entry bottomLeft"><span role="img" aria-label="Emoji">⭐</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">✨</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">🔥</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">💯</span></button>
           <button className="entry"><span role="img" aria-label="Emoji">💩</span></button>
-          <button className="entry"><span role="img" aria-label="Emoji">🌈</span></button>
+          <button className="entry bottomRight"><span role="img" aria-label="Emoji">🌈</span></button>
         </div>
       </div>
     )

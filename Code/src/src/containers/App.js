@@ -199,15 +199,15 @@ class App extends Component {
     let button3;
     if (this.state.display === 'letters') {
       element = <Letters />;
-      button2 = <button onClick={this.handleNumClick} className="option">0</button>
+      button2 = <button onClick={this.handleNumClick} className="option cyanText">0</button>
       button3 = <button onClick={this.handleEmojiClick} className="option">:)</button>
     } else if (this.state.display === 'numbers') {
       element = <Numbers />;
-      button2 = <button onClick={this.handleLetterClick} className="option">abc</button>
+      button2 = <button onClick={this.handleLetterClick} className="option cyanText">abc</button>
       button3 = <button onClick={this.handleEmojiClick} className="option">:)</button>
     } else {
       element = <Emojis />;
-      button2 = <button onClick={this.handleNumClick} className="option">0</button>
+      button2 = <button onClick={this.handleNumClick} className="option cyanText">0</button>
       button3 = <button onClick={this.handleLetterClick} className="option">abc</button>
     }
 	
@@ -225,11 +225,11 @@ class App extends Component {
           </div>
           {element}
           <div className="options">
-            <button className="option">.</button>
+            <button className="option topLeft bottomLeft cyanText">.</button>
             {button2}
             {button3}
             <button className="option">&crarr;</button>
-            <button className="option">&#8678;</button>
+            <button className="option topRight bottomRight">&#8678;</button>
           </div>
         </div>
       </div>

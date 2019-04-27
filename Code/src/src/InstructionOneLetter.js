@@ -8,6 +8,7 @@ import Letters from './components/LetterComponent';
 import Numbers from './components/NumberComponent';
 import Emojis from './components/EmojiComponent';
 
+
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
 const row2 = document.getElementsByClassName('row2');
@@ -74,7 +75,7 @@ class InstructionOneLetter extends React.Component {
   handlePredictions(...predictions) {
     this.setState({predictions : predictions})
   }
-
+  
   resetKey(key) {
     if (key != null) {
       key.classList.add("entry");

@@ -5,12 +5,12 @@ class Numbers extends Component {
     return (
       <div className="userInput">
       <div>
-        <button className="entry">1</button>
+        <button className="entry topLeft">1</button>
         <button className="entry">2</button>
         <button className="entry">!</button>
         <button className="entry">@</button>
         <button className="entry">#</button>
-        <button className="entry">$</button>
+        <button className="entry topRight">$</button>
       </div>
       <div>
         <button className="entry">3</button>
@@ -37,12 +37,12 @@ class Numbers extends Component {
         <button className="entry">"</button>
       </div>
       <div>
-        <button className="entry">9</button>
+        <button className="entry bottomLeft">9</button>
         <button className="entry">0</button>
         <button className="entry">(</button>
         <button className="entry">)</button>
         <button className="entry">/</button>
-        <button className="entry">\</button>
+        <button className="entry bottomRight">\</button>
       </div>
       </div>
     )
