@@ -4,26 +4,15 @@ import io from "socket.io-client";
 import './App.css';
 import { getRandomArray } from './helpers/shuffle';
 
-import Letters from './components/LetterComponent';
-import Numbers from './components/NumberComponent';
-import Emojis from './components/EmojiComponent';
-
 // Getting rows
 const row1 = document.getElementsByClassName('row1');
 const row2 = document.getElementsByClassName('row2');
-const row3 = document.getElementsByClassName('row3');
-const row4 = document.getElementsByClassName('row4');
-const row5 = document.getElementsByClassName('row5');
-const rows = [row1, row2, row3, row4, row5];
+const rows = [row1, row2];
 
 // Getting Columns
 const col1 = document.getElementsByClassName('col1');
 const col2 = document.getElementsByClassName('col2');
-const col3 = document.getElementsByClassName('col3');
-const col4 = document.getElementsByClassName('col4');
-const col5 = document.getElementsByClassName('col5');
-const col6 = document.getElementsByClassName('col6');
-const cols = [col1, col2, col3, col4, col5, col6];
+const cols = [col1, col2];
 
 let prev = rows[0];
 let curRow = 0; // Keeping track of which array index you're on for random rows.
@@ -35,7 +24,7 @@ const nlp_socket = io('http://34.73.165.89:8001'); // Socket to connect to NLP S
 const robot_socket = io('http://localhost:8002'); // Socket to connect to RobotJS
 const FLASHING_PAUSE = 1000;
 
-class InstructionOneWord extends React.Component {
+class InstructionOneWord extends Component {
 	
 	constructor(props) {
     super(props);
@@ -51,23 +40,8 @@ class InstructionOneWord extends React.Component {
       colFound : false,
       predictions: ['', '', '']
     };
-    this.handleNumClick = this.handleNumClick.bind(this);
-    this.handleEmojiClick = this.handleEmojiClick.bind(this);
-    this.handleLetterClick = this.handleLetterClick.bind(this);
     this.handlePredictions = this.handlePredictions.bind(this);
     this.writePhrase    = this.writePhrase.bind(this);
-  }
-
-  handleNumClick() {
-    this.setState({ display: 'numbers' });
-  }
-
-  handleEmojiClick() {
-    this.setState({ display: 'emojis' })
-  }
-
-  handleLetterClick() {
-    this.setState({ display: 'letters' });
   }
 
   handlePredictions(...predictions) {
@@ -91,12 +65,15 @@ class InstructionOneWord extends React.Component {
   writePhrase() {
     const {statement, interval, lettersFound, rowOrder, 
       colOrder, rowFound, colFound, displayText} = this.state;
+
     if (lettersFound === statement.length) {
       clearInterval(interval);
     } else {
+
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
       }
+
       if (selectedKey != null) {
         this.resetKey(selectedKey);
       }
@@ -112,23 +89,15 @@ class InstructionOneWord extends React.Component {
         prev = row;
         curRow = curRow + 1;
 
-        // Handling Spaces 
-
-        if (statement[lettersFound] === ' ' && row === rows[4]) {
-          const rowOrder = getRandomArray(5);
-          curRow = 0;
-          this.setState({rowFound : true, rowOrder});
-        }
         for (let j = 0; j < row.length; j++) {
           row[j].classList.remove("entry");
           row[j].classList.add("selected");
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
-              // row[j].classList.add("chosen");
+              this.keyChosen(selectedKey);
             }
-            // numColumSelected = j;
-            const rowOrder = getRandomArray(5);
+            const rowOrder = getRandomArray(2);
             curRow = 0;
             this.setState({rowFound : true, rowOrder});
           }
@@ -137,13 +106,6 @@ class InstructionOneWord extends React.Component {
         const col = cols[colOrder[curCol]];
         prev = col;
         curCol = curCol + 1;
-        
-        // Handling Spaces
-        if (statement[lettersFound] === ' ' && col === cols[0]) {
-          const colOrder = getRandomArray(6);
-          curCol = 0;
-          this.setState({colFound : true, colOrder});
-        }
 
         for (let j = 0; j < col.length; j++) {
           col[j].classList.remove("entry");
@@ -151,17 +113,17 @@ class InstructionOneWord extends React.Component {
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
-              // col[j].classList.add("chosen");
+              this.keyChosen(selectedKey);
             }
-            const colOrder = getRandomArray(6);
+            const colOrder = getRandomArray(2);
             curCol = 0;
             this.setState({colFound : true, colOrder});
           }
         }
       }
+
       // If a letter has been found.
       if (rowFound && colFound) {
-        this.keyChosen(selectedKey);
         // TODO: Reset numCol and numRow to -1
         [curRow, curCol] = [0, 0];
         const newDisplay = displayText + statement[lettersFound];
@@ -176,10 +138,9 @@ class InstructionOneWord extends React.Component {
   }
 
   componentDidMount() {
-    // const statement = prompt("What would you like to type?");
-    const statement = "what would you like to type";
-    const rowOrder = getRandomArray(5);
-    const colOrder = getRandomArray(6); 
+    const statement = "cab";
+    const rowOrder = getRandomArray(2);
+    const colOrder = getRandomArray(2); 
     const interval = setInterval(this.writePhrase, FLASHING_PAUSE);
     this.setState({interval, statement, rowOrder, colOrder});
   }
@@ -189,17 +150,18 @@ class InstructionOneWord extends React.Component {
 	  
 	
     return (
-	<div className="instructionScreen">
-		<div className="upperTextDiv">
-        <h3 className="mindTypeColorText oneWord">Great! How about a word?<br />Try: "cab"</h3>
-		</div>
-		<div className="keysContainer">
-		<input type="text" className="displayInstruction" readOnly></input>
-		<TwoByTwo />
-		<button onClick={this.props.instructionOneWordHandler}>Continue</button>
-		
+      <div className="instructionScreen">
+        <div className="upperTextDiv">
+            <h3 className="mindTypeColorText oneWord">Great! How about a word?<br />Try: "cab"</h3>
+        </div>
+
+        <div className="keysContainer">
+        <input type="text" className="displayInstruction" value={this.state.displayText} readOnly></input>
+          <TwoByTwo />
+          <button onClick={this.props.instructionOneWordHandler}>Continue</button>
+        </div>
+        
       </div>
-	</div>
     )
   }
 }

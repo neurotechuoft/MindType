@@ -95,7 +95,7 @@ class App extends Component {
       for (let j = 0; j < prev.length; j++) {
         this.resetKey(prev[j]);
       }
-      if (selectedKey != null) {
+      if (selectedKey != null) { 
         this.resetKey(selectedKey);
       }
       
@@ -123,7 +123,7 @@ class App extends Component {
           if (row[j].innerHTML === statement[lettersFound]) {
             if (colFound) {
               selectedKey = row[j];
-              // row[j].classList.add("chosen");
+              this.keyChosen(selectedKey);
             }
             // numColumSelected = j;
             const rowOrder = getRandomArray(5);
@@ -149,7 +149,7 @@ class App extends Component {
           if (col[j].innerHTML === statement[lettersFound]) {
             if (rowFound) {
               selectedKey = col[j];
-              // col[j].classList.add("chosen");
+              this.keyChosen(selectedKey);
             }
             const colOrder = getRandomArray(6);
             curCol = 0;
@@ -159,7 +159,6 @@ class App extends Component {
       }
       // If a letter has been found.
       if (rowFound && colFound) {
-        this.keyChosen(selectedKey);
         // TODO: Reset numCol and numRow to -1
         [curRow, curCol] = [0, 0];
         const newDisplay = displayText + statement[lettersFound];

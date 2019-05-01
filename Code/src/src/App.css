@@ -147,15 +147,15 @@ body {
   font-family: $font-stack;
   border: none;
   font-weight: bold;
-  border-top: 0.5px solid #3da8c4;
-  border-bottom:none;
-  border-right:none;
-  border-left: 0.5px solid #3da8c4; 
 }
 
 .entry {
   color: #52A0B4;
   background-color: white;
+  border-top: 0.5px solid #3da8c4;
+  border-bottom:none;
+  border-right:none;
+  border-left: 0.5px solid #3da8c4; 
 }
 
 .entry.bottom {

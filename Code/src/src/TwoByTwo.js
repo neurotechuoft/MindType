@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class TwoByTwo extends React.Component {
+class TwoByTwo extends Component {
 	
   render(){
     return (
