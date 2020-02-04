@@ -36,7 +36,7 @@ pyparsing==2.2.0
 pyriemann==0.2.5
 pyserial==3.4
 python-dateutil==2.7.3
-python-engineio==2.2.0
+python-engineio==3.8.2.post1
 python-socketio==2.0.0
 pytz==2018.5
 requests==2.19.1
