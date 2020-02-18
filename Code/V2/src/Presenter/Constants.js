@@ -1,7 +1,7 @@
 // Represents constants used by the Presenter
 
 const VIEWS = {
-    APP: "app"
+    LETTERS: "letters"
 };
 
 export {VIEWS};
