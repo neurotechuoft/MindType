@@ -9,9 +9,26 @@ import {isRequired, isPositiveInteger, isArrayOfValidLength} from "./PropTypes";
  * props.colSize: The number of columns in the grid.
  * props.contents: The value of each button in the grid.
  *
+ * -----------------------------------------------------
+ *
  * Note: If two adjacent items in 'contents' are the same,
- * and these would be found on the same row, then it
+ * and these are found on the same row, then it
  * only creates one button for the single value.
+ *
+ * For instance, when given:
+ *  - rowSize = 2
+ *  - colSize = 4
+ *  - contents = [
+ *      'a', 'a', 'a', 'b',
+ *      'b', 'c', 'd', 'e',
+ *      'f', 'f', 'g', 'g',
+ *  ]
+ *
+ *  The arrangement of buttons is similar to:
+ *  | a         | b |
+ *  | b | c | d | e |
+ *  | f     | g     |
+ *
  */
 class Grid extends Component {
 
