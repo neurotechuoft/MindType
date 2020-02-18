@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {VIEWS} from './Constants';
-import LetterComponent from "../Views/LetterComponent";
+import Letters from "../Views/Letters";
 
 /**
  * Presenter in MVP Architecture.
@@ -15,7 +15,7 @@ class Presenter extends Component {
 
     render() {
         if (this.state.page === VIEWS.LETTERS) {
-            return (<LetterComponent />);
+            return (<Letters />);
         }
         return "";
     }

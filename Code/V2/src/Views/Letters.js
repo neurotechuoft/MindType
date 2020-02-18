@@ -12,15 +12,15 @@ class Letters extends Component {
     let colSize = 6;
 
     let characters = [
-        'a', 'b', 'c', 'd', 'e', 'f',
-        'g', 'h', 'i', 'j', 'k', 'l',
-        'm', 'n', 'o', 'p', 'q', 'r',
-        's', 't', 'u', 'v', 'w', 'x'
+        'a', 'a', 'c', 'd', 'e', 'f',
+        'f', 'h', 'i', 'j', 'k', 'l',
+        'm', 'n', 'o', 'o', 'q', 'r',
+        's', 'v', 'v', 'v', 'w', 'w'
     ];
 
     return (
       <div>
-            <Grid rowSize={rowSize} colSize={colSize} values={characters} />
+            <Grid rowSize={rowSize} colSize={colSize} contents={characters} />
             <br />
             <button className={CLASSES.UNSELECTED + " " + CLASSES.ROW + "4" + " " + CLASSES.COL + "0"}>y</button>
             <button className={CLASSES.UNSELECTED + " " + CLASSES.ROW + "4" + " " + CLASSES.COL + "1"}>z</button>

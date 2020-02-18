@@ -8,11 +8,22 @@ function isRequired(props, propName) {
 
 function isPositiveInteger(props, propName) {
     let value = props[propName];
-    let error = new Error('prop ' + propName + ' is not a positive integer');
+    let error = new Error('prop ' + propName + ' is not a positive integer (actual value: ' + value + ')');
     if (!Number.isInteger(value)) {
         throw error;
     }
     if (value < 1) {
+        throw error;
+    }
+}
+
+function isNonNegativeInteger(props, propName) {
+    let value = props[propName];
+    let error = new Error('prop ' + propName + ' should be a non-negative integer (actual value: ' + value + ')');
+    if (!Number.isInteger(value)) {
+        throw error;
+    }
+    if (value < 0) {
         throw error;
     }
 }
@@ -31,4 +42,4 @@ function isArrayOfValidLength(props, propName, expectedLength) {
     }
 }
 
-export {isRequired, isPositiveInteger, isArray, isArrayOfValidLength};
+export {isRequired, isPositiveInteger, isNonNegativeInteger, isArray, isArrayOfValidLength};
