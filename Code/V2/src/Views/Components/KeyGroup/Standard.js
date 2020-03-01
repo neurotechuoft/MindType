@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {GridData} from "../Grid/Data";
 import {ButtonData, createDefaultButtonData} from "../Grid/Button/Data";
 import Grid from "../Grid";
-import delete_btn from '../../assets/delete.png';
-import shift_btn from '../../assets/shift.png';
+import delete_btn from '../../Assets/delete.png';
+import shift_btn from '../../Assets/shift.png';
 
 /**
  * A standard keyboard layout for typing text, which contains:

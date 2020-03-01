@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {ButtonData} from "../Components/Grid/Button/Data";
 import Standard from "../Components/KeyGroup/Standard";
 import Switcher from "../Components/KeyGroup/Switcher";
-import smile_btn from "../assets/smile.png"
+import smile_btn from "../Assets/smile.png"
 import Interface from "./Interface";
 
 /**

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {GridData} from "../Grid/Data";
 import {createDefaultButtonData} from "../Grid/Button/Data";
 import Grid from "../Grid";
-import return_btn from '../../assets/return.png';
+import return_btn from '../../Assets/return.png';
 import {isRequired} from "../Grid/PropTypes";
 
 /**
