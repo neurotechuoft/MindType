@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {isRequired, isPositiveInteger, isNonNegativeInteger} from "./PropTypes";
-import {CLASSES} from "./Constants";
+import {isRequired, isPositiveInteger, isNonNegativeInteger} from "../PropTypes";
+import {CLASSES} from "../Constants";
 
 /**
  * Creates a Button of Dynamic Width.

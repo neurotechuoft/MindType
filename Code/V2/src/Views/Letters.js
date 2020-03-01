@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import {createDefaultButtonData,
-    ButtonData,
-    GridData} from "./Components/Grid/Data";
+import {GridData} from "./Components/Grid/Data";
+import {ButtonData, createDefaultButtonData} from "./Components/Grid/Button/Data";
 import Grid from "./Components/Grid";
 import delete_btn from './assets/delete.png';
 import shift_btn from './assets/shift.png';
