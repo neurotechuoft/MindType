@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {VIEWS} from './Constants';
-import Letters from "../Views/Letters";
+import Letters from "../Views/Keyboards/Letters";
+import Numbers from "../Views/Keyboards/Numbers";
 
 /**
  * Presenter in MVP Architecture.
@@ -16,6 +17,8 @@ class Presenter extends Component {
     render() {
         if (this.state.page === VIEWS.LETTERS) {
             return (<Letters />);
+        } else if (this.state.page === VIEWS.NUMBERS) {
+            return (<Numbers />);
         }
         return "";
     }

@@ -43,4 +43,12 @@ function isArrayOfValidLength(props, propName, expectedLength) {
     }
 }
 
-export {isRequired, isPositiveInteger, isNonNegativeInteger, isArray, isArrayOfValidLength};
+function isArrayOfMinLength(props, propName, minLength) {
+    isArray(props, propName);
+    let actualLength = props[propName].length;
+    if(actualLength < minLength) {
+        throw new Error('prop ' + propName + ' has array length ' + actualLength + ' (min length ' + minLength +')');
+    }
+}
+
+export {isRequired, isPositiveInteger, isNonNegativeInteger, isArray, isArrayOfValidLength, isArrayOfMinLength};
