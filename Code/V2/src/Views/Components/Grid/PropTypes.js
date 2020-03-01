@@ -38,7 +38,7 @@ function isArrayOfValidLength(props, propName, expectedLength) {
     isArray(props, propName);
     let actualLength = props[propName].length;
     if(actualLength !== expectedLength) {
-        throw new Error('prop ' + propName + ' has length ' + actualLength + ' (expected length ' + expectedLength +')');
+        throw new Error('prop ' + propName + ' has array length ' + actualLength + ' (expected length ' + expectedLength +')');
     }
 }
 

@@ -1,8 +1,23 @@
 import {isRequired,
     isPositiveInteger,
-    isNonNegativeInteger,
     isFunction,
-    isArrayOfValidLength} from './ValueTypes';
+    isArray} from './ValueTypes';
+
+/**
+ * Creates ButtonData objects for each item in content,
+ * with the default values of ButtonData.
+ *
+ * @param content - An array of the content of buttons.
+ * @returns {[]} - An array of corresponding ButtonData objects.
+ */
+function createDefaultButtonData(content) {
+    let items = [];
+    for (let i=0; i<content.length; i++) {
+        items[i] = new ButtonData(content[i], null, 1);
+        //console.table(items[i]);
+    }
+    return items;
+}
 
 /**
  * Class For A Particular Button's Data
@@ -12,17 +27,23 @@ class ButtonData {
     /**
      * @param content - The content (a.k.a. value) of the button.
      * @param onClick - The onClick function of the button. Optional.
+     * @param width - The width of the button (a positive integer). Optional.
+     *                If not specified, defaults to 1.
      */
-    constructor(content, onClick) {
-        this.typeCheckContructor(content, onClick);
+    constructor(content, onClick, width) {
+        this.typeCheckConstructor(content, onClick, width);
         this.content = content;
         this.onClick = onClick;
+        this.width = (width === null) ? 1 : width;
     }
 
-    typeCheckContructor(content, onClick) {
+    typeCheckConstructor(content, onClick, width) {
         isRequired('content', content);
         if (onClick !== null) {
             isFunction('onClick', onClick);
+        }
+        if (width !== null) {
+            isPositiveInteger('width', width);
         }
     }
 
@@ -34,6 +55,10 @@ class ButtonData {
         this.content = content;
     }
 
+    getWidth() {
+        return this.width;
+    }
+
     getOnClick() {
         return this.onClick;
     }
@@ -41,7 +66,6 @@ class ButtonData {
     setOnClick(onClick) {
         this.onClick = onClick;
     }
-
 }
 
 
@@ -53,71 +77,82 @@ class GridData {
     /**
      * @param rowSize - A positive integer for the number of rows in the grid.
      * @param colSize - A positive integer for the number of cols in the grid.
-     * @param contents - An array for the contents of each button. Length: rowSize * colSize.
-     * @param onClicks - An array for the onClick functions of each button. Null or Length: rowSize * colSize.
+     * @param buttonData - An array of ButtonData objects for each button.
+     *                  The buttons and their width should perfectly fit into
+     *                  'rowSize' many rows of size 'colSize'.
      */
-    constructor(rowSize, colSize, contents, onClicks) {
-        this.typeCheckConstructor(rowSize, colSize, contents, onClicks);
-        this.initializeValues(rowSize, colSize, contents, onClicks);
+    constructor(rowSize, colSize, buttonData) {
+        this.typeCheckConstructor(rowSize, colSize, buttonData);
+        this.rowSize = rowSize;
+        this.colSize = colSize;
+        this.buttonData = buttonData;
+        this.getRowSize = this.getRowSize.bind(this);
+        this.getColSize = this.getColSize.bind(this);
+        this.getButtonData = this.getButtonData.bind(this);
     }
 
     /**
      * Validates the types of the constructor's parameters.
      */
-    typeCheckConstructor(rowSize, colSize, contents, onClicks) {
+    typeCheckConstructor(rowSize, colSize, buttonData) {
+
+        /* CHECK PARAMETER TYPES */
 
         isPositiveInteger('rowSize', rowSize);
         isPositiveInteger('colSize', colSize);
+        isArray('buttonData', buttonData);
 
-        let expectedLength = rowSize * colSize;
-        isArrayOfValidLength('contents', contents, expectedLength);
-        if (onClicks !== null) {
-            isArrayOfValidLength('onClicks', onClicks, expectedLength);
+        /* CHECK PARAMETER DETAILS */
+
+        // Verify that each row has an appropriate size.
+        // Also, build-up 'actualSize' value for later.
+
+        let actualSize = 0;
+        let currRowSize = 0;
+        for (let i=0; i<buttonData.length; i++) {
+            let newWidth = buttonData[i].getWidth();
+            currRowSize += newWidth;
+            if (currRowSize > colSize) {
+                throw new Error('Row has invalid size. It surpasses column size. \n \n' +
+                    'Expected Size (rowSize): ' + rowSize + '\n' +
+                    'Current Size (counting through row): ' + currRowSize + '\n' +
+                    'Button Content currently being placed: ' + buttonData[i].getContent()
+                );
+            } else if (currRowSize === colSize) {
+                currRowSize = 0;
+            }
+            actualSize += newWidth;
+        }
+        if (currRowSize !== 0 && currRowSize !== rowSize) {
+            throw new Error('Final row has invalid size. It is less than the column size.' +
+                '\n \n' +
+                'Expected Size (rowSize): ' + rowSize + '\n' +
+                'Current Size (counting through row): ' + currRowSize
+            );
         }
 
-    }
+        // Verify that the overall button count (adjusted by width)
+        // is equal to the expected size of the grid.
 
-    /**
-     * Initializes the object for the constructor.
-     */
-    initializeValues(rowSize, colSize, contents, onClicks) {
-        this.rowSize = rowSize;
-        this.colSize = colSize;
-        let size = rowSize * colSize;
-        for (let i=0; i<size; i++) {
-            this.buttons = new ButtonData(contents[i],
-                onClicks ? onClicks[i] : null);
+        let expectedSize = rowSize * colSize;
+        if (expectedSize !== actualSize) {
+            throw new Error('buttonData has invalid size. \n \n' +
+                'Expected (from rowSize * colSize): ' + expectedSize + ' \n' +
+                'Actual (from counting button sizes): ' + actualSize);
         }
     }
 
-    /**
-     * Set the onClick function of a particular button.
-     *
-     * All indexing of the button's position begins at 0.
-     *
-     * @param onClick - The onClick function of the button.
-     * @param row - A non-negative integer representing the row index of the button.
-     * @param col - A non-negative integer representing the col index of the button.
-     */
-    setOnClick(onClick, row, col) {
-        isNonNegativeInteger(row);
-        isNonNegativeInteger(col);
-        let index = (row*this.colSize) + col;
-        this.onClicks[index] = onClick;
+    getRowSize() {
+        return this.rowSize;
     }
 
-    /**
-     * Set the onClick function of all buttons using an ordered array,
-     * which corresponds to the same left-right, up-down order that
-     * English is read in.
-     *
-     * @param onClicks - The ordered list of onClick functions for the buttons.
-     */
-    setAllOnClicks(onClicks) {
-        this.onClicks = onClicks;
+    getColSize() {
+        return this.colSize;
     }
 
+    getButtonData() {
+        return this.buttonData;
+    }
 }
 
-
-export {GridData};
+export {createDefaultButtonData, ButtonData, GridData};

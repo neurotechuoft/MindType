@@ -13,4 +13,9 @@ const CLASSES = {
     UNSELECTED: "unselected"
 };
 
-export {CLASSES};
+const KEYS = {
+    BUTTON: "button-", // used as: 'button-0', 'button-1', etc.
+    BREAK: "break-" // used as: 'break-0', 'break-1', etc.
+}
+
+export {CLASSES, KEYS};
