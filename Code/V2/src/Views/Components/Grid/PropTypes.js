@@ -1,4 +1,5 @@
-// Custom PropType Validation
+// Custom PropType Validation.
+// Throws an error if requirement is unsatisfied.
 
 function isRequired(props, propName) {
     if (!(propName in props)) {
