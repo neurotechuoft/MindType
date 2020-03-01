@@ -9,8 +9,10 @@ const CLASSES = {
     // Ex: width-<num> has exactly <n> times the width of width-1
     WIDTH: "width-", // must be used as 'width-1', 'width-2', etc.
     /* FOR SELECTION */
-    SELECTED: "selected",
-    UNSELECTED: "unselected"
+    IN_SCOPE: "in-scope", // possible to select in this round (ie: after selecting row-0, all buttons in this row are in scope)
+    NOT_IN_SCOPE: "not-in-scope",
+    HIGHLIGHTED: "highlighted", // currently an option to select (ie: currently flashed a different colour)
+    NOT_HIGHLIGHTED: "not-highlighted"
 };
 
 const KEYS = {

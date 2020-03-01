@@ -13,7 +13,6 @@ function createDefaultButtonData(content) {
     let items = [];
     for (let i=0; i<content.length; i++) {
         items[i] = new ButtonData(content[i], null, 1);
-        //console.table(items[i]);
     }
     return items;
 }
@@ -23,7 +22,9 @@ function createDefaultButtonData(content) {
  */
 class ButtonData {
 
-    /**
+    /** Sample Usage:
+     * new ButtonData(value, () => alert("My content is: " + value), 1);
+     * ------------------------------------------------------------------------
      * @param content - The content (a.k.a. value) of the button.
      * @param onClick - The onClick function of the button. Optional.
      * @param width - The width of the button (a positive integer). Optional.

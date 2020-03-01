@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import {CLASSES, KEYS} from "./Constants";
+import {KEYS} from "./Constants";
 import {isRequired} from "./PropTypes";
 import {GridData} from "./Data";
+import Button from "./Button";
 
 /**
  * Creates a Grid of Buttons from a GridData object.
@@ -25,21 +26,16 @@ class Grid extends Component {
         return row*colSize + col;
     }
 
+
     buildButton(value, onClick, row, col, width, index) {
-        let defaultClasses = CLASSES.UNSELECTED;
-        let allClasses = defaultClasses + " "
-            + CLASSES.ROW + row + " "
-            + CLASSES.COL + col + " "
-            + CLASSES.WIDTH + width;
-        let key = KEYS.BUTTON + index;
-        if (onClick === null) {
-            return (<button key={key} className={allClasses}>
-                {value}
-                </button>);
-        }
-        return (<button key={key} className={allClasses} onClick={onClick}>
-            {value}
-            </button>);
+        return (
+            <Button content={value}
+                onClick={onClick}
+                row={row}
+                col={col}
+                width={width}
+                 />
+        );
     }
 
     buildLineBreak(index) {
@@ -73,7 +69,7 @@ class Grid extends Component {
             elements.push(button);
             currCol += width;
             // 2) Determine if we need to build a line break
-            if (currRow + 1 !== colSize && currCol === colSize) {
+            if (currRow + 1 !== rowSize && currCol === colSize) {
                 elements.push(this.buildLineBreak(currRow));
                 currRow += 1;
                 currCol = 0;

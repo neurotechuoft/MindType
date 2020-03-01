@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Letters from './Letters';
+import TestingBuildKeyboard from './TestingBuildKeyboard';
 //import io from "socket.io-client";
 import { getRandomArray } from './shuffle';
 
@@ -184,7 +184,7 @@ class LetterSwitch extends React.Component {
     render(){
         return (<div>
             <input type="text" readOnly/>
-            <Letters />
+            <TestingBuildKeyboard />
             <button >:)</button>
             <button >&123</button>
             <button >.</button>

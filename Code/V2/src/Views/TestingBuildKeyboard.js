@@ -5,7 +5,7 @@ import Grid from "./Components/Grid";
 import delete_btn from './assets/delete.png';
 import shift_btn from './assets/shift.png';
 
-class Letters extends Component {
+class TestingBuildKeyboard extends Component {
 
   constructor(props) {
     super(props);
@@ -21,8 +21,8 @@ class Letters extends Component {
 
         buttonData = buttonData.concat([
              new ButtonData('a', null, 2),
-             new ButtonData('c', null, 1),
-             new ButtonData('d', null, 3)
+             new ButtonData('b', null, 1),
+             new ButtonData('c', null, 3)
         ]);
 
 
@@ -50,4 +50,4 @@ class Letters extends Component {
   }
 }
 
-export default Letters;
+export default TestingBuildKeyboard;
