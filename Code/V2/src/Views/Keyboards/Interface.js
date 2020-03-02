@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
  * A Keyboard View Contains:
  * - textfield
  * - a word prediction bar
- * - any non-zero number of key groups
+ * - two keyboard groups
  */
 class Interface extends Component {
 

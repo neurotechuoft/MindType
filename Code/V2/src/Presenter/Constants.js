@@ -2,7 +2,8 @@
 
 const VIEWS = {
     LETTERS: "letters",
-    NUMBERS: "numbers"
+    NUMBERS: "numbers",
+    EMOJIS: "emojis"
 };
 
 export {VIEWS};

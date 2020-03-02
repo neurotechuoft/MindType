@@ -6,7 +6,7 @@ import return_btn from '../../Assets/return.png';
 import {isRequired} from "../Grid/PropTypes";
 
 /**
- * A standard keyboard layout, which allows for switching screens.
+ * A variable common key group, which allows for switching screens.
  * Dimensions: 1 row, 6 columns
  *
  * Layout of Buttons:

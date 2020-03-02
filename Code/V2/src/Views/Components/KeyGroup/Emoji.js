@@ -4,9 +4,9 @@ import {createDefaultButtonData} from "../Grid/Button/Data";
 import Grid from "../Grid";
 
 /**
- * A key group for typing numbers, punctuation & standard symbols.
+ * A key group for typing emojis.
  */
-class NumberSymbol extends Component {
+class Emoji extends Component {
 
     constructor(props) {
         super(props);
@@ -18,11 +18,11 @@ class NumberSymbol extends Component {
 
     buildButtonData() {
         let chars = [
-            '1', '2', '3', '4', '5', '6',
-            '7', '8', '9', '0', '#', '~',
-            '\'', '\"', ':', ';', '?', '!',
-            '@', '#', '$', '%', '&', '*',
-            '(', ')', '+', '-', '=', '/'
+            '😊', '😂', '😉', '😍', '😘', '😋',
+            '😠', '😒', '😮', '😎', '😢', '😭',
+            '🙈', '🙉', '🙊', '❤', '💔', '🎉',
+            '👋', '✌', '👍', '👎', '👏', '🙏',
+            '⭐', '✨', '🔥', '💯', '💩', '🌈'
         ];
 
         return createDefaultButtonData(chars);
@@ -33,4 +33,4 @@ class NumberSymbol extends Component {
     }
 }
 
-export default NumberSymbol;
+export default Emoji;

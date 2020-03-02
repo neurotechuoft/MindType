@@ -6,7 +6,7 @@ import delete_btn from '../../Assets/delete.png';
 import shift_btn from '../../Assets/shift.png';
 
 /**
- * A standard keyboard layout for typing text, which contains:
+ * A standard key group for typing text, which contains:
  * - alphabet
  * - shift button
  * - backspace button
