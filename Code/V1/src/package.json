@@ -4,7 +4,7 @@
   "main": "main.js",
   "private": true,
   "dependencies": {
-    "electron": "^2.0.8",
+    "electron": "^7.2.4",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-scripts": "^2.1.8",
@@ -26,6 +26,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "electron": "^4.1.0"
+    "electron": "^7.2.4"
   }
 }
