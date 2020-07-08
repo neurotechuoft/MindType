@@ -1,27 +1,31 @@
 /* 
-    script: color of the script on a key (number, letter, etc.)
-    key: color of a key in a neutral state
-    flashed: color of a key while flashed
-    selected: color of a key currently selected by the user
+    key.script: color of the script on a key (number, letter, etc.)
+    key.neutral: color of a key in a neutral state
+    key.flashed: color of a key while flashed
+    key.selected: color of a key currently selected by the user
+
+    inputBar.border: color of border of textbar
+    inputBar.background: color of background of textbar
+    inputBar.text: color of text in the textbar
+
+    background: color of the background of the main view
 */
 
-export const defaultTheme = {
-    script: "#43a8c2",      //cyan      
-    key: "#ffffff",         //white       
-    flashed: "#ffff3c",     //yellow    
-    selected: "#ee8426",    //orange
-};
+export default defaultTheme = {
 
-export const darkTheme = {
-    script: "#b6b6b6",      //gray      
-    key: "#000000",         //black       
-    flashed: "#9f0c0c",     //dark red    
-    selected: "#0807a0",    //dark blue
-};
+    key: {
+        script: "#43a8c2",      //cyan      
+        neutral: "#ffffff",     //white       
+        flashed: "#ffff3c",     //yellow    
+        selected: "#ee8426",    //orange
+    },
 
-export const lightTheme = {
-    script: "#000000",      //black      
-    key: "#ffffff",         //white       
-    flashed: "#9f0c0c",     //dark red    
-    selected: "#0807a0",    //dark blue
-}
+    inputBar: {
+        border: "#43a8c2",      //cyan
+        background: "#ffffff",  //white
+        text: "#000000",        //black
+    },
+    
+    background: "#ffffff",      //white
+    
+};
