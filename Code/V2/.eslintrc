@@ -1,0 +1,83 @@
+/** 
+* NOTE: This requires the @typescript-eslint/eslint-plugin@^2.7.0
+* and @typescript-eslint/parser@^2.7.0 to work.
+*/
+{
+    "env": {
+      // Prevents ESLint from flagging use of Jest functions like
+      // describe(), it(), etc.
+      "jest": true,
+      "node": true,
+      "browser": true
+    },
+    "root": true,
+    "plugins": [
+      "@typescript-eslint",
+      "react",
+      "react-hooks"
+    ],
+    "extends": ["airbnb-base"],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+      "linebreak-style": 0,
+      // These rules should be removed once import resolving works
+      // see: https://github.com/benmosher/eslint-plugin-import/issues/496
+      "import/no-extraneous-dependencies": 0,
+      "import/no-unresolved": 0,
+      "import/extensions": 0,
+      // Required for reducers that use immer
+      "no-param-reassign": 0,
+      "import/prefer-default-export": 0,
+      "no-console": 0,
+      "arrow-parens": ["error", "as-needed"],
+      // Change this to "consistent" from "multiline" as it can make adhering to
+      // max-len difficult
+      "object-curly-newline": ["error", { "consistent": true }],
+      "function-paren-newline": ["error",  "consistent"],
+      "comma-dangle": ["error", "only-multiline"],
+      "indent": ["error", 4],
+      "react/jsx-filename-extension": [1, {
+        "extensions": [".jsx", ".tsx"]
+      }],
+      "react/jsx-indent": ["error", 4],
+      "react/jsx-indent-props": ["error", 4],
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "spaced-comment": 0,
+      "react/prop-types": 0,
+      "no-unused-vars": 0,
+      "@typescript-eslint/explicit-member-accessibility": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/explicit-function-return-type": 0,
+      "@typescript-eslint/no-use-before-define": 0,
+      "@typescript-eslint/prefer-interface": 0,
+      "@typescript-eslint/no-non-null-assertion": 0,
+      "@typescript-eslint/ban-ts-ignore": 0,
+      "@typescript-eslint/no-empty-function": "off",
+      "prefer-const": 0,
+      "no-nested-ternary": "off",
+  
+  /** TO BE ERRORS **/
+  // All rules below will become errors, once all offending code is fixed
+      "react/jsx-no-bind": ["warn", {
+        "ignoreRefs": false,
+        "allowArrowFunctions": false,
+        "allowFunctions": false,
+        "allowBind": false,
+        "ignoreDOMComponents": true
+      }],
+      "react/jsx-handler-names": "warn"
+    },
+    "settings": {
+      "react": {
+        "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React in use
+      }
+    }
+  }
