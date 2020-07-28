@@ -1,8 +1,8 @@
 /* 
-    key.script: color of the script on a key (number, letter, etc.)
-    key.neutral: color of a key in a neutral state
-    key.flashed: color of a key while flashed
-    key.selected: color of a key currently selected by the user
+    key.script: the color of the script on a key (constant for all states)
+    key.neutral: background color of a key in a neutral state
+    key.flashed: background color of a key while flashed
+    key.selected: background color of a key currently selected by the user
 
     inputBar.border: color of border of textbar
     inputBar.background: color of background of textbar
@@ -11,13 +11,13 @@
     background: color of the background of the main view
 */
 
-export default defaultTheme = {
+const defaultTheme = {
 
     key: {
-        script: "#43a8c2",      //cyan      
-        neutral: "#ffffff",     //white       
-        flashed: "#ffff3c",     //yellow    
-        selected: "#ee8426",    //orange
+        script: "#ffffff", //white
+        neutral: "#43a8c2", //cyan
+        flashed: "#facb33",  //sunglow yellow 
+        selected: "#ab0020",    //crimson red
     },
 
     inputBar: {
@@ -29,3 +29,5 @@ export default defaultTheme = {
     background: "#ffffff",      //white
     
 };
+
+export default defaultTheme;
