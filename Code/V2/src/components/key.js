@@ -3,19 +3,33 @@ import styled from 'styled-components';
 import theme from '../themes/index';
 
 const Key = (props) => {
-        const keyColor = theme.key[props.status];
+        const {children, status, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight} = props;
+        const keyColor = theme.key[status];
+        
+        return (
+            <Button 
+                keyColor={keyColor} 
+                roundTopLeft={roundTopLeft}
+                roundTopRight={roundTopRight} 
+                roundBottomLeft={roundBottomLeft}
+                roundBottomRight={roundBottomRight}
+            >
+                {children}
+            </Button>
+        );
+};
 
-        const Button = styled.button`
+export default Key;
+
+const rounded = '8px';
+const unrounded = '0px'; 
+
+const Button = styled.button`
         font-size: 1em;
         color: ${theme.key.script};
         margin: 0.25em;
         padding: 0.25 0.5em;
-        border-radius: 8px;   // border-radius seems to round the button's edges with larger values and sharpen with smaller
-        background: ${keyColor};   
-        border: 2px solid ${keyColor};
+        background: ${props => props.keyColor};
+        border-radius: ${props => {console.log(props.roundTopLeft); return rounded;}} ${props => props.roundTopRight ? rounded : unrounded} ${props => props.roundBottomLeft ? rounded : unrounded} ${props => props.roundBottomRight ? rounded : unrounded};
+        border: 2px solid ${props => props.keyColor};
          `;
-
-        return (<Button>{props.children}</Button>);
-};
-
-export default Key;
