@@ -5,7 +5,7 @@ import theme from '../themes/index';
 const Key = (props) => {
         const {children, status, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight} = props;
         const keyColor = theme.key[status];
-        
+
         return (
             <Button 
                 keyColor={keyColor} 
@@ -30,6 +30,10 @@ const Button = styled.button`
         margin: 0.25em;
         padding: 0.25 0.5em;
         background: ${props => props.keyColor};
-        border-radius: ${props => {console.log(props.roundTopLeft); return rounded;}} ${props => props.roundTopRight ? rounded : unrounded} ${props => props.roundBottomLeft ? rounded : unrounded} ${props => props.roundBottomRight ? rounded : unrounded};
+        border-radius: 
+                    ${props => props.roundTopLeft ? rounded: unrounded} 
+                    ${props => props.roundTopRight ? rounded : unrounded} 
+                    ${props => props.roundBottomRight ? rounded : unrounded} 
+                    ${props => props.roundBottomLeft ? rounded : unrounded};
         border: 2px solid ${props => props.keyColor};
          `;
