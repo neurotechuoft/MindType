@@ -3,7 +3,7 @@ import { KeyType, KeyStatus } from '../types';
 /**
  * The colors of a key for a single 'KeyStatus'.
  */
-interface KeyStatusColor {
+export interface KeyStatusColor {
     // The color of the text/symbol on a key
     content: string;
     // The background color of the key
@@ -14,7 +14,7 @@ interface KeyStatusColor {
  * The colors of a key for a single 'KeyType',
  * but for every 'KeyStatus'.
  */
-interface KeyTheme {
+export interface KeyTheme {
     // The font family for text on a key
     font: string;
     color: {

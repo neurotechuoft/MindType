@@ -1,6 +1,9 @@
 import React from 'react';
+import styled from 'styled-components';
 import logo from './logo.svg';
 import { Counter } from './features/counter/Counter';
+import { Key } from './components/Key';
+import { KeyType, KeyStatus } from './types';
 import './App.css';
 
 function App() {
@@ -50,9 +53,23 @@ function App() {
             React Redux
           </a>
         </span>
+        <Row>
+          <Key type={KeyType.TEXT} status={KeyStatus.NEUTRAL}>Text Neutral</Key>
+          <Key type={KeyType.TEXT} status={KeyStatus.FLASHED}>Text Flashed</Key>
+          <Key type={KeyType.TEXT} status={KeyStatus.SELECTED}>Text Selected</Key>
+        </Row>
+        <Row>
+          <Key type={KeyType.NAVIGATION} status={KeyStatus.NEUTRAL}>Text Neutral</Key>
+          <Key type={KeyType.NAVIGATION} status={KeyStatus.FLASHED}>Text Flashed</Key>
+          <Key type={KeyType.NAVIGATION} status={KeyStatus.SELECTED}>Text Selected</Key>
+        </Row>
       </header>
     </div>
   );
 }
 
 export default App;
+
+const Row = styled.div`
+    flex-direction: row
+`;
