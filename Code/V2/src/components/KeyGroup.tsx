@@ -1,26 +1,38 @@
 import React from "react";
 import styled from "styled-components";
-import Key from "./Key.js";
+import Key, { KeyProps } from "./Key";
 import { KeyStatus } from "../types";
 
-const KeyGroup = (props) => {
-  const { row_count, col_count } = props;
-  const keyboard = Array(row_count)
-    .fill(KeyStatus.NEUTRAL)
-    .map((x) => Array(col_count).fill(x));
+interface KeyGroupProps {
+  rowCount: number;
+  colCount: number;
+  data: KeyProps[][];
+}
+
+export const KeyGroup = (props) => {
+  const { rowCount, colCount, data } = props;
+  const keys = data.map((arr: Array<KeyProps>, r: number) =>
+    arr
+      .filter((x) => x)
+      .map((item: KeyProps, c: number) => <GridKey {...item} row={r} col={c} />)
+  );
+  return <Wrapper>{keys}</Wrapper>;
 };
 
-// const KeyGroup = styled.div`
-//     display: flex;
-//     flex-flow: row wrap;
-
 const Wrapper = styled.div`
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  grid-template-rows: repeat(5, 30px);
+  gap: 2px 2px;
 `;
 
-const Row = styled.div`
-  flex-direction: row;
-  width: 100%;
-`;
+interface GridKeyProps extends KeyProps {
+  row: number;
+  col: number;
+}
 
-export default Row;
+const GridKey = styled(Key)<GridKeyProps>`
+  grid-column: ${(props) => props.col + 1} / ${(props) => props.col + 1 + props.width};
+  grid-row: ${(props) => props.row + 1} / ${(props) => props.row + 2};
+`;
+// child grid properties in GridKey not working (GridKey seems to not be a direct child of Wrapper)
