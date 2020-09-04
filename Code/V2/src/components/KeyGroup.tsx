@@ -36,3 +36,4 @@ const GridKey = styled(Key)<GridKeyProps>`
   grid-row: ${(props) => props.row + 1} / ${(props) => props.row + 2};
 `;
 // child grid properties in GridKey not working (GridKey seems to not be a direct child of Wrapper)
+// need to pass grid properties to Key since GridKey is child of Key

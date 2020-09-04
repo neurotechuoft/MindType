@@ -11,7 +11,7 @@ export interface KeyProps {
 }
 
 export const Key = (props: KeyProps) => {
-  const { children, type=KeyType.TEXT, status, width } = props;
+  const { children, type = KeyType.TEXT, status, width } = props;
 
   const keyTheme: KeyTheme = useMemo(() => theme.key[type], [type]);
 
@@ -24,7 +24,7 @@ export const Key = (props: KeyProps) => {
 
   return (
     <StyledButton
-      fontFamily={fontFamily} 
+      fontFamily={fontFamily}
       textColor={keyStatusColor.content}
       backgroundColor={keyStatusColor.background}
       width={width}
