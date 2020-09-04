@@ -3,37 +3,58 @@ import styled from "styled-components";
 import Key, { KeyProps } from "./Key";
 import { KeyStatus } from "../types";
 
-interface KeyGroupProps {
+type KeyGroupProps = {
   rowCount: number;
   colCount: number;
-  data: KeyProps[][];
-}
+  children: any;
+  //data: KeyProps[][];
+};
 
-export const KeyGroup = (props) => {
-  const { rowCount, colCount, data } = props;
+export const KeyGroup = (props: KeyGroupProps) => {
+  const { children, rowCount, colCount /*,data*/ } = props;
+  /*
   const keys = data.map((arr: Array<KeyProps>, r: number) =>
     arr
       .filter((x) => x)
       .map((item: KeyProps, c: number) => <GridKey {...item} row={r} col={c} />)
+  );    
+  */
+  return (
+    <Wrapper rowCount={rowCount} colCount={colCount}>
+      {children}
+    </Wrapper>
   );
-  return <Wrapper>{keys}</Wrapper>;
 };
 
-const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, auto);
-  grid-template-rows: repeat(5, 30px);
-  gap: 2px 2px;
-`;
-
-interface GridKeyProps extends KeyProps {
-  row: number;
-  col: number;
+interface wrapperProps {
+  rowCount: number;
+  colCount: number;
 }
 
-const GridKey = styled(Key)<GridKeyProps>`
-  grid-column: ${(props) => props.col + 1} / ${(props) => props.col + 1 + props.width};
-  grid-row: ${(props) => props.row + 1} / ${(props) => props.row + 2};
+const stile = styled.div`
+  border-radius: 25px;
+  border: 2px solid red;
+  margin: 8px;
+  z-index: 1;
 `;
-// child grid properties in GridKey not working (GridKey seems to not be a direct child of Wrapper)
-// need to pass grid properties to Key since GridKey is child of Key
+
+const Wrapper = styled.div<wrapperProps>`
+  display: grid;
+  grid-template-columns: repeat(${(props) => props.colCount}, 80px);
+  grid-template-rows: repeat(${(props) => props.rowCount}, 80px);
+  gap: 1px 1px;
+  border-radius: 25px;
+  border: 2px solid lightblue;
+  margin: 8px;
+`;
+
+// interface GridKeyProps extends KeyProps {
+//   row: number;
+//   col: number;
+// }
+
+// const GridKey = styled(Key)<GridKeyProps>`
+//   grid-column: ${(props) => props.col + 1} / ${(props) => props.col};
+//   grid-row: ${(props) => props.row + 1} / ${(props) => props.row + 2};
+// `;
+// // child grid properties in GridKey not working (GridKey seems to not be a direct child of Wrapper)
