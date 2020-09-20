@@ -22,13 +22,15 @@ export const Key = (props: KeyProps) => {
     const keyStatusColor: KeyStatusColor = useMemo(() => keyTheme.color[status], [
         keyTheme,
         status,
-	]);
-	
-	let clickEvent = function(e : SyntheticEvent) {console.log(children)};
+    ]);
+
+    let clickEvent = function (e: SyntheticEvent) {
+        console.log(children);
+    };
 
     return (
         <StyledButton
-			onClick = {clickEvent}
+            onClick={clickEvent}
             fontFamily={fontFamily}
             textColor={keyStatusColor.content}
             backgroundColor={keyStatusColor.background}
@@ -60,7 +62,6 @@ const StyledButton = styled.button<StyledButtonProps>`
     padding: 0.25em 0.5em;
     background: ${(props) => props.backgroundColor};
     border: 2px solid ${(props) => props.backgroundColor};
-    ${(props) =>
-        props.col ? `grid-column: ${props.col + 1} / ${props.col + 1 + props.width};` : ''}
-    ${(props) => (props.row ? `grid-row: ${props.row + 1} / ${props.row + 2};` : '')}
+    ${(props) => (props.col || props.col == 0) && `grid-column: ${props.col + 1} / ${props.col + 1 + props.width};`}
+    ${(props) => (props.row || props.row == 0) && `grid-row: ${props.row + 1} / ${props.row + 2};`}
 `;
