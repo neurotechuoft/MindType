@@ -32,6 +32,6 @@ const Grid = styled.div<GridProps>`
     grid-template-columns: repeat(${(props) => props.colCount}, 80px);
     grid-template-rows: repeat(${(props) => props.rowCount}, 80px);
     gap: 1px 1px;
-	margin: 8px;
-	border-radius: 12px; 
+    border-radius: 12px; 
+    grid-column: 2 / 3;
 `;

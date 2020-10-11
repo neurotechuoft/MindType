@@ -4,6 +4,7 @@ import { KeyType, KeyStatus } from '../types';
 import theme, { KeyTheme, KeyStatusColor } from '../themes/index';
 
 export interface KeyProps {
+    clickHandler(text: any): any;
     children: any;
     type?: KeyType;
     status: KeyStatus;
@@ -13,7 +14,7 @@ export interface KeyProps {
 }
 
 export const Key = (props: KeyProps) => {
-    const { children, type = KeyType.TEXT, status, width, row, col } = props;
+    const { children, type = KeyType.TEXT, status, width, row, col, clickHandler } = props;
 
     const keyTheme: KeyTheme = useMemo(() => theme.key[type], [type]);
 
@@ -23,14 +24,10 @@ export const Key = (props: KeyProps) => {
         keyTheme,
         status,
     ]);
-
-    let clickEvent = function (e: SyntheticEvent) {
-        console.log(children);
-    };
-
+   
     return (
         <StyledButton
-            onClick={clickEvent}
+            onClick={() => clickHandler(children)}
             fontFamily={fontFamily}
             textColor={keyStatusColor.content}
             backgroundColor={keyStatusColor.background}

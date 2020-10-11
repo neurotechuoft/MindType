@@ -37,5 +37,6 @@ const StyledBar = styled.div<StyledBarProps>`
     background: ${(props) => props.backgroundColor};
     border: 2px solid ${(props) => props.backgroundColor};
     text-align: left;
-    width: ${2.5 * 6}em;
+    height: 1.2em;
+    grid-column: 2 / 3;
 `;
