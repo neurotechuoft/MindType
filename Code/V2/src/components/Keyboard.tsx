@@ -6,24 +6,33 @@ import { KeyGroup } from './KeyGroup';
 import theme from '../themes';
 import '../App.css';
 import TextBar from './TextBar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faBackspace, faArrowAltCircleUp } from '@fortawesome/free-solid-svg-icons';
 
-// type TextBarState = {
-//     text: String;
-// };
+library.add(faBackspace, faArrowAltCircleUp); //allows us to reference icon images as strings
 
-export class Keyboard extends React.Component<{}, {text: any}> {
-
-    constructor(props) {
+export class Keyboard extends React.Component<{}, { text: any; capitalizeNext: boolean }> {
+    constructor(props: any) {
         super(props);
         this.state = {
-            text: ''
+            text: '',
+            capitalizeNext: false,
         };
     }
 
-    changeText = (str) => {
+    changeText = (keyScript: any) => {
         const old = this.state.text;
-        this.setState({text: old + str});
-    }
+
+        if (typeof keyScript === 'string') {
+            const letter = this.state.capitalizeNext ? keyScript.toUpperCase() : keyScript;     // letter/spacebar key
+            this.setState({ text: old + letter, capitalizeNext: false });
+        } else if (keyScript.props.icon == 'backspace') {                                 //backspace key
+            this.setState({ text: old.substring(0, old.length - 1) });
+        } else if (keyScript.props.icon == 'arrow-alt-circle-up') {                       //shift key
+            this.setState({ capitalizeNext: !this.state.capitalizeNext });
+        }
+    };
 
     data: KeyProps[][] = [
         [
@@ -192,20 +201,20 @@ export class Keyboard extends React.Component<{}, {text: any}> {
                 clickHandler: this.changeText,
             },
             {
-                children: '_______',
+                children: ' ',
                 status: KeyStatus.NEUTRAL,
                 width: 2,
                 clickHandler: this.changeText,
             },
             (undefined as unknown) as KeyProps,
             {
-                children: 'ca',
+                children: <FontAwesomeIcon icon="arrow-alt-circle-up" size="lg" />,
                 status: KeyStatus.NEUTRAL,
                 width: 1,
                 clickHandler: this.changeText,
             },
             {
-                children: 'ba',
+                children: <FontAwesomeIcon icon="backspace" size="lg" />,
                 status: KeyStatus.NEUTRAL,
                 width: 1,
                 clickHandler: this.changeText,

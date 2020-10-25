@@ -2,6 +2,9 @@ import React, { SyntheticEvent, useMemo } from 'react';
 import styled from 'styled-components';
 import { KeyType, KeyStatus } from '../types';
 import theme, { KeyTheme, KeyStatusColor } from '../themes/index';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBackspace } from '@fortawesome/free-solid-svg-icons';
+import { faArrowAltCircleUp } from '@fortawesome/free-solid-svg-icons';
 
 export interface KeyProps {
     clickHandler(text: any): any;
@@ -11,10 +14,11 @@ export interface KeyProps {
     width: number;
     row?: number;
     col?: number;
+    src?: any;
 }
 
 export const Key = (props: KeyProps) => {
-    const { children, type = KeyType.TEXT, status, width, row, col, clickHandler } = props;
+    const { children, type = KeyType.TEXT, status, width, row, col, clickHandler, src=''} = props;
 
     const keyTheme: KeyTheme = useMemo(() => theme.key[type], [type]);
 
@@ -27,6 +31,7 @@ export const Key = (props: KeyProps) => {
    
     return (
         <StyledButton
+            src={src}
             onClick={() => clickHandler(children)}
             fontFamily={fontFamily}
             textColor={keyStatusColor.content}
@@ -49,6 +54,7 @@ interface StyledButtonProps {
     width: number;
     row?: number;
     col?: number;
+    src?: any;
 }
 
 const StyledButton = styled.button<StyledButtonProps>`
