@@ -21,7 +21,7 @@ export class Keyboard extends React.Component<{}, { text: any; capitalizeNext: b
         };
     }
 
-    changeText = (keyScript: any) => {
+    changeText = (keyScript: any, status: KeyStatus,  row: number, col: number) => {
         const old = this.state.text;
 
         if (typeof keyScript === 'string') {
@@ -32,6 +32,20 @@ export class Keyboard extends React.Component<{}, { text: any; capitalizeNext: b
         } else if (keyScript.props.icon == 'arrow-alt-circle-up') {                       //shift key
             this.setState({ capitalizeNext: !this.state.capitalizeNext });
         }
+
+        var newStatus = null;
+
+        if (status == KeyStatus.NEUTRAL) {
+             newStatus = KeyStatus.FLASHED;
+        }
+        else if(status == KeyStatus.FLASHED) {
+             newStatus = KeyStatus.SELECTED;
+        }
+        else {
+             newStatus = KeyStatus.NEUTRAL;
+        }
+
+        this.data[row][col].status = newStatus;
     };
 
     data: KeyProps[][] = [

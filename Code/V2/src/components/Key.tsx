@@ -7,7 +7,7 @@ import { faBackspace } from '@fortawesome/free-solid-svg-icons';
 import { faArrowAltCircleUp } from '@fortawesome/free-solid-svg-icons';
 
 export interface KeyProps {
-    clickHandler(text: any): any;
+    clickHandler(text: any, status: KeyStatus, row: number, col: number): any;
     children: any;
     type?: KeyType;
     status: KeyStatus;
@@ -17,14 +17,14 @@ export interface KeyProps {
     src?: any;
 }
 
-export const Key = (props: KeyProps) => {
+    const Key = (props: KeyProps) => {
     const { children, type = KeyType.TEXT, status, width, row, col, clickHandler, src=''} = props;
 
     const keyTheme: KeyTheme = useMemo(() => theme.key[type], [type]);
 
     const fontFamily: string = keyTheme.font;
 
-    const keyStatusColor: KeyStatusColor = useMemo(() => keyTheme.color[status], [
+    var keyStatusColor: KeyStatusColor = useMemo(() => keyTheme.color[status], [
         keyTheme,
         status,
     ]);
@@ -32,7 +32,9 @@ export const Key = (props: KeyProps) => {
     return (
         <StyledButton
             src={src}
-            onClick={() => clickHandler(children)}
+            onClick={() => {
+                clickHandler(children, status, row, col)
+            }}
             fontFamily={fontFamily}
             textColor={keyStatusColor.content}
             backgroundColor={keyStatusColor.background}
