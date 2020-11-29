@@ -18,7 +18,7 @@ export interface KeyProps {
 }
 
     const Key = (props: KeyProps) => {
-    const { children, type = KeyType.TEXT, status, width, row, col, clickHandler, src=''} = props;
+    const { children, type = KeyType.TEXT, status, width, row=-1, col=-1, clickHandler, src=''} = props;
 
     const keyTheme: KeyTheme = useMemo(() => theme.key[type], [type]);
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Key, KeyProps } from './Key';
+import { KeyProps } from './Key';
 import { KeyType, KeyStatus } from '../types';
 import { KeyGroup } from './KeyGroup';
 import theme from '../themes';
