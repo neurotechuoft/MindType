@@ -26,7 +26,7 @@ mne==0.16.2
 monotonic==1.5
 multidict==4.3.1
 muselsl==1.0.2
-numpy==1.15.1
+numpy==1.22.0
 pandas==0.23.4
 pexpect==4.6.0
 ptyprocess==0.6.0
